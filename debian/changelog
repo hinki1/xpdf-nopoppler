@@ -1,3 +1,46 @@
+xpdf (3.00-12) unstable; urgency=high
+
+  * SECURITY UPDATE: Fixed buffer overflow that could overwrite the stack 
+    and hence cause the execution of arbitrary code as reported by 
+    iDEFENSE (xpdf/Decrypt.cc)
+  * References: CAN-2005-0064
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed, 19 Jan 2005 23:48:56 +1100
+
+xpdf (3.00-11) unstable; urgency=high
+
+  * SECURITY UPDATE: fix potential buffer overflow
+    Applied patch to colour map handling in xpdf/Gfx.cc (closes: #286742)
+  * References: CAN-2004-1125
+
+ -- Hamish Moffatt <hamish@debian.org>  Thu, 23 Dec 2004 08:16:24 +1100
+
+xpdf (3.00-10) unstable; urgency=high
+
+  * SECURITY UPDATE: fix potential buffer overflow
+  * goo/gmem.[ch]: change declarations of gmalloc and grealloc to use size_t
+    instead of int; int truncated sizes to 32 bits, which made xpdf still
+    vulnerable to integer (and eventually buffer) overflow attacks on 64 bit
+    platforms like amd64.
+  * Thanks to Marcus Meissner <meissner@suse.de> for providing the patch
+    and Martin Pitt <mpitt@debian.org> for providing the changes for
+    Debian in the form of 3.00-9ubuntu2
+  * References:
+    CAN-2004-0889 (incomplete fix in version 3.00-9)
+
+  * Incorporated patch from Arnaud Giersch to fix crashes with
+    certain PDFs (closes: #278693, #279292)
+
+ -- Hamish Moffatt <hamish@debian.org>  Mon,  8 Nov 2004 00:23:22 +1100
+
+xpdf (3.00-9) unstable; urgency=high
+
+  * Applied patch to fix vulnerability CAN-2004:0889: integer overflow 
+    issues that could allow denial of service or possibly arbitrary 
+    code execution
+
+ -- Hamish Moffatt <hamish@debian.org>  Thu, 21 Oct 2004 23:49:32 +1000
+
 xpdf (3.00-8) unstable; urgency=low
 
   * Final cleanup for sarge.

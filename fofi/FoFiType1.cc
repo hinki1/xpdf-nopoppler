@@ -163,7 +163,8 @@ void FoFiType1::parse() {
       line = getNextLine(line);
       for (j = 0; j < 300 && line; ++j) {
 	line1 = getNextLine(line);
-	if ((n = line1 - line) > 255) {
+	n = line1? (line1 - line): ((char *)file + len - line);
+	if (n > 255) {
 	  n = 255;
 	}
 	strncpy(buf, line, n);
