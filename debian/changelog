@@ -1,3 +1,22 @@
+xpdf (3.00-13) unstable; urgency=low
+
+  * SECURITY UPDATE: fix buffer overflow for PDF documents with an /Encrypt
+    /Length value > 16 (xpdf/XRef.cc) (upstream xpdf-3.00pl3.patch)
+  * References: CAN-2005-0064 (in addition to previous changes)
+
+  * Added desktop entry to xpdf-reader (adapted from Ubuntu with thanks)
+    (closes: #280812)
+  * Updated build-dependency on debhelper to 4.2.21 to get dh_desktop
+
+  * Fixed FTBFS on amd64 with gcc-4.0 resulting from cast from void*
+    to int in xpdf/XPDFViewer.cc (closes: #288727)
+    Thanks to Andreas Jochens for the patch.
+
+  * Added note to header of source files modified to remove PDF
+    permission checking as requested by upstream in bug#298584
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue, 22 Mar 2005 23:33:52 +1100
+
 xpdf (3.00-12) unstable; urgency=high
 
   * SECURITY UPDATE: Fixed buffer overflow that could overwrite the stack 

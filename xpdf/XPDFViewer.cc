@@ -4,6 +4,8 @@
 //
 // Copyright 2002-2003 Glyph & Cog, LLC
 //
+// Modified for Debian by Hamish Moffatt, 22 May 2002.
+//
 //========================================================================
 
 #include <aconf.h>
@@ -1380,7 +1382,7 @@ void XPDFViewer::zoomMenuCbk(Widget widget, XtPointer ptr,
   double z;
 
   XtVaGetValues(widget, XmNuserData, &userData, NULL);
-  z = zoomMenuInfo[(int)userData].zoom;
+  z = zoomMenuInfo[(long)userData].zoom;
   // only redraw if this was triggered by an event; otherwise
   // the caller is responsible for doing the redraw
   if (z != viewer->core->getZoom() && data->event) {

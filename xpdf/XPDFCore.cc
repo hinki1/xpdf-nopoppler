@@ -4,6 +4,8 @@
 //
 // Copyright 2002-2003 Glyph & Cog, LLC
 //
+// Modified for Debian by Hamish Moffatt, 22 May 2002.
+//
 //========================================================================
 
 #include <aconf.h>

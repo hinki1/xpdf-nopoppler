@@ -72,10 +72,12 @@ binary-arch:    build
 	mv debian/xpdf-reader/usr/bin/xpdf debian/xpdf-reader/usr/bin/xpdf.bin
 	cp debian/xpdf-wrapper debian/xpdf-reader/usr/bin/xpdf
 	chmod +x debian/xpdf-reader/usr/bin/xpdf
+	cp debian/xpdf.desktop debian/xpdf-reader/usr/share/applications/
 
 	dh_installmime -pxpdf-reader
 	dh_installmenu -pxpdf-reader
 	dh_strip -a
+	dh_desktop -a
 	dh_compress -a
 	dh_fixperms -a
 	dh_installdeb -a
