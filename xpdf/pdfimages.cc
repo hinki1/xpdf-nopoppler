@@ -119,11 +119,13 @@ int main(int argc, char *argv[]) {
   }
 
   // check for copy permission
+#ifdef ENFORCE_PERMISSIONS
   if (!doc->okToCopy()) {
     error(-1, "Copying of images from this document is not allowed.");
     exitCode = 3;
     goto err1;
   }
+#endif
 
   // get page range
   if (firstPage < 1)

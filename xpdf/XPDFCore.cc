@@ -940,9 +940,11 @@ void XPDFCore::moveSelection(int mx, int my) {
 // global variables (currentSelection and currentSelectionOwner).
 
 void XPDFCore::copySelection() {
+#ifdef ENFORCE_PERMISSIONS
   if (!doc->okToCopy()) {
     return;
   }
+#endif
   if (currentSelection) {
     delete currentSelection;
   }
@@ -997,9 +999,11 @@ GBool XPDFCore::getSelection(int *xMin, int *yMin, int *xMax, int *yMax) {
 }
 
 GString *XPDFCore::extractText(int xMin, int yMin, int xMax, int yMax) {
+#ifdef ENFORCE_PERMISSIONS
   if (!doc->okToCopy()) {
     return NULL;
   }
+#endif
   return out->getText(xMin, yMin, xMax, yMax);
 }
 
@@ -1008,9 +1012,11 @@ GString *XPDFCore::extractText(int pageNum,
   TextOutputDev *textOut;
   GString *s;
 
+#ifdef ENFORCE_PERMISSIONS
   if (!doc->okToCopy()) {
     return NULL;
   }
+#endif
   textOut = new TextOutputDev(NULL, gTrue, gFalse, gFalse);
   if (!textOut->isOk()) {
     delete textOut;
@@ -1050,6 +1056,9 @@ void XPDFCore::doAction(LinkAction *action) {
   Object movieAnnot, obj1, obj2;
   GString *msg;
   int i;
+
+  if (action == 0)
+    return;
 
   switch (kind = action->getKind()) {
 
@@ -1647,6 +1656,7 @@ void XPDFCore::inputCbk(Widget widget, XtPointer ptr, XtPointer callData) {
 	  core->setCursor(None);
 	  core->moveSelection(mx, my);
 #ifndef NO_TEXT_SELECT
+#ifdef ENFORCE_PERMISSIONS
 	  if (core->selectXMin != core->selectXMax &&
 	      core->selectYMin != core->selectYMax) {
 	    if (core->doc->okToCopy()) {
@@ -1655,6 +1665,9 @@ void XPDFCore::inputCbk(Widget widget, XtPointer ptr, XtPointer callData) {
 	      error(-1, "Copying of text from this document is not allowed.");
 	    }
 	  }
+#else
+      core->copySelection();
+#endif
 #endif
 	}
 	if (core->hyperlinksEnabled) {

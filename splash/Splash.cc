@@ -631,6 +631,8 @@ SplashError Splash::fillWithPattern(SplashPath *path, GBool eo,
   if (path->length == 0) {
     return splashErrEmptyPath;
   }
+  if (path->length == 1)
+    return splashErrBogusPath;
   xPath = new SplashXPath(path, state->flatness, gTrue);
   xPath->sort();
   scanner = new SplashXPathScanner(xPath, eo);

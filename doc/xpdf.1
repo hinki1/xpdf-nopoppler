@@ -7,6 +7,11 @@ xpdf \- Portable Document Format (PDF) file viewer for X (version 3.00)
 [options]
 .RI [ PDF-file
 .RI [ page " | +" dest ]]
+.sp
+.B zxpdf
+[options]
+.RI [ PDF-file
+.RI [ page " | +" dest ]]
 .SH DESCRIPTION
 .B Xpdf
 is a viewer for Portable Document Format (PDF) files.  (These are also
@@ -37,11 +42,17 @@ You can also start xpdf without opening any files:
 .RS
 xpdf
 .RE
+.PP
+Compressed files (gz and bz2) may be viewed using the command:
+.PP
+.RS
+zxpdf file.pdf.gz
+.RE
+.PP
 .SH CONFIGURATION FILE
 Xpdf reads a configuration file at startup.  It first tries to find
 the user's private config file, ~/.xpdfrc.  If that doesn't exist, it
-looks for a system-wide config file, typically /usr/local/etc/xpdfrc
-(but this location can be changed when xpdf is built).  See the
+looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
 .BR xpdfrc (5)
 man page for details.
 .SH OPTIONS

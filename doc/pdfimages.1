@@ -12,9 +12,9 @@ pdfimages \- Portable Document Format (PDF) image extractor
 saves images from a Portable Document Format (PDF) file as Portable
 Pixmap (PPM), Portable Bitmap (PBM), or JPEG files.
 .PP
-Pdfimages reads the PDF file, scans one or more pages,
+Pdfimages reads the PDF file
 .IR PDF-file ,
-and writes one PPM, PBM, or JPEG file for each image,
+scans one or more pages, and writes one PPM, PBM, or JPEG file for each image,
 .IR image-root - nnn . xxx ,
 where
 .I nnn
@@ -24,9 +24,7 @@ is the image type (.ppm, .pbm, .jpg).
 .SH CONFIGURATION FILE
 Pdfimages reads a configuration file at startup.  It first tries to
 find the user's private config file, ~/.xpdfrc.  If that doesn't
-exist, it looks for a system-wide config file, typically
-/usr/local/etc/xpdfrc (but this location can be changed when pdfimages
-is built).  See the
+exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
 .BR xpdfrc (5)
 man page for details.
 .SH OPTIONS

@@ -305,15 +305,25 @@ fi
 dnl ##### Check for FreeType 2.x.
 dnl ##### (Note: FT_Get_Name_Index was added in FT 2.0.5, and is
 dnl ##### the reason that Xpdf requires 2.0.5+.)
-smr_CHECK_LIB(freetype2, freetype, [FreeType2 font rasterizer - version 2.0.5+],
-              FT_Get_Name_Index, freetype/freetype.h, -lm)
-if test x"$freetype2_LIBS" = x; then
-  smr_CHECK_LIB(freetype2, freetype, [FreeType2 font rasterizer - version 2.0.5+],
-                FT_Get_Name_Index, freetype.h, -lm)
-fi
+dnl smr_CHECK_LIB(freetype2, freetype, [FreeType2 font rasterizer - version 2.0.5+],
+dnl               FT_Get_Name_Index, freetype/freetype.h, -lm)
+dnl if test x"$freetype2_LIBS" = x; then
+dnl   smr_CHECK_LIB(freetype2, freetype, [FreeType2 font rasterizer - version 2.0.5+],
+dnl                 FT_Get_Name_Index, freetype.h, -lm)
+dnl fi
+dnl AC_SUBST(freetype2_LIBS)
+dnl AC_SUBST(freetype2_CFLAGS)
+dnl if test "x$smr_have_freetype2_library" != xyes; then
+dnl   no_x="yes"
+dnl fi
+
+PKG_CHECK_MODULES(freetype2, freetype2 >= 9.5.3, have_freetype2_library="yes",
+		  have_freetype2_library="no")
 AC_SUBST(freetype2_LIBS)
 AC_SUBST(freetype2_CFLAGS)
-if test "x$smr_have_freetype2_library" != xyes; then
+if test "x$have_freetype2_library" = xyes; then
+  AC_DEFINE_UNQUOTED(HAVE_FREETYPE_FREETYPE_H)
+else
   no_x="yes"
 fi
 

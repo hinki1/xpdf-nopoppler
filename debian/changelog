@@ -1,0 +1,553 @@
+xpdf (3.00-8) unstable; urgency=low
+
+  * Final cleanup for sarge.
+  * Fixed handling of some PDFs causing crashes (Closes: #254864)
+    Modified splash/SplashFTFont.cc to prevent crash caused by calling
+    FreeType's FT_Decompose_Outline with a non-outline object
+  * Cleaned up dependency on libt1-5 to prevent duplicate depends
+  * Moved pixmaps to /usr/share/pixmaps
+  * Cleaned up lintian warnings
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed, 18 Aug 2004 23:32:07 +1000
+
+xpdf (3.00-7) unstable; urgency=low
+
+  * Changed wrapper script to use /bin/bash explicitly
+    (closes: #245943, #248090)
+  * Add /usr/share/bug/xpdf/control so that bugs submitted to 'xpdf'
+    go to 'xpdf-reader' instead
+  * Update supplied configuration file for new configuration options
+    (closes: #246351)
+  * Added menu icon (closes: #244504)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun,  9 May 2004 23:24:30 +1000
+
+xpdf (3.00-6) unstable; urgency=low
+
+  * Add dependency on libt1-5 >= 5.0.2 to fix several Xpdf crashes
+    (closes: #238946, #243847, #243879)
+  * Fixed wrapper script so that X resources are still located
+    correctly (closes: #242513)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 25 Apr 2004 21:48:25 +1000
+
+xpdf (3.00-5) unstable; urgency=low
+
+  * Fix crash when clicking bookmarks in some PDFs (closes: #236007)
+  * Not uploaded
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue, 30 Mar 2004 23:31:16 +1000
+
+xpdf (3.00-4) unstable; urgency=low
+
+  * Build with new libt1 rather than old t1lib (closes: #234273)
+  * Fixed repeated text in pdfimages(1) (closes: #202139)
+  * Fix crash on some PDFs due to empty paths (closes: #231709, #240187)
+    (thanks to Guillaume Morin for the patch)
+  * Applied upstream patch to add TrueType font collection (TTC) support
+    (closes: #232340)
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue, 30 Mar 2004 22:30:35 +1000
+
+xpdf (3.00-3) unstable; urgency=low
+
+  * Add upstream patch to fix handling of 16-bit TrueType fonts
+  * Added note to /etc/xpdf/xpdfrc file warning that user configuration
+    files (~/.xpdfrc) override the system-wide file, rather than supplement
+    it (closes: #230853)
+  * Updated /etc/xpdf/xpdfrc to remove obselete X font mappings
+    (no longer supported)
+  * Updated /usr/share/doc/xpdf-common/examples/sample-xpdfrc for 3.00
+    (closes: #229874) by supplying the debian package version instead
+    of upstream's
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue, 10 Feb 2004 23:00:02 +1100
+
+xpdf (3.00-2) unstable; urgency=low
+
+  * Added build-dep for pkg-config
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed, 28 Jan 2004 00:38:31 +1100
+
+xpdf (3.00-1) unstable; urgency=low
+
+  * New upstream release
+    * Enter now works in Find dialog to start searching (closes: #167975)
+    * Find dialog text input grows when window is resized (closes: #205208)
+    * Fixed crashes with some PDFs (closes: #223989, #224943, #225289, #229264)
+    * Fixed inverted horizontal mouse wheel behaviour (closes: #224849)
+    * Fixed slow rendering of some documents (closes: #222254)
+  * Corrected location of upstream sources in copyright file
+    (closes: #229670)
+  * Fixed location of configuration file in manual pages
+    (/etc/xpdfrc -> /etc/xpdf/xpdfrc)
+
+ -- Hamish Moffatt <hamish@debian.org>  Mon, 26 Jan 2004 14:39:30 +1100
+
+xpdf (2.03-2) unstable; urgency=low
+
+  * Applied upstream patch to fix reading of JBIG encoded files (closes:
+    #220450)
+  * Wrapper script will now use exec when calling xpdf.bin
+    (closes: #219736) and zxpdf will do the same when calling xpdf
+
+ -- Hamish Moffatt <hamish@debian.org>  Fri, 14 Nov 2003 09:08:11 +1100
+
+xpdf (2.03-1) unstable; urgency=low
+
+  * New upstream release
+    * Fixes crashes with some documents (closes: #215867, #212990)
+    * Supports PDF outline (bookmarks) (closes: #166926)
+    * Supports clipping to text which makes some more PDF files
+      display correctly (closes: #184070)
+    * Fix PDF BitsPerComponent handling (closes: #185950)
+    * Handle PDFs with broken Unicode cmap table (closes: #188532)
+    * Handle PDFs with broken DCT streams (closes: #193718)
+    * Improved text extraction with right-to-left scripts (closes: #176745)
+    * If the print command is changed in the print dialog, it won't
+      be reset if another file is opened (closes: #200466)
+
+  * Updated Greek and Cyrillic language support to 2003-jun-28 versions
+  * Provided manual page for xpdf.bin (symlink to xpdf(1)) (closes: #211887)
+  * update-xpdfrc will now ignore backup (*~) and RCS files (closes: #194124)
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed, 22 Oct 2003 22:43:47 +1000
+
+xpdf (2.02pl1-1) unstable; urgency=high
+
+  * Upstream patch release to fix security hole in URL handling
+    (closes: #198032)
+
+ -- Hamish Moffatt <hamish@debian.org>  Thu, 19 Jun 2003 23:06:21 +1000
+
+xpdf (2.02-2) unstable; urgency=low
+
+  * Modified xpdf(1) to include information about zxpdf
+    (closes: #175535)
+  * Modified zxpdf to work with no command line parameters
+  * Modified zxpdf to recognise .PDF (upper case) file extension
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed, 23 Apr 2003 00:27:50 +1000
+
+xpdf (2.02-1) unstable; urgency=low
+
+  * New upstream release
+  * Incorporated new Arabic language package 2003-feb-16
+  * Updated Hebrew language support to 2003-feb-16
+  * Upstream: fixed display problems in some PDFs (closes: #181076,
+    #144047, #167827, #176856, #180829)
+  * Upstream: fixed crash on find-next before find (closes: #172973)
+  * Upstream: fixed color handling in buttons (closes: #171398)
+  * Upstream: fixed crash if Ctrl-W pressed while file open (closes: #177698)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 30 Mar 2003 14:06:43 +1000
+
+xpdf (2.01-3) unstable; urgency=low
+
+  * Fixed wrapper script bug: incorrect handling of command line
+    parameters (closes: #174965, #174851)
+  * Fixed wrapper script bug: should set $LC_ALL as well as $LANG
+    (closes: #174717)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat,  4 Jan 2003 15:59:01 +1100
+
+xpdf (2.01-2) unstable; urgency=low
+
+  * Applied patch to fix buffer overflow as reported by iDEFENSE
+  * Fixed name of language configuration files (/etc/xpdf/xpdf-* renamed
+    back to xpdfrc-*) (closes: #173046)
+  * Modified update-xpdfrc to ignore .dpkg* files in /etc/xpdf
+    (closes: #173268)
+  * Made xpdf a wrapper script which calls real xpdf binary to work
+    around locale problems (closes: #167956, #168717, #169339, #172009)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 28 Dec 2002 00:35:52 +1100
+
+xpdf (2.01-1) unstable; urgency=low
+
+  * New upstream release
+  * Merged in the small and free xpdf language packages xpdf-cyrillic,
+    xpdf-greek, xpdf-hebrew, xpdf-latin2, xpdf-thai and xpdf-turkish;
+    the others remain as seperate packages in non-free.
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun,  8 Dec 2002 00:02:37 +1100
+
+xpdf (2.00-2) unstable; urgency=low
+
+  * Recompile with lesstif2 (closes: #170624)
+  * Change the default urlCommand to sensible-browser, which will make it
+    honour the BROWSER variable, and run a good default browser that is
+    installed if that is not set. Sure beats hardcoding non-free netscape.
+    (closes: #170085)
+  * Suggest www-browser.
+  * Fixed incorrect resource names in xpdf(1) (closes: #168730)
+  * Set a default print command (closes: #168520)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 30 Nov 2002 13:08:38 +1100
+
+xpdf (2.00-1) unstable; urgency=low
+
+  * New upstream release - uses Lesstif instead of old Xpdf-specific toolkit
+  * Upstream: Control-P now brings up the print dialog (closes: #157225)
+  * Upstream: Worked around problems with fonts in some PDF files
+    (closes: #159778)
+  * Upstream: 'Save as' now uses the standard Motif save dialog, so any
+    filename can be entered (closes: #158423)
+  * Upstream: handles malformed PDFs with error messages rather than
+    silently as happened previously in some cases (closes: #151241)
+  * Upstream: fullscreen behaviour is working fine in this version
+    (closes: #156252)
+  * Upstream: Enter works in save dialog (closes: #166942)
+  * Upstream: now uses standard Motif file selector dialog (closes: #160255)
+  * No performance issues observed with resizing the window (closes: #165847)
+  * Tweaked configuration mechanism not to build /etc/xpdfrc now,
+    but an include file for the main configuration file instead.
+    No changes to the language packages are required to support this.
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue,  5 Nov 2002 11:49:24 +1100
+
+xpdf (1.01-3) unstable; urgency=low
+
+  * Recompile with more recent FreeType, updated dependencies to match
+    (closes: #155946)
+  * Made xpdf handle missing default paper name from libpaper
+    (eg if $PAPERSIZE is set to a non-existent file) (closes: #150360)
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed,  4 Sep 2002 21:49:41 +1000
+
+xpdf (1.01-2) unstable; urgency=low
+
+  * Fixed dependencies to ensure that xpdf-common, xpdf-reader and
+    xpdf-utils versions are always synchronised (closes: #147897,
+    #151683)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun,  7 Jul 2002 01:24:00 +1000
+
+xpdf (1.01-1) unstable; urgency=low
+
+  * New upstream release (closes: #146286, #147428)
+    including support for Type 3 fonts (closes: #128686, #137378,
+    #137416, #143245, #145541, #147614)
+  * Removed empty examples directory (closes: #145057, #146336)
+  * Changed dependency on gsfonts to require the woody version
+    or newer (>= 6.0-1) (closes: #146398)
+  * Applied patch to allow copying and printing of protected
+    PDF files (closes: #145558)
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed, 22 May 2002 23:16:47 +1000
+
+xpdf (1.00-4) unstable; urgency=low
+
+  * xpdf-reader: added zxpdf script contributed by Yann Dirson to allow
+    viewing of compressed PDF files (closes: #87316, #14227)
+  * xpdf-reader, xpdf-utils: corrected location of the configuration 
+    files in the manual pages (closes: #139982)
+  * xpdf-common: added note to /etc/xpdf/xpdfrc describing configuration
+    file scheme (closes: #143372)
+
+ -- Hamish Moffatt <hamish@debian.org>  Thu, 25 Apr 2002 10:57:47 +1000
+
+xpdf (1.00-3) unstable; urgency=low
+
+  * Fixed conflicts with xpdf-i (should conflict with versions
+    <= 0.90-8, not 0.90-7) (closes: #136385, #136157)
+  * Applied patch from the upstream author to fix the missing
+    initialZoom X resource (closes: #135712)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat,  9 Mar 2002 00:23:33 +1100
+
+xpdf (1.00-2) unstable; urgency=low
+
+  * Fixed problem with building the arch-specific packages when
+    xpdf-common was not installed (tried to overwrite /etc/xpdfrc)
+    (closes: #134336, #134338)
+
+ -- Hamish Moffatt <hamish@debian.org>  Mon, 18 Feb 2002 08:36:59 +1100
+
+xpdf (1.00-1) unstable; urgency=low
+
+  * New upstream release (closes: #131961)
+  * Split the xpdf package into xpdf-reader, xpdf-utils and a
+    metapackage, xpdf. This reduces the number of library packages
+    required if you just want pdf2ps, for example. (closes: #122786)
+  * The new upstream release has the language support split into
+    seperate packages. See xpdf-chinese-simplified,
+    xpdf-chinese-traditional, xpdf-korean, xpdf-japanese,
+    xpdf-thai and xpdf-cyrillic. NOTE: some of these are
+    non-free.
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat,  2 Feb 2002 23:44:20 +1100
+
+xpdf (0.93-6) unstable; urgency=low
+
+  * Applied patch from the upstream author Derek Noonburg
+    to fix an unitialized variable which causes xpdf
+    to sometimes crash on Alpha systems (closes: #124314)
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed, 16 Jan 2002 21:30:53 +1100
+
+xpdf (0.93-5) unstable; urgency=low
+
+  * Applied patch from the upstream author Derek Noonburg
+    to fix TrueType font embedding bugs (closes: #123913)
+  * Added Build-Conflicts: with libttf-dev; the compile gets
+    mixed up between freetype1 and freetype2 when libttf-dev
+    is installed (closes: #123565)
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed,  9 Jan 2002 22:46:49 +1100
+
+xpdf (0.93-4) unstable; urgency=low
+
+  * Added menu hint "Documents" (closes: #121029)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 25 Nov 2001 13:02:24 +1100
+
+xpdf (0.93-3) unstable; urgency=low
+
+  * Added app-defaults file mapping for Type 1 base-14 fonts (requires
+    gsfonts) (closes: #120649, #120994)
+  * Added libpaper support; xpdf now gets the default paper size from
+    X resources, $PAPERSIZE, /etc/papersize, or defaults to letter
+    (closes: #120645)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 25 Nov 2001 11:38:19 +1100
+
+xpdf (0.93-2) unstable; urgency=low
+
+  * Removed final references to install-mime (closes: #120423)
+  * Linked with libfreetype6 (closes: #116283)
+  * Configuration file moved to /etc/xpdfrc (was /usr/etc/xpdfrc by mistake)
+  * Also linked with t1lib
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 24 Nov 2001 16:20:23 +1100
+
+xpdf (0.93-1) unstable; urgency=low
+
+  * New upstream release (closes: #81911, #107448)
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed,  7 Nov 2001 23:54:52 +1100
+
+xpdf (0.92-5) unstable; urgency=low
+
+  * Fixed freetype file locations which caused the build to fail if
+    libfreetype6-dev wasn't installed (but isn't actually used)
+    (closes: #111745)
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue, 11 Sep 2001 20:21:47 +1000
+
+xpdf (0.92-4) unstable; urgency=low
+
+  * Added libttf-dev to build-deps so that xpdf will be built with
+    TrueType font support (closes: #108667)
+  * Increased xpdf's priority in mailcap from 4 to 6 to be above
+    gv and acroread (closes: #106858)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun,  2 Sep 2001 14:54:11 +1000
+
+xpdf (0.92-3) unstable; urgency=low
+
+  * Changed build-dep on xpm4g-dev to xlibs-dev (closes: #83814)
+  * Re-enabled Chinese language support (closes: #74974)
+
+ -- Hamish Moffatt <hamish@debian.org>  Mon, 29 Jan 2001 08:23:06 +1100
+
+xpdf (0.92-2) unstable; urgency=low
+
+  * Recompiled with latest X libraries
+
+ -- Hamish Moffatt <hamish@debian.org>  Thu, 18 Jan 2001 08:21:23 +1100
+
+xpdf (0.92-1) unstable; urgency=low
+
+  * New upstream release
+  * Updated Standards-Version
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed,  6 Dec 2000 21:16:34 +1100
+
+xpdf (0.91-3) unstable; urgency=low
+
+  * Enabled Chinese language support (closes: #74974)
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue,  7 Nov 2000 15:52:41 +1100
+
+xpdf (0.91-2) unstable; urgency=low
+
+  * Changed replaces/conflicts with xpdf-i to allow installation
+    of xpdf-i 0.91-1 (dummy package) as well as xpdf >= 0.91
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue, 19 Sep 2000 22:55:44 +1100
+
+xpdf (0.91-1) unstable; urgency=low
+
+  * New upstream version (closes: #43604, #47391, #61055, #67591, #50170)
+  * Upstream source now includes decryption; xpdf-i is now obselete
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 20 Aug 2000 18:25:07 +1000
+
+xpdf (0.90-6) unstable; urgency=low
+
+  * Added build-depends for debhelper, xpm4g-dev and xlib6g-dev
+    (closes: #68464, #61585)
+
+ -- Hamish Moffatt <hamish@debian.org>  Mon,  7 Aug 2000 19:29:08 +1000
+
+xpdf (0.90-5) unstable; urgency=low
+
+  * Added build-depends for t1lib-dev (closes: #55658)
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue,  1 Aug 2000 21:03:43 +1000
+
+xpdf (0.90-4) unstable; urgency=low
+
+  * Recompile for t1lib1
+
+ -- Hamish Moffatt <hamish@debian.org>  Mon,  3 Jan 2000 09:45:45 +1100
+
+xpdf (0.90-3) unstable; urgency=low
+
+  * FHS compliant
+  * Converted to debhelper
+  * Moved xpdf binary from /usr/X11R6/bin to /usr/bin
+
+ -- Hamish Moffatt <hamish@debian.org>  Fri,  1 Oct 1999 23:51:31 +1000
+
+xpdf (0.90-2) unstable; urgency=low
+
+  * Recompiled with t1lib 0.9.1-4 to get correct dependencies
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 11 Sep 1999 00:59:17 +1000
+
+xpdf (0.90-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 14 Aug 1999 14:31:00 +1000
+
+xpdf (0.80-6) unstable; urgency=low
+
+  * Added code in postinst and postrm to remove old MIME entries
+    added using install-mime (fixes #37724, #31293)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 23 May 1999 00:25:00 +1000
+
+xpdf (0.80-5) unstable; urgency=low
+
+  * Fixed error in /usr/lib/mime/packages/xpdf (fixes #37537)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 15 May 1999 22:35:00 +1000
+
+xpdf (0.80-4) unstable; urgency=low
+
+  * Fixed bug in postinst introduced in 0.80-3 (fixes #37009, #37026)
+  * xpdf now Conflicts with and Replaces xpdf-i
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 02 May 1999 18:20:00 +1000
+
+xpdf (0.80-3) unstable; urgency=low
+
+  * Fixed incorrect mime support handling with patch from David Rocher
+    (fixes bug#36901)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 01 May 1999 18:45:00 +1000
+
+xpdf (0.80-2) unstable; urgency=low
+
+  * Enabled support for 16-bit Japanese fonts (fixes bug#30671)
+
+ -- Hamish Moffatt <hamish@debian.org>  Fri, 18 Dec 1998 00:18:00 +1100
+
+xpdf (0.80-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 29 Nov 1998 01:03:00 +1100
+
+xpdf (0.7a-3) unstable; urgency=low
+
+  * Previous upload had wrong section and was rejected
+  * Change of license; xpdf is now GPL (see
+    http://www.debian.org/Lists-Archives/debian-devel-9809/msg00193.html)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 10 Oct 1998 11:12:00 +1000
+
+xpdf (0.7a-2) unstable; urgency=low
+
+  * New maintainer
+  * Updated to use update-mime (fixes#26532)
+  * Removed dependency on mime-support, as instructed by update-mime(1)
+  * Rebuilt with new libstdc++
+
+ -- Hamish Moffatt <hamish@debian.org>  Tue, 06 Oct 1998 19:43:00 +1000
+
+xpdf (0.7a-1) non-free; urgency=low
+
+  * Upgraded to new upstream release xpdf-0.7a
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Mon,  2 Mar 1998 19:24:35 -0500
+
+xpdf (0.7-3) non-free; urgency=low
+
+  * Moved to non-free as the copyright violated #3 of the DFSG (fixes #14360)
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue,  4 Nov 1997 20:44:26 -0500
+
+xpdf (0.7-2) unstable; urgency=low
+
+  * Compiled with GNU libc2 aka libc6
+  * Linked against xlib6g and xpm4g (fixes bug #12915)
+  * Uses pristine upstream sources as xpdf_0.7.orig.tar.gz
+  * Upgraded to Debian Policy 2.3.0.0
+  * Added menu file for xpdf
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Tue, 30 Sep 1997 20:34:09 -0400
+
+xpdf (0.7-1) unstable; urgency=low
+
+  * New upstream release xpdf-0.7
+
+ -- Dirk Eddelbuettel <edd@debian.org>  Thu, 29 May 1997 21:22:38 -0400
+
+xpdf (0.6-1) unstable frozen; urgency=low
+
+  * New upstream release xpdf-0.6 (fixes bug #4476)
+
+  * Changed Priority: to optional as per override file on master 
+    
+  * Converted package management files to Debian Standard 2.1.1.0 
+  * Changed maintainer email address to <edd@debian.org>
+  
+ -- Dirk Eddelbuettel <edd@debian.org>  Sun, 24 Nov 1996 16:50:23 -0500
+
+Sat Aug 10 16:22:28 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
+
+	* xpdf-0.5-1 release: only changes to Debian package files
+
+	* debian.control: now Depends on mime-support, suitable postinst
+ 	  and postrm scripts added (with thanks to Brian White);
+	  also updated virtual package dependencies, now Provides: a 
+	  pdf-viewer as well as postscript-preview and Depends changed 
+	  to X11R6 from elf-x11r6lib 
+
+	* debian.rules: install xpdf.1x, not xpdf.1 
+
+Mon May 27 20:58:19 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
+
+	* xpdf-0.5-0 release: upgraded to upstream version 0.5 
+
+Sun Apr 28 09:51:02 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
+
+	* xpdf-0.4-0 release: upgraded to upstream version 0.4
+
+	* debian.control: added Architecture:, changed Section: to text,
+	  added note that xpdftops is now included
+
+Wed Feb 14 21:49:17 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
+
+	* xpdf-0.3-1 release
+
+	* debian.rules: fix location of README to /usr/doc/xpdf (bug#2333)
+
+Sun Jan 28 17:36:31 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
+
+	* xpdf-0.3-0: Initial Debian release
+
