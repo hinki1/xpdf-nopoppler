@@ -4,8 +4,6 @@
 //
 // Copyright 1998-2003 Glyph & Cog, LLC
 //
-// Modified for Debian by Hamish Moffatt, 22 May 2002.
-//
 //========================================================================
 
 #include <aconf.h>
@@ -121,13 +119,11 @@ int main(int argc, char *argv[]) {
   }
 
   // check for copy permission
-#ifdef ENFORCE_PERMISSIONS
   if (!doc->okToCopy()) {
     error(-1, "Copying of images from this document is not allowed.");
     exitCode = 3;
     goto err1;
   }
-#endif
 
   // get page range
   if (firstPage < 1)

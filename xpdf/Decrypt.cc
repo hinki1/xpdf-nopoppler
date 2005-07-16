@@ -73,11 +73,6 @@ GBool Decrypt::makeFileKey(int encVersion, int encRevision, int keyLength,
   Guchar fx, fy;
   int len, i, j;
 
-  // check whether we have non-zero keyLength
-  if ( !keyLength ) {
-    return gFalse;
-  }
-
   // try using the supplied owner password to generate the user password
   *ownerPasswordOk = gFalse;
   if (ownerPassword) {
@@ -103,7 +98,7 @@ GBool Decrypt::makeFileKey(int encVersion, int encRevision, int keyLength,
     } else {
       memcpy(test2, ownerKey->getCString(), 32);
       for (i = 19; i >= 0; --i) {
-	for (j = 0; j < keyLength && j < 16; ++j) {
+	for (j = 0; j < keyLength; ++j) {
 	  tmpKey[j] = test[j] ^ i;
 	}
 	rc4InitKey(tmpKey, keyLength, fState);
@@ -139,11 +134,6 @@ GBool Decrypt::makeFileKey2(int encVersion, int encRevision, int keyLength,
   Guchar fx, fy;
   int len, i, j;
   GBool ok;
-
-  // check whether we have non-zero keyLength
-  if ( !keyLength ) {
-    return gFalse;
-  }
 
   // generate file key
   buf = (Guchar *)gmalloc(68 + fileID->getLength());
@@ -182,7 +172,7 @@ GBool Decrypt::makeFileKey2(int encVersion, int encRevision, int keyLength,
   } else if (encRevision == 3) {
     memcpy(test, userKey->getCString(), 32);
     for (i = 19; i >= 0; --i) {
-      for (j = 0; j < keyLength && j < 16; ++j) {
+      for (j = 0; j < keyLength; ++j) {
 	tmpKey[j] = fileKey[j] ^ i;
       }
       rc4InitKey(tmpKey, keyLength, fState);

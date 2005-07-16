@@ -1,0 +1,510 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 06_security.dpatch by  <hamish@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Various security fixes
+
+@DPATCH@
+
+--- xpdf-3.00.orig/goo/gmem.c
++++ xpdf-3.00/goo/gmem.c
+@@ -53,9 +53,9 @@
+ 
+ #endif /* DEBUG_MEM */
+ 
+-void *gmalloc(int size) {
++void *gmalloc(size_t size) {
+ #ifdef DEBUG_MEM
+-  int size1;
++  size_t size1;
+   char *mem;
+   GMemHdr *hdr;
+   void *data;
+@@ -94,11 +94,11 @@
+ #endif
+ }
+ 
+-void *grealloc(void *p, int size) {
++void *grealloc(void *p, size_t size) {
+ #ifdef DEBUG_MEM
+   GMemHdr *hdr;
+   void *q;
+-  int oldSize;
++  size_t oldSize;
+ 
+   if (size == 0) {
+     if (p)
+@@ -137,7 +137,7 @@
+ 
+ void gfree(void *p) {
+ #ifdef DEBUG_MEM
+-  int size;
++  size_t size;
+   GMemHdr *hdr;
+   GMemHdr *prevHdr, *q;
+   int lst;
+--- xpdf-3.00.orig/goo/gmem.h
++++ xpdf-3.00/goo/gmem.h
+@@ -19,13 +19,13 @@
+  * Same as malloc, but prints error message and exits if malloc()
+  * returns NULL.
+  */
+-extern void *gmalloc(int size);
++extern void *gmalloc(size_t size);
+ 
+ /*
+  * Same as realloc, but prints error message and exits if realloc()
+  * returns NULL.  If <p> is NULL, calls malloc instead of realloc().
+  */
+-extern void *grealloc(void *p, int size);
++extern void *grealloc(void *p, size_t size);
+ 
+ /*
+  * Same as free, but checks for and ignores NULL pointers.
+--- xpdf-3.00.orig/fofi/FoFiType1.cc
++++ xpdf-3.00/fofi/FoFiType1.cc
+@@ -163,7 +163,8 @@
+       line = getNextLine(line);
+       for (j = 0; j < 300 && line; ++j) {
+ 	line1 = getNextLine(line);
+-	if ((n = line1 - line) > 255) {
++	n = line1? (line1 - line): ((char *)file + len - line);
++	if (n > 255) {
+ 	  n = 255;
+ 	}
+ 	strncpy(buf, line, n);
+--- xpdf-3.00.orig/splash/Splash.cc
++++ xpdf-3.00/splash/Splash.cc
+@@ -631,6 +631,8 @@
+   if (path->length == 0) {
+     return splashErrEmptyPath;
+   }
++  if (path->length == 1)
++    return splashErrBogusPath;
+   xPath = new SplashXPath(path, state->flatness, gTrue);
+   xPath->sort();
+   scanner = new SplashXPathScanner(xPath, eo);
+--- xpdf-3.00.orig/xpdf/Catalog.cc
++++ xpdf-3.00/xpdf/Catalog.cc
+@@ -13,6 +13,7 @@
+ #endif
+ 
+ #include <stddef.h>
++#include <limits.h>
+ #include "gmem.h"
+ #include "Object.h"
+ #include "XRef.h"
+@@ -64,6 +65,15 @@
+   }
+   pagesSize = numPages0 = (int)obj.getNum();
+   obj.free();
++  // The gcc doesnt optimize this away, so this check is ok,
++  // even if it looks like a pagesSize != pagesSize check
++  if (pagesSize >= INT_MAX/sizeof(Page *) ||
++      pagesSize >= INT_MAX/sizeof(Ref)) {
++    error(-1, "Invalid 'pagesSize'");
++    ok = gFalse;
++    return;
++  }
++
+   pages = (Page **)gmalloc(pagesSize * sizeof(Page *));
+   pageRefs = (Ref *)gmalloc(pagesSize * sizeof(Ref));
+   for (i = 0; i < pagesSize; ++i) {
+@@ -191,6 +201,11 @@
+       }
+       if (start >= pagesSize) {
+ 	pagesSize += 32;
++        if (pagesSize >= INT_MAX/sizeof(Page *) ||
++            pagesSize >= INT_MAX/sizeof(Ref)) {
++          error(-1, "Invalid 'pagesSize' parameter.");
++          goto err3;
++        }
+ 	pages = (Page **)grealloc(pages, pagesSize * sizeof(Page *));
+ 	pageRefs = (Ref *)grealloc(pageRefs, pagesSize * sizeof(Ref));
+ 	for (j = pagesSize - 32; j < pagesSize; ++j) {
+--- xpdf-3.00.orig/xpdf/Decrypt.cc
++++ xpdf-3.00/xpdf/Decrypt.cc
+@@ -73,6 +73,11 @@
+   Guchar fx, fy;
+   int len, i, j;
+ 
++  // check whether we have non-zero keyLength
++  if ( !keyLength ) {
++    return gFalse;
++  }
++
+   // try using the supplied owner password to generate the user password
+   *ownerPasswordOk = gFalse;
+   if (ownerPassword) {
+@@ -98,7 +103,7 @@
+     } else {
+       memcpy(test2, ownerKey->getCString(), 32);
+       for (i = 19; i >= 0; --i) {
+-	for (j = 0; j < keyLength; ++j) {
++	for (j = 0; j < keyLength && j < 16; ++j) {
+ 	  tmpKey[j] = test[j] ^ i;
+ 	}
+ 	rc4InitKey(tmpKey, keyLength, fState);
+@@ -135,6 +140,11 @@
+   int len, i, j;
+   GBool ok;
+ 
++  // check whether we have non-zero keyLength
++  if ( !keyLength ) {
++    return gFalse;
++  }
++
+   // generate file key
+   buf = (Guchar *)gmalloc(68 + fileID->getLength());
+   if (userPassword) {
+@@ -172,7 +182,7 @@
+   } else if (encRevision == 3) {
+     memcpy(test, userKey->getCString(), 32);
+     for (i = 19; i >= 0; --i) {
+-      for (j = 0; j < keyLength; ++j) {
++      for (j = 0; j < keyLength && j < 16; ++j) {
+ 	tmpKey[j] = fileKey[j] ^ i;
+       }
+       rc4InitKey(tmpKey, keyLength, fState);
+--- xpdf-3.00.orig/xpdf/Gfx.cc
++++ xpdf-3.00/xpdf/Gfx.cc
+@@ -2654,7 +2654,9 @@
+     haveMask = gFalse;
+     dict->lookup("Mask", &maskObj);
+     if (maskObj.isArray()) {
+-      for (i = 0; i < maskObj.arrayGetLength(); ++i) {
++      for (i = 0;
++	   i < maskObj.arrayGetLength() && i < 2*gfxColorMaxComps;
++	   ++i) {
+ 	maskObj.arrayGet(i, &obj1);
+ 	maskColors[i] = obj1.getInt();
+ 	obj1.free();
+--- xpdf-3.00.orig/xpdf/GfxState.cc
++++ xpdf-3.00/xpdf/GfxState.cc
+@@ -708,6 +708,11 @@
+   }
+   nCompsA = obj2.getInt();
+   obj2.free();
++  if (nCompsA > gfxColorMaxComps) {
++    error(-1, "ICCBased color space with too many (%d > %d) components",
++	  nCompsA, gfxColorMaxComps);
++    nCompsA = gfxColorMaxComps;
++  }
+   if (dict->lookup("Alternate", &obj2)->isNull() ||
+       !(altA = GfxColorSpace::parse(&obj2))) {
+     switch (nCompsA) {
+@@ -1054,7 +1059,7 @@
+   }
+   nCompsA = obj1.arrayGetLength();
+   if (nCompsA > gfxColorMaxComps) {
+-    error(-1, "DeviceN color space with more than %d > %d components",
++    error(-1, "DeviceN color space with too many (%d > %d) components",
+ 	  nCompsA, gfxColorMaxComps);
+     nCompsA = gfxColorMaxComps;
+   }
+--- xpdf-3.00.orig/xpdf/XPDFCore.cc
++++ xpdf-3.00/xpdf/XPDFCore.cc
+@@ -1051,6 +1059,9 @@
+   GString *msg;
+   int i;
+ 
++  if (action == 0)
++    return;
++
+   switch (kind = action->getKind()) {
+ 
+   // GoTo / GoToR action
+--- xpdf-3.00.orig/xpdf/XPDFViewer.cc
++++ xpdf-3.00/xpdf/XPDFViewer.cc
+@@ -1380,7 +1382,7 @@
+   double z;
+ 
+   XtVaGetValues(widget, XmNuserData, &userData, NULL);
+-  z = zoomMenuInfo[(int)userData].zoom;
++  z = zoomMenuInfo[(long)userData].zoom;
+   // only redraw if this was triggered by an event; otherwise
+   // the caller is responsible for doing the redraw
+   if (z != viewer->core->getZoom() && data->event) {
+--- xpdf-3.00.orig/xpdf/XRef.cc
++++ xpdf-3.00/xpdf/XRef.cc
+@@ -16,6 +16,7 @@
+ #include <stddef.h>
+ #include <string.h>
+ #include <ctype.h>
++#include <limits.h>
+ #include "gmem.h"
+ #include "Object.h"
+ #include "Stream.h"
+@@ -96,7 +97,7 @@
+   }
+   nObjects = obj1.getInt();
+   obj1.free();
+-  if (nObjects == 0) {
++  if (nObjects <= 0) {
+     goto err1;
+   }
+ 
+@@ -106,6 +107,14 @@
+   }
+   first = obj1.getInt();
+   obj1.free();
++  if (first < 0) {
++    goto err1;
++  }
++
++  if (nObjects >= INT_MAX/sizeof(int)) {
++    error(-1, "Invalid 'nObjects'");
++    goto err1;
++  }
+ 
+   objs = new Object[nObjects];
+   objNums = (int *)gmalloc(nObjects * sizeof(int));
+@@ -130,6 +139,12 @@
+     offsets[i] = obj2.getInt();
+     obj1.free();
+     obj2.free();
++    if (objNums[i] < 0 || offsets[i] < 0 ||
++	(i > 0 && offsets[i] < offsets[i-1])) {
++      delete parser;
++      gfree(offsets);
++      goto err1;
++    }
+   }
+   while (str->getChar() != EOF) ;
+   delete parser;
+@@ -369,10 +384,21 @@
+     }
+     n = obj.getInt();
+     obj.free();
++    if (first < 0 || n < 0 || first + n < 0) {
++      goto err1;
++    }
+     if (first + n > size) {
+       for (newSize = size ? 2 * size : 1024;
+-	   first + n > newSize;
++	   first + n > newSize && newSize > 0;
+ 	   newSize <<= 1) ;
++      if (newSize < 0) {
++	goto err1;
++      }
++      if (newSize >= INT_MAX/sizeof(XRefEntry)) {
++        error(-1, "Invalid 'obj' parameters'");
++        goto err1;
++      }
++
+       entries = (XRefEntry *)grealloc(entries, newSize * sizeof(XRefEntry));
+       for (i = size; i < newSize; ++i) {
+ 	entries[i].offset = 0xffffffff;
+@@ -443,7 +469,7 @@
+ 
+   // check for an 'XRefStm' key
+   if (obj.getDict()->lookup("XRefStm", &obj2)->isInt()) {
+-    pos2 = obj2.getInt();
++    pos2 = (Guint)obj2.getInt();
+     readXRef(&pos2);
+     if (!ok) {
+       goto err1;
+@@ -474,7 +500,14 @@
+   }
+   newSize = obj.getInt();
+   obj.free();
++  if (newSize < 0) {
++    goto err1;
++  }
+   if (newSize > size) {
++    if (newSize >= INT_MAX/sizeof(XRefEntry)) {
++      error(-1, "Invalid 'size' parameter.");
++      return gFalse;
++    }
+     entries = (XRefEntry *)grealloc(entries, newSize * sizeof(XRefEntry));
+     for (i = size; i < newSize; ++i) {
+       entries[i].offset = 0xffffffff;
+@@ -494,6 +527,9 @@
+     }
+     w[i] = obj2.getInt();
+     obj2.free();
++    if (w[i] < 0 || w[i] > 4) {
++      goto err1;
++    }
+   }
+   obj.free();
+ 
+@@ -513,13 +549,14 @@
+       }
+       n = obj.getInt();
+       obj.free();
+-      if (!readXRefStreamSection(xrefStr, w, first, n)) {
++      if (first < 0 || n < 0 ||
++	  !readXRefStreamSection(xrefStr, w, first, n)) {
+ 	idx.free();
+ 	goto err0;
+       }
+     }
+   } else {
+-    if (!readXRefStreamSection(xrefStr, w, 0, size)) {
++    if (!readXRefStreamSection(xrefStr, w, 0, newSize)) {
+       idx.free();
+       goto err0;
+     }
+@@ -551,10 +588,20 @@
+   Guint offset;
+   int type, gen, c, newSize, i, j;
+ 
++  if (first + n < 0) {
++    return gFalse;
++  }
+   if (first + n > size) {
+     for (newSize = size ? 2 * size : 1024;
+-	 first + n > newSize;
++	 first + n > newSize && newSize > 0;
+ 	 newSize <<= 1) ;
++    if (newSize < 0) {
++      return gFalse;
++    }
++    if (newSize >= INT_MAX/sizeof(XRefEntry)) {
++      error(-1, "Invalid 'size' inside xref table.");
++      return gFalse;
++    }
+     entries = (XRefEntry *)grealloc(entries, newSize * sizeof(XRefEntry));
+     for (i = size; i < newSize; ++i) {
+       entries[i].offset = 0xffffffff;
+@@ -585,24 +632,26 @@
+       }
+       gen = (gen << 8) + c;
+     }
+-    switch (type) {
+-    case 0:
+-      entries[i].offset = offset;
+-      entries[i].gen = gen;
+-      entries[i].type = xrefEntryFree;
+-      break;
+-    case 1:
+-      entries[i].offset = offset;
+-      entries[i].gen = gen;
+-      entries[i].type = xrefEntryUncompressed;
+-      break;
+-    case 2:
+-      entries[i].offset = offset;
+-      entries[i].gen = gen;
+-      entries[i].type = xrefEntryCompressed;
+-      break;
+-    default:
+-      return gFalse;
++    if (entries[i].offset == 0xffffffff) {
++      switch (type) {
++      case 0:
++	entries[i].offset = offset;
++	entries[i].gen = gen;
++	entries[i].type = xrefEntryFree;
++	break;
++      case 1:
++	entries[i].offset = offset;
++	entries[i].gen = gen;
++	entries[i].type = xrefEntryUncompressed;
++	break;
++      case 2:
++	entries[i].offset = offset;
++	entries[i].gen = gen;
++	entries[i].type = xrefEntryCompressed;
++	break;
++      default:
++	return gFalse;
++      }
+     }
+   }
+ 
+@@ -664,38 +713,48 @@
+     // look for object
+     } else if (isdigit(*p)) {
+       num = atoi(p);
+-      do {
+-	++p;
+-      } while (*p && isdigit(*p));
+-      if (isspace(*p)) {
++      if (num > 0) {
+ 	do {
+ 	  ++p;
+-	} while (*p && isspace(*p));
+-	if (isdigit(*p)) {
+-	  gen = atoi(p);
++	} while (*p && isdigit(*p));
++	if (isspace(*p)) {
+ 	  do {
+ 	    ++p;
+-	  } while (*p && isdigit(*p));
+-	  if (isspace(*p)) {
++	  } while (*p && isspace(*p));
++	  if (isdigit(*p)) {
++	    gen = atoi(p);
+ 	    do {
+ 	      ++p;
+-	    } while (*p && isspace(*p));
+-	    if (!strncmp(p, "obj", 3)) {
+-	      if (num >= size) {
+-		newSize = (num + 1 + 255) & ~255;
+-		entries = (XRefEntry *)
+-		            grealloc(entries, newSize * sizeof(XRefEntry));
+-		for (i = size; i < newSize; ++i) {
+-		  entries[i].offset = 0xffffffff;
+-		  entries[i].type = xrefEntryFree;
++	    } while (*p && isdigit(*p));
++	    if (isspace(*p)) {
++	      do {
++		++p;
++	      } while (*p && isspace(*p));
++	      if (!strncmp(p, "obj", 3)) {
++		if (num >= size) {
++		  newSize = (num + 1 + 255) & ~255;
++		  if (newSize < 0) {
++		    error(-1, "Bad object number");
++		    return gFalse;
++		  }
++                  if (newSize >= INT_MAX/sizeof(XRefEntry)) {
++                    error(-1, "Invalid 'obj' parameters.");
++                    return gFalse;
++                  }
++		  entries = (XRefEntry *)
++		      grealloc(entries, newSize * sizeof(XRefEntry));
++		  for (i = size; i < newSize; ++i) {
++		    entries[i].offset = 0xffffffff;
++		    entries[i].type = xrefEntryFree;
++		  }
++		  size = newSize;
++		}
++		if (entries[num].type == xrefEntryFree ||
++		    gen >= entries[num].gen) {
++		  entries[num].offset = pos - start;
++		  entries[num].gen = gen;
++		  entries[num].type = xrefEntryUncompressed;
+ 		}
+-		size = newSize;
+-	      }
+-	      if (entries[num].type == xrefEntryFree ||
+-		  gen >= entries[num].gen) {
+-		entries[num].offset = pos - start;
+-		entries[num].gen = gen;
+-		entries[num].type = xrefEntryUncompressed;
+ 	      }
+ 	    }
+ 	  }
+@@ -705,6 +764,10 @@
+     } else if (!strncmp(p, "endstream", 9)) {
+       if (streamEndsLen == streamEndsSize) {
+ 	streamEndsSize += 64;
++        if (streamEndsSize >= INT_MAX/sizeof(int)) {
++          error(-1, "Invalid 'endstream' parameter.");
++          return gFalse;
++        }
+ 	streamEnds = (Guint *)grealloc(streamEnds,
+ 				       streamEndsSize * sizeof(int));
+       }
+@@ -757,6 +820,9 @@
+ 	} else {
+ 	  keyLength = 5;
+ 	}
++    if (keyLength > 16) {
++      keyLength = 16;
++    }
+ 	permFlags = permissions.getInt();
+ 	if (encVersion >= 1 && encVersion <= 2 &&
+ 	    encRevision >= 2 && encRevision <= 3) {

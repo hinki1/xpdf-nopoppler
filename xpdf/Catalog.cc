@@ -13,7 +13,6 @@
 #endif
 
 #include <stddef.h>
-#include <limits.h>
 #include "gmem.h"
 #include "Object.h"
 #include "XRef.h"
@@ -65,15 +64,6 @@ Catalog::Catalog(XRef *xrefA) {
   }
   pagesSize = numPages0 = (int)obj.getNum();
   obj.free();
-  // The gcc doesnt optimize this away, so this check is ok,
-  // even if it looks like a pagesSize != pagesSize check
-  if (pagesSize >= INT_MAX/sizeof(Page *) ||
-      pagesSize >= INT_MAX/sizeof(Ref)) {
-    error(-1, "Invalid 'pagesSize'");
-    ok = gFalse;
-    return;
-  }
-
   pages = (Page **)gmalloc(pagesSize * sizeof(Page *));
   pageRefs = (Ref *)gmalloc(pagesSize * sizeof(Ref));
   for (i = 0; i < pagesSize; ++i) {
@@ -201,11 +191,6 @@ int Catalog::readPageTree(Dict *pagesDict, PageAttrs *attrs, int start) {
       }
       if (start >= pagesSize) {
 	pagesSize += 32;
-        if (pagesSize >= INT_MAX/sizeof(Page *) ||
-            pagesSize >= INT_MAX/sizeof(Ref)) {
-          error(-1, "Invalid 'pagesSize' parameter.");
-          goto err3;
-        }
 	pages = (Page **)grealloc(pages, pagesSize * sizeof(Page *));
 	pageRefs = (Ref *)grealloc(pageRefs, pagesSize * sizeof(Ref));
 	for (j = pagesSize - 32; j < pagesSize; ++j) {

@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 04_freetype-glyph.dpatch by  <hamish@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Bug fix for Freetype glyph handling
+
+@DPATCH@
+
+--- xpdf-3.00.orig/splash/SplashFTFont.cc
++++ xpdf-3.00/splash/SplashFTFont.cc
+@@ -225,6 +225,9 @@
+   if (FT_Get_Glyph(slot, &glyph)) {
+     return NULL;
+   }
++  if (glyph->format != FT_GLYPH_FORMAT_OUTLINE) {
++    return NULL;
++  }
+   path = new SplashPath();
+   FT_Outline_Decompose(&((FT_OutlineGlyph)glyph)->outline,
+ 		       &outlineFuncs, path);

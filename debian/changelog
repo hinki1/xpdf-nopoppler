@@ -1,59 +1,12 @@
-xpdf (3.00-13.7) oldstable-security; urgency=high
+xpdf (3.00-14) unstable; urgency=low
 
-  * Fix integer overflow in stream predictor (CVE-2007-3387).
+  * Use dpatch for patch management; added build-dep on dpatch
+  * Fix FTBFS with gcc-4.0 (closes: #316836); 
+    thanks to Daniel Schepler for the patch
+  * xpdf-utils now suggests: pdftk (closes: #306624)
+  * Fix page parameter handling in zxpdf (closes: #315458)
 
- -- Moritz Muehlenhoff <jmm@debian.org>  Fri,  3 Aug 2007 17:13:32 +0200
-
-xpdf (3.00-13.6) stable-security; urgency=high
-
-  * Non-maintainer upload by the Security Team
-  * Backported upstream patch by Derek Noonburg to fix several
-    vulnerabilities [splash/SplashXPathScanner.cc, xpdf/JBIG2Stream.cc,
-    xpdf/Stream.h, goo/gmem.c]
-
- -- Martin Schulze <joey@infodrom.org>  Wed, 15 Feb 2006 08:29:48 +0100
-
-xpdf (3.00-13.5) stable-security; urgency=high
-
-  * Non-maintainer upload by the Security Team
-  * Ported patch to fix buffer overflow [splash/Splash.cc, CVE-2006-0301]
-
- -- Martin Schulze <joey@infodrom.org>  Sat,  4 Feb 2006 17:42:24 +0100
-
-xpdf (3.00-13.4) stable-security; urgency=high
-
-  * Non-maintainer upload by the Security Team
-  * Added more precautionary checks by Dirk Müller [xpdf/Stream.cc,
-    xpdf/JBIG2Stream.cc]
-
- -- Martin Schulze <joey@infodrom.org>  Thu, 15 Dec 2005 10:32:20 +0100
-
-xpdf (3.00-13.3) stable-security; urgency=high
-
-  * Non-maintainer upload by the Security Team
-  * Added more precautionary checks by Martin Pitt [xpdf/JPXStream.cc,
-    xpdf/Stream.cc]
-
- -- Martin Schulze <joey@infodrom.org>  Mon, 12 Dec 2005 10:19:37 +0100
-
-xpdf (3.00-13.2) stable-security; urgency=hibh
-
-  * Non-maintainer upload by the Security Team
-  * Adjusted the former patch
-  * Applied missing bits found by Ludwig Nussel
-
- -- Martin Schulze <joey@infodrom.org>  Fri,  9 Dec 2005 10:52:13 +0100
-
-xpdf (3.00-13.1) stable-security; urgency=high
-
-  * SECURITY UPDATE: fix several potential buffer overflows:
-    DCTStream Baseline Heap Overflow, DCTStream Progressive Heap Overflow,
-    StreamPredictor Heap Overflow, JPX Stream Reader Heap Overflow
-    (closes: #342281) (based on upstream 3.01pl1 patch)
-  * References: CVE-2005-3191, CVE-2005-3193
-    ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.01pl1.patch
-
- -- Hamish Moffatt <hamish@debian.org>  Wed,  7 Dec 2005 23:51:01 +1100
+ -- Hamish Moffatt <hamish@debian.org>  Sun, 17 Jul 2005 01:07:20 +1000
 
 xpdf (3.00-13) unstable; urgency=low
 

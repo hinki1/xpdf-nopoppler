@@ -4,8 +4,6 @@
 //
 // Copyright 1996-2003 Glyph & Cog, LLC
 //
-// Modified for Debian by Hamish Moffatt, 22 May 2002.
-//
 //========================================================================
 
 #include <aconf.h>
@@ -268,14 +266,12 @@ int main(int argc, char *argv[]) {
     goto err1;
   }
 
-#ifdef ENFORCE_PERMISSIONS
   // check for print permission
   if (!doc->okToPrint()) {
     error(-1, "Printing this document is not allowed.");
     exitCode = 3;
     goto err1;
   }
-#endif
 
   // construct PostScript file name
   if (argc == 3) {

@@ -225,9 +225,6 @@ SplashPath *SplashFTFont::getGlyphPath(int c) {
   if (FT_Get_Glyph(slot, &glyph)) {
     return NULL;
   }
-  if (glyph->format != FT_GLYPH_FORMAT_OUTLINE) {
-    return NULL;
-  }
   path = new SplashPath();
   FT_Outline_Decompose(&((FT_OutlineGlyph)glyph)->outline,
 		       &outlineFuncs, path);

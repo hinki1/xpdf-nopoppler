@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-#include <limits.h>
 #include "gmem.h"
 
 #ifdef DEBUG_MEM
@@ -54,16 +53,16 @@ static int gMemAlloc = 0;
 
 #endif /* DEBUG_MEM */
 
-void *gmalloc(size_t size) {
+void *gmalloc(int size) {
 #ifdef DEBUG_MEM
-  size_t size1;
+  int size1;
   char *mem;
   GMemHdr *hdr;
   void *data;
   int lst;
   unsigned long *trl, *p;
 
-  if (size <= 0)
+  if (size == 0)
     return NULL;
   size1 = gMemDataSize(size);
   if (!(mem = (char *)malloc(size1 + gMemHdrSize + gMemTrlSize))) {
@@ -85,7 +84,7 @@ void *gmalloc(size_t size) {
 #else
   void *p;
 
-  if (size <= 0)
+  if (size == 0)
     return NULL;
   if (!(p = malloc(size))) {
     fprintf(stderr, "Out of memory\n");
@@ -95,13 +94,13 @@ void *gmalloc(size_t size) {
 #endif
 }
 
-void *grealloc(void *p, size_t size) {
+void *grealloc(void *p, int size) {
 #ifdef DEBUG_MEM
   GMemHdr *hdr;
   void *q;
-  size_t oldSize;
+  int oldSize;
 
-  if (size <= 0) {
+  if (size == 0) {
     if (p)
       gfree(p);
     return NULL;
@@ -119,7 +118,7 @@ void *grealloc(void *p, size_t size) {
 #else
   void *q;
 
-  if (size <= 0) {
+  if (size == 0) {
     if (p)
       free(p);
     return NULL;
@@ -138,7 +137,7 @@ void *grealloc(void *p, size_t size) {
 
 void gfree(void *p) {
 #ifdef DEBUG_MEM
-  size_t size;
+  int size;
   GMemHdr *hdr;
   GMemHdr *prevHdr, *q;
   int lst;

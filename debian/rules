@@ -8,16 +8,18 @@ config:
 	./configure --prefix=/usr --with-gzip --with-x --with-freetype2-includes=/usr/include/freetype2 --sysconfdir=/etc/xpdf --enable-freetype2 --with-t1-includes=/usr/include
 
 build: build-stamp
-build-stamp:
+build-stamp: patch
 	dh_testdir
 	./configure --prefix=/usr --with-gzip --with-x --with-freetype2-includes=/usr/include/freetype2 --sysconfdir=/etc/xpdf --enable-freetype2 --with-t1-includes=/usr/include
 	$(MAKE) 
 	touch build-stamp
 
-clean:
+clean: clean1 unpatch
+clean1:
 	dh_testdir
 	-$(MAKE) -i distclean
 	rm -rf *~ debian/*~ debian/files* build-stamp aconf.h
+	rm -rf fofi/Makefile splash/Makefile
 	dh_clean
 
 binary-indep:   # Nothing to build
@@ -85,6 +87,16 @@ binary-arch:    build
 	dh_gencontrol -a
 	dh_md5sums -a
 	dh_builddeb -a
+
+patch: patch-stamp
+patch-stamp:
+	dpatch apply-all
+	#dpatch call-all -a=pkg-info >patch-stamp
+	touch patch-stamp
+
+unpatch:
+	dpatch deapply-all
+	rm -rf patch-stamp debian/patched
 
 binary:		binary-indep binary-arch
 .PHONY: binary binary-arch binary-indep clean checkroot

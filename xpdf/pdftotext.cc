@@ -4,8 +4,6 @@
 //
 // Copyright 1997-2003 Glyph & Cog, LLC
 //
-// Modified for Debian by Hamish Moffatt, 22 May 2002.
-//
 //========================================================================
 
 #include <aconf.h>
@@ -162,14 +160,12 @@ int main(int argc, char *argv[]) {
     goto err2;
   }
 
-#ifdef ENFORCE_PERMISSIONS
   // check for copy permission
   if (!doc->okToCopy()) {
     error(-1, "Copying of text from this document is not allowed.");
     exitCode = 3;
     goto err2;
   }
-#endif
 
   // construct text file name
   if (argc == 3) {

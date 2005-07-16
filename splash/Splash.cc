@@ -631,8 +631,6 @@ SplashError Splash::fillWithPattern(SplashPath *path, GBool eo,
   if (path->length == 0) {
     return splashErrEmptyPath;
   }
-  if (path->length == 1)
-    return splashErrBogusPath;
   xPath = new SplashXPath(path, state->flatness, gTrue);
   xPath->sort();
   scanner = new SplashXPathScanner(xPath, eo);
@@ -736,10 +734,6 @@ void Splash::drawPixel(int x, int y, SplashPattern *pattern, GBool noClip) {
   SplashMono1P *mono1;
   SplashBGR8P *bgr8;
 
-  if ( (unsigned) x >= (unsigned) bitmap->getWidth() ||
-       (unsigned) y >= (unsigned) bitmap->getHeight())
-    return;
-
   if (noClip || state->clip->test(x, y)) {
     color = pattern->getColor(x, y);
     switch (bitmap->mode) {
@@ -778,11 +772,6 @@ void Splash::drawSpan(int x0, int x1, int y, SplashPattern *pattern,
   int i, j, n;
 
   n = x1 - x0 + 1;
-
-  if ((unsigned) x0 >= (unsigned) bitmap->getWidth() ||
-      (unsigned) x1 >= (unsigned) bitmap->getWidth() ||
-      (unsigned) y >= (unsigned) bitmap->getHeight())
-    return;
 
   switch (bitmap->mode) {
   case splashModeMono1:
@@ -868,11 +857,6 @@ void Splash::xorSpan(int x0, int x1, int y, SplashPattern *pattern,
   int i, j, n;
 
   n = x1 - x0 + 1;
-
-  if ((unsigned) x0 >= (unsigned) bitmap->getWidth() ||
-      (unsigned) x1 >= (unsigned) bitmap->getWidth() ||
-      (unsigned) y >= (unsigned) bitmap->getHeight())
-    return;
 
   switch (bitmap->mode) {
   case splashModeMono1:

@@ -1,0 +1,50 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 07_gcc4.dpatch by  <hamish@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fix FTBFS with gcc-4.0
+
+@DPATCH@
+
+diff -ur xpdf-3.00.old/splash/SplashT1Font.h xpdf-3.00/splash/SplashT1Font.h
+--- xpdf-3.00.old/splash/SplashT1Font.h	2004-01-22 01:26:44.000000000 +0000
++++ xpdf-3.00/splash/SplashT1Font.h	2005-07-04 07:02:02.000000000 +0000
+@@ -21,6 +21,8 @@
+ // SplashT1Font
+ //------------------------------------------------------------------------
+ 
++class SplashT1FontFile;
++
+ class SplashT1Font: public SplashFont {
+ public:
+ 
+diff -ur xpdf-3.00.old/xpdf/TextOutputDev.h xpdf-3.00/xpdf/TextOutputDev.h
+--- xpdf-3.00.old/xpdf/TextOutputDev.h	2004-01-22 01:26:45.000000000 +0000
++++ xpdf-3.00/xpdf/TextOutputDev.h	2005-07-04 07:04:34.000000000 +0000
+@@ -166,6 +166,8 @@
+ // TextLine
+ //------------------------------------------------------------------------
+ 
++class TextBlock;
++
+ class TextLine {
+ public:
+ 
+@@ -223,6 +225,8 @@
+ // TextBlock
+ //------------------------------------------------------------------------
+ 
++class TextPage;
++
+ class TextBlock {
+ public:
+ 
+@@ -338,6 +342,8 @@
+ 
+ #endif // TEXTOUT_WORD_LIST
+ 
++class TextLineFrag;
++
+ //------------------------------------------------------------------------
+ // TextPage
+ //------------------------------------------------------------------------

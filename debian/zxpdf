@@ -41,5 +41,5 @@ fi
 if [ "$tmp" == "" ]; then
     exec xpdf $flags
 else
-    exec xpdf $flags "$tmp" $page
+    exec xpdf $flags "$tmp" $pages
 fi

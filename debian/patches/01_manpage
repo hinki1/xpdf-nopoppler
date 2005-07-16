@@ -1,0 +1,130 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 01_manpage.dpatch by  <hamish@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Manual page updates
+
+@DPATCH@
+
+--- xpdf-3.00.orig/doc/pdffonts.1
++++ xpdf-3.00/doc/pdffonts.1
+@@ -61,9 +61,7 @@
+ .SH CONFIGURATION FILE
+ Pdffonts reads a configuration file at startup.  It first tries to
+ find the user's private config file, ~/.xpdfrc.  If that doesn't
+-exist, it looks for a system-wide config file, typically
+-/usr/local/etc/xpdfrc (but this location can be changed when pdffonts
+-is built).  See the
++exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
+ .BR xpdfrc (5)
+ man page for details.
+ .SH OPTIONS
+--- xpdf-3.00.orig/doc/pdfimages.1
++++ xpdf-3.00/doc/pdfimages.1
+@@ -12,9 +12,9 @@
+ saves images from a Portable Document Format (PDF) file as Portable
+ Pixmap (PPM), Portable Bitmap (PBM), or JPEG files.
+ .PP
+-Pdfimages reads the PDF file, scans one or more pages,
++Pdfimages reads the PDF file
+ .IR PDF-file ,
+-and writes one PPM, PBM, or JPEG file for each image,
++scans one or more pages, and writes one PPM, PBM, or JPEG file for each image,
+ .IR image-root - nnn . xxx ,
+ where
+ .I nnn
+@@ -24,9 +24,7 @@
+ .SH CONFIGURATION FILE
+ Pdfimages reads a configuration file at startup.  It first tries to
+ find the user's private config file, ~/.xpdfrc.  If that doesn't
+-exist, it looks for a system-wide config file, typically
+-/usr/local/etc/xpdfrc (but this location can be changed when pdfimages
+-is built).  See the
++exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
+ .BR xpdfrc (5)
+ man page for details.
+ .SH OPTIONS
+--- xpdf-3.00.orig/doc/pdfinfo.1
++++ xpdf-3.00/doc/pdfinfo.1
+@@ -71,8 +71,7 @@
+ .SH CONFIGURATION FILE
+ Pdfinfo reads a configuration file at startup.  It first tries to find
+ the user's private config file, ~/.xpdfrc.  If that doesn't exist, it
+-looks for a system-wide config file, typically /usr/local/etc/xpdfrc
+-(but this location can be changed when pdfinfo is built).  See the
++looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
+ .BR xpdfrc (5)
+ man page for details.
+ .SH OPTIONS
+--- xpdf-3.00.orig/doc/pdftoppm.1
++++ xpdf-3.00/doc/pdftoppm.1
+@@ -24,9 +24,7 @@
+ .SH CONFIGURATION FILE
+ Pdftoppm reads a configuration file at startup.  It first tries to
+ find the user's private config file, ~/.xpdfrc.  If that doesn't
+-exist, it looks for a system-wide config file, typically
+-/usr/local/etc/xpdfrc (but this location can be changed when pdftoppm
+-is built).  See the
++exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc. See the
+ .BR xpdfrc (5)
+ man page for details.
+ .SH OPTIONS
+--- xpdf-3.00.orig/doc/pdftops.1
++++ xpdf-3.00/doc/pdftops.1
+@@ -31,8 +31,7 @@
+ .SH CONFIGURATION FILE
+ Pdftops reads a configuration file at startup.  It first tries to find
+ the user's private config file, ~/.xpdfrc.  If that doesn't exist, it
+-looks for a system-wide config file, typically /usr/local/etc/xpdfrc
+-(but this location can be changed when pdftops is built).  See the
++looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
+ .BR xpdfrc (5)
+ man page for details.
+ .SH OPTIONS
+--- xpdf-3.00.orig/doc/pdftotext.1
++++ xpdf-3.00/doc/pdftotext.1
+@@ -28,9 +28,7 @@
+ .SH CONFIGURATION FILE
+ Pdftotext reads a configuration file at startup.  It first tries to
+ find the user's private config file, ~/.xpdfrc.  If that doesn't
+-exist, it looks for a system-wide config file, typically
+-/usr/local/etc/xpdfrc (but this location can be changed when pdftotext
+-is built).  See the
++exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
+ .BR xpdfrc (5)
+ man page for details.
+ .SH OPTIONS
+--- xpdf-3.00.orig/doc/xpdf.1
++++ xpdf-3.00/doc/xpdf.1
+@@ -7,6 +7,11 @@
+ [options]
+ .RI [ PDF-file
+ .RI [ page " | +" dest ]]
++.sp
++.B zxpdf
++[options]
++.RI [ PDF-file
++.RI [ page " | +" dest ]]
+ .SH DESCRIPTION
+ .B Xpdf
+ is a viewer for Portable Document Format (PDF) files.  (These are also
+@@ -37,11 +42,17 @@
+ .RS
+ xpdf
+ .RE
++.PP
++Compressed files (gz and bz2) may be viewed using the command:
++.PP
++.RS
++zxpdf file.pdf.gz
++.RE
++.PP
+ .SH CONFIGURATION FILE
+ Xpdf reads a configuration file at startup.  It first tries to find
+ the user's private config file, ~/.xpdfrc.  If that doesn't exist, it
+-looks for a system-wide config file, typically /usr/local/etc/xpdfrc
+-(but this location can be changed when xpdf is built).  See the
++looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
+ .BR xpdfrc (5)
+ man page for details.
+ .SH OPTIONS
