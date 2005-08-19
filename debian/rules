@@ -66,6 +66,7 @@ binary-arch:    build
 
 	dh_installdocs -a
 	dh_movefiles -a
+	rm -rf debian/tmp
 
 	# rename xpdf binary and install wrapper script
 	mv debian/xpdf-reader/usr/bin/xpdf debian/xpdf-reader/usr/bin/xpdf.bin

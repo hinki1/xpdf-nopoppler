@@ -8,13 +8,13 @@
 
 --- xpdf-3.00.orig/splash/SplashFTFont.cc
 +++ xpdf-3.00/splash/SplashFTFont.cc
-@@ -225,6 +225,9 @@
+@@ -238,6 +238,9 @@
    if (FT_Get_Glyph(slot, &glyph)) {
      return NULL;
    }
 +  if (glyph->format != FT_GLYPH_FORMAT_OUTLINE) {
 +    return NULL;
 +  }
-   path = new SplashPath();
+   path.path = new SplashPath();
+   path.needClose = gFalse;
    FT_Outline_Decompose(&((FT_OutlineGlyph)glyph)->outline,
- 		       &outlineFuncs, path);

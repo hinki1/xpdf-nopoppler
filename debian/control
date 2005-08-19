@@ -2,9 +2,9 @@ Source: xpdf
 Section: text
 Priority: optional
 Maintainer: Hamish Moffatt <hamish@debian.org>
-Standards-Version: 3.6.1
-Build-Depends: libt1-dev (>= 5.0.2-3), xlibs-dev, lesstif2-dev | libmotif-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaperg-dev, pkg-config, dpatch
-Build-Conflicts: libttf-dev
+Standards-Version: 3.6.2
+Build-Depends: libt1-dev (>= 5.0.2-3), xlibs-dev, lesstif2-dev | libmotif-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaperg-dev, pkg-config, dpatch, automake1.9, autoconf
+Build-Conflicts: libttf-dev, libstroke0-dev, autoconf2.13
 Build-Depends-Indep: debhelper (>= 4)
 
 Package: xpdf

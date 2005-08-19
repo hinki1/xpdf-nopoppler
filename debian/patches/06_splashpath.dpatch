@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 06_splashpath.dpatch by  <hamish@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad --exclude=CVS --exclude=.svn ./splash/Splash.cc /tmp/dpep-work.Z6NPbI/xpdf-3.01/splash/Splash.cc
+--- ./splash/Splash.cc	2005-08-17 15:34:30.000000000 +1000
++++ /tmp/dpep-work.Z6NPbI/xpdf-3.01/splash/Splash.cc	2005-08-19 18:36:11.000000000 +1000
+@@ -820,6 +820,9 @@
+   if (path->length == 0) {
+     return splashErrEmptyPath;
+   }
++  if (path->length == 1) {
++    return splashErrBogusPath;
++  }
+   xPath = new SplashXPath(path, state->flatness, gTrue);
+   xPath->sort();
+   scanner = new SplashXPathScanner(xPath, eo);

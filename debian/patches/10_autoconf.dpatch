@@ -1,0 +1,19 @@
+#! /bin/sh -e
+## DP: run aclocal and autoconf
+
+dpatch_patch ()
+{
+	tar cf debian/patched/autoconf.tar configure aclocal.m4
+	aclocal-1.9 -I .
+	autoconf
+}
+
+dpatch_unpatch ()
+{
+	tar xf debian/patched/autoconf.tar
+}
+
+DPATCH_LIB_NO_DEFAULT=1
+
+. /usr/share/dpatch/dpatch.lib.sh
+

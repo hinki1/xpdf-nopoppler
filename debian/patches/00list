@@ -1,8 +1,9 @@
-01_manpage
-02_permissions
-03_freetype-build
-04_freetype-glyph
-05_unicode
-06_security
-07_gcc4
-08_can-2005-2097.dpatch
+01_manpage.dpatch
+02_permissions.dpatch
+03_freetype-build.dpatch
+04_freetype-glyph.dpatch
+05_gmem.dpatch
+06_splashpath.dpatch
+07_decrypt.dpatch
+08_core_action.dpatch
+10_autoconf.dpatch

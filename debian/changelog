@@ -1,3 +1,31 @@
+xpdf (3.01-1) unstable; urgency=low
+
+  * New upstream release (closes: #323715)
+    * Added initial transparency support (closes: #181958, #284504, #243533)
+    * Improved performance of pattern handling (closes: #220628)
+    * Rasterizer optimisations (closes: #229714, #283549)
+    * Handle negative font sizes (closes: #267790, #269495)
+    * Fixed bugs in the Type 1C font parser
+      (closes: #280291, #308547, #316895, #322906, #317708)
+      and TrueType (closes: #270086)
+    * Fix borders with some files (closes: #284307)
+    * Fixed copy/paste losing text (closes: #310042)
+    * Window is sized to fit the document page (closes: #249039, #254843)
+    * Background window is now gray to show page size (closes: #295696)
+    * Directories are not scanned until open dialog used (closes: #298742)
+    * Fixed other crashes (closes: #251057, #264298, #303710),
+      PostScript output bugs (closes: #295685)
+
+  * Added build-conflicts with libstroke0-dev, as it supplies
+    autoconf macros that conflict with xpdf's own
+  * Added category and generic name entries to the Desktop file
+    (closes: #302546); thanks to Alejandro Exojo for the patch
+  * Register for MIME type application/x-pdf in addition to
+    application/pdf (closes: #319057)
+  * Updated to standards-revision 3.6.2
+
+ -- Hamish Moffatt <hamish@debian.org>  Fri, 19 Aug 2005 22:48:35 +1000
+
 xpdf (3.00-15) unstable; urgency=low
 
   * SECURITY UPDATE: fix potiential DoS attack through hand-crafted

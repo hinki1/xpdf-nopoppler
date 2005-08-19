@@ -1,0 +1,52 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 07_decrypt.dpatch by  <hamish@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad --exclude=CVS --exclude=.svn ./xpdf/Decrypt.cc /tmp/dpep-work.wRRwAu/xpdf-3.01/xpdf/Decrypt.cc
+--- ./xpdf/Decrypt.cc	2005-08-17 15:34:31.000000000 +1000
++++ /tmp/dpep-work.wRRwAu/xpdf-3.01/xpdf/Decrypt.cc	2005-08-19 18:47:09.000000000 +1000
+@@ -75,6 +75,11 @@
+   Guchar fx, fy;
+   int len, i, j;
+ 
++  // check whether we have non-zero keyLength
++  if ( !keyLength ) {
++    return gFalse;
++  }
++
+   // try using the supplied owner password to generate the user password
+   *ownerPasswordOk = gFalse;
+   if (ownerPassword) {
+@@ -100,7 +105,7 @@
+     } else {
+       memcpy(test2, ownerKey->getCString(), 32);
+       for (i = 19; i >= 0; --i) {
+-	for (j = 0; j < keyLength; ++j) {
++	for (j = 0; j < keyLength && j < 16; ++j) {
+ 	  tmpKey[j] = test[j] ^ i;
+ 	}
+ 	rc4InitKey(tmpKey, keyLength, fState);
+@@ -140,6 +145,11 @@
+   int len, i, j;
+   GBool ok;
+ 
++  // check whether we have non-zero keyLength
++  if ( !keyLength ) {
++    return gFalse;
++  }
++
+   // generate file key
+   buf = (Guchar *)gmalloc(72 + fileID->getLength());
+   if (userPassword) {
+@@ -184,7 +194,7 @@
+   } else if (encRevision == 3) {
+     memcpy(test, userKey->getCString(), 32);
+     for (i = 19; i >= 0; --i) {
+-      for (j = 0; j < keyLength; ++j) {
++      for (j = 0; j < keyLength && j < 16; ++j) {
+ 	tmpKey[j] = fileKey[j] ^ i;
+       }
+       rc4InitKey(tmpKey, keyLength, fState);
