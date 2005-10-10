@@ -1,3 +1,13 @@
+xpdf (3.01-2) unstable; urgency=low
+
+  * Incorporate upstream patch to fix resize issues with some
+    window managers (20_resize.dpatch)
+    (closes: #325112, #326888, #327572, #329112, #324172)
+  * Fix incorrect escape sequences in xpdf.1 (closes: #320631)
+    Thanks to Erik Schanze for the patch. (01_manpage.dpatch)
+
+ -- Hamish Moffatt <hamish@debian.org>  Mon, 10 Oct 2005 23:34:46 +1000
+
 xpdf (3.01-1) unstable; urgency=low
 
   * New upstream release (closes: #323715)

@@ -7,3 +7,4 @@
 07_decrypt.dpatch
 08_core_action.dpatch
 10_autoconf.dpatch
+20_resize.dpatch

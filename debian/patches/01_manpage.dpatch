@@ -5,9 +5,9 @@
 ## DP: Manual page updates
 
 @DPATCH@
-
---- xpdf-3.00.orig/doc/pdffonts.1
-+++ xpdf-3.00/doc/pdffonts.1
+diff -urNad xpdf-3.01~/doc/pdffonts.1 xpdf-3.01/doc/pdffonts.1
+--- xpdf-3.01~/doc/pdffonts.1	2005-10-10 23:41:12.000000000 +1000
++++ xpdf-3.01/doc/pdffonts.1	2005-10-10 23:41:17.000000000 +1000
 @@ -61,9 +61,7 @@
  .SH CONFIGURATION FILE
  Pdffonts reads a configuration file at startup.  It first tries to
@@ -19,8 +19,9 @@
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
---- xpdf-3.00.orig/doc/pdfimages.1
-+++ xpdf-3.00/doc/pdfimages.1
+diff -urNad xpdf-3.01~/doc/pdfimages.1 xpdf-3.01/doc/pdfimages.1
+--- xpdf-3.01~/doc/pdfimages.1	2005-10-10 23:41:12.000000000 +1000
++++ xpdf-3.01/doc/pdfimages.1	2005-10-10 23:41:17.000000000 +1000
 @@ -12,9 +12,9 @@
  saves images from a Portable Document Format (PDF) file as Portable
  Pixmap (PPM), Portable Bitmap (PBM), or JPEG files.
@@ -33,7 +34,7 @@
  .IR image-root - nnn . xxx ,
  where
  .I nnn
-@@ -24,9 +24,7 @@
+@@ -28,9 +28,7 @@
  .SH CONFIGURATION FILE
  Pdfimages reads a configuration file at startup.  It first tries to
  find the user's private config file, ~/.xpdfrc.  If that doesn't
@@ -44,8 +45,9 @@
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
---- xpdf-3.00.orig/doc/pdfinfo.1
-+++ xpdf-3.00/doc/pdfinfo.1
+diff -urNad xpdf-3.01~/doc/pdfinfo.1 xpdf-3.01/doc/pdfinfo.1
+--- xpdf-3.01~/doc/pdfinfo.1	2005-10-10 23:41:12.000000000 +1000
++++ xpdf-3.01/doc/pdfinfo.1	2005-10-10 23:41:17.000000000 +1000
 @@ -71,8 +71,7 @@
  .SH CONFIGURATION FILE
  Pdfinfo reads a configuration file at startup.  It first tries to find
@@ -56,8 +58,9 @@
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
---- xpdf-3.00.orig/doc/pdftoppm.1
-+++ xpdf-3.00/doc/pdftoppm.1
+diff -urNad xpdf-3.01~/doc/pdftoppm.1 xpdf-3.01/doc/pdftoppm.1
+--- xpdf-3.01~/doc/pdftoppm.1	2005-10-10 23:41:12.000000000 +1000
++++ xpdf-3.01/doc/pdftoppm.1	2005-10-10 23:41:17.000000000 +1000
 @@ -24,9 +24,7 @@
  .SH CONFIGURATION FILE
  Pdftoppm reads a configuration file at startup.  It first tries to
@@ -69,8 +72,9 @@
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
---- xpdf-3.00.orig/doc/pdftops.1
-+++ xpdf-3.00/doc/pdftops.1
+diff -urNad xpdf-3.01~/doc/pdftops.1 xpdf-3.01/doc/pdftops.1
+--- xpdf-3.01~/doc/pdftops.1	2005-10-10 23:41:12.000000000 +1000
++++ xpdf-3.01/doc/pdftops.1	2005-10-10 23:41:17.000000000 +1000
 @@ -31,8 +31,7 @@
  .SH CONFIGURATION FILE
  Pdftops reads a configuration file at startup.  It first tries to find
@@ -81,8 +85,9 @@
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
---- xpdf-3.00.orig/doc/pdftotext.1
-+++ xpdf-3.00/doc/pdftotext.1
+diff -urNad xpdf-3.01~/doc/pdftotext.1 xpdf-3.01/doc/pdftotext.1
+--- xpdf-3.01~/doc/pdftotext.1	2005-10-10 23:41:12.000000000 +1000
++++ xpdf-3.01/doc/pdftotext.1	2005-10-10 23:41:17.000000000 +1000
 @@ -28,9 +28,7 @@
  .SH CONFIGURATION FILE
  Pdftotext reads a configuration file at startup.  It first tries to
@@ -94,9 +99,10 @@
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
---- xpdf-3.00.orig/doc/xpdf.1
-+++ xpdf-3.00/doc/xpdf.1
-@@ -7,6 +7,11 @@
+diff -urNad xpdf-3.01~/doc/xpdf.1 xpdf-3.01/doc/xpdf.1
+--- xpdf-3.01~/doc/xpdf.1	2005-10-10 23:41:12.000000000 +1000
++++ xpdf-3.01/doc/xpdf.1	2005-10-10 23:42:46.000000000 +1000
+@@ -7,10 +7,15 @@
  [options]
  .RI [ PDF-file
  .RI [ page " | +" dest ]]
@@ -108,7 +114,21 @@
  .SH DESCRIPTION
  .B Xpdf
  is a viewer for Portable Document Format (PDF) files.  (These are also
-@@ -37,11 +42,17 @@
+-sometimes also called \'Acrobat' files, from the name of Adobe's PDF
++sometimes also called 'Acrobat' files, from the name of Adobe's PDF
+ software.)  Xpdf runs under the X Window System on UNIX, VMS, and
+ OS/2.
+ .PP
+@@ -29,7 +34,7 @@
+ xpdf file.pdf 18
+ .RE
+ .PP
+-You can also give a named destination, prefixed with \'+' in place of
++You can also give a named destination, prefixed with '+' in place of
+ the page number.  (This is only useful with PDF files that provide
+ named destination targets.)
+ .PP
+@@ -38,11 +43,17 @@
  .RS
  xpdf
  .RE
@@ -128,3 +148,104 @@
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
+@@ -91,8 +102,8 @@
+ .TP
+ .BI \-z " zoom"
+ Set the initial zoom factor.  A number specifies a zoom percentage,
+-where 100 means 72 dpi.You may also specify \'page', to fit the page
+-to the window size, or \'width', to fit the page width to the window
++where 100 means 72 dpi.You may also specify 'page', to fit the page
++to the window size, or 'width', to fit the page width to the window
+ width.
+ .RB "[config file: " initialZoom "; or X resource: " xpdf.initialZoom ]
+ .TP
+@@ -118,7 +129,7 @@
+ .BI \-ps " PS-file"
+ Set the default file name for PostScript output (i.e., the name which
+ will appear in the print dialog).  This can also be of the form
+-\'|command' to pipe the PostScript through a command.
++'|command' to pipe the PostScript through a command.
+ .RB "[config file: " psFile ]
+ .TP
+ .BI \-paper " size"
+@@ -224,12 +235,12 @@
+ .RB "[X resource: " xpdf*fontList ]
+ .PP
+ The color and font options only affect the user interface elements,
+-not the PDF display (the \'paper').
++not the PDF display (the 'paper').
+ .PP
+ The following X resources do not have command line option equivalents:
+ .TP
+ .B xpdf.viKeys
+-Enables the \'h', \'l', \'k' and \'j' keys for left, right, up, and
++Enables the 'h', 'l', 'k' and 'j' keys for left, right, up, and
+ down scrolling.
+ .TP
+ .B xpdf.toolTipEnable
+@@ -247,7 +258,7 @@
+ .B "dashed left/right arrow buttons"
+ Move backward or forward along the history path.
+ .TP
+-.B "\'Page' entry box"
++.B "'Page' entry box"
+ Move to a specific page number.  Click in the box to activate it, type
+ the page number, then hit return.
+ .TP
+@@ -260,17 +271,17 @@
+ .B "print button"
+ Bring up a dialog for generating a PostScript file.  The dialog has
+ options to set the pages to be printed and the PostScript file name.
+-The file name can be \'-' for stdout or \'|command' to pipe the
+-PostScript through a command, e.g., \'|lpr'.
++The file name can be '-' for stdout or '|command' to pipe the
++PostScript through a command, e.g., '|lpr'.
+ .TP
+-.B "\'?' button"
+-Bring up the \'about xpdf' window.
++.B "'?' button"
++Bring up the 'about xpdf' window.
+ .TP
+ .B "link info"
+-The space between the \'?' and \'Quit' buttons is used to show the URL
++The space between the '?' and 'Quit' buttons is used to show the URL
+ or external file name when the mouse is over a link.
+ .TP
+-.B "\'Quit' button"
++.B "'Quit' button"
+ Quit xpdf.
+ .PP
+ .SS Menu
+@@ -323,9 +334,9 @@
+ .PP
+ .SS Links
+ Clicking on a hyperlink will jump to the link's destination.  A link
+-to another PDF document will make xpdf load that document.  A
+-\'launch' link to an executable program will display a dialog, and if
+-you click \'ok', execute the program.  URL links call an external
++to another PDF document will make xpdf load that document.  A 'launch'
++link to an executable program will display a dialog, and if
++you click 'ok', execute the program.  URL links call an external
+ command (see the
+ .B WEB BROWSERS
+ section below).
+@@ -445,7 +456,7 @@
+ .PP
+ When you click on a URL link in a PDF file, xpdf will execute the
+ command specified by the urlCommand config file option, replacing an
+-occurrence of \'%s' with the URL.  For example, to call netscape with
++occurrence of '%s' with the URL.  For example, to call netscape with
+ the URL, add this line to your config file:
+ .PP
+ .RS
+@@ -459,8 +470,8 @@
+ xpdf -remote myServer file.pdf
+ .RE
+ .PP
+-If there is currently no xpdf running in server mode with the name
+-\'myServer', a new xpdf window will be opened.  If another command:
++If there is currently no xpdf running in server mode with the name 'myServer',
++a new xpdf window will be opened.  If another command:
+ .PP
+ .RS
+ xpdf -remote myServer another.pdf 9
