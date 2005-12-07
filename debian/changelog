@@ -1,3 +1,14 @@
+xpdf (3.00-13.1) stable-security; urgency=high
+
+  * SECURITY UPDATE: fix several potential buffer overflows:
+    DCTStream Baseline Heap Overflow, DCTStream Progressive Heap Overflow,
+    StreamPredictor Heap Overflow, JPX Stream Reader Heap Overflow
+    (closes: #342281) (based on upstream 3.01pl1 patch)
+  * References: CVE-2005-3191, CVE-2005-3193
+    ftp://ftp.foolabs.com/pub/xpdf/xpdf-3.01pl1.patch
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed,  7 Dec 2005 23:51:01 +1100
+
 xpdf (3.00-13) unstable; urgency=low
 
   * SECURITY UPDATE: fix buffer overflow for PDF documents with an /Encrypt
