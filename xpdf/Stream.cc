@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <limits.h>
 #ifndef WIN32
 #include <unistd.h>
 #endif
@@ -417,7 +418,15 @@ StreamPredictor::StreamPredictor(Stream *strA, int predictorA,
   predLine = NULL;
   ok = gFalse;
 
+  if (width <= 0 || nComps <= 0 || nBits <= 0 ||
+      nComps >= INT_MAX/nBits ||
+      width >= INT_MAX/nComps/nBits) {
+    return;
+  }
   nVals = width * nComps;
+  if (nVals + 7 <= 0) {
+    return;
+  }
   totalBits = nVals * nBits;
   if (totalBits == 0 ||
       (totalBits / nBits) / nComps != width ||
