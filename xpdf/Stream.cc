@@ -1288,6 +1288,12 @@ CCITTFaxStream::CCITTFaxStream(Stream *strA, int encodingA, GBool endOfLineA,
   endOfLine = endOfLineA;
   byteAlign = byteAlignA;
   columns = columnsA;
+
+  if (columns + 4 < 1 || (columns + 4) >= INT_MAX / sizeof(short)) {
+    error(getPos(), "Bad number of columns in CCITTFaxStream");
+    exit(1);
+  }
+
   rows = rowsA;
   endOfBlock = endOfBlockA;
   black = blackA;
@@ -2926,6 +2932,7 @@ GBool DCTStream::readBaselineSOF() {
   width = read16();
   numComps = str->getChar();
   if (numComps <= 0 || numComps > 4) {
+    numComps = 0;
     error(getPos(), "Bad number of components in DCT stream", prec);
     return gFalse;
   }
@@ -2956,6 +2963,7 @@ GBool DCTStream::readProgressiveSOF() {
   width = read16();
   numComps = str->getChar();
   if (numComps <= 0 || numComps > 4) {
+    numComps = 0;
     error(getPos(), "Bad number of components in DCT stream");
     return gFalse;
   }
@@ -2982,6 +2990,7 @@ GBool DCTStream::readScanInfo() {
   length = read16() - 2;
   scanInfo.numComps = str->getChar();
   if (scanInfo.numComps <= 0 || scanInfo.numComps > 4) {
+    scanInfo.numComps = 0;
     error(getPos(), "Bad number of components in DCT stream");
     return gFalse;
   }
@@ -3059,12 +3068,12 @@ GBool DCTStream::readHuffmanTables() {
   while (length > 0) {
     index = str->getChar();
     --length;
-    if ((index & 0x0f) >= 4) {
+    if ((index & ~0x10) >= 4 || (index & ~0x10) < 0) {
       error(getPos(), "Bad DCT Huffman table");
       return gFalse;
     }
     if (index & 0x10) {
-      index &= 0x0f;
+      index &= 0x03;
       if (index >= numACHuffTables)
 	numACHuffTables = index+1;
       tbl = &acHuffTables[index];
