@@ -3,7 +3,7 @@ Section: text
 Priority: optional
 Maintainer: Hamish Moffatt <hamish@debian.org>
 Standards-Version: 3.6.2
-Build-Depends: libt1-dev (>= 5.0.2-3), xlibs-dev, lesstif2-dev | libmotif-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaperg-dev, pkg-config, dpatch, automake1.9, autoconf
+Build-Depends: libt1-dev (>= 5.0.2-3), libxext-dev | xlibs-dev, libxp-dev | xlibs-dev, libxt-dev | xlibs-dev, libxpm-dev | xlibs-dev, libx11-dev | xlibs-dev, lesstif2-dev | libmotif-dev, x-dev | xlibs-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaperg-dev, pkg-config, dpatch, automake1.9, autoconf
 Build-Conflicts: libttf-dev, libstroke0-dev, autoconf2.13
 Build-Depends-Indep: debhelper (>= 4)
 

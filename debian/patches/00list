@@ -6,6 +6,7 @@
 06_splashpath.dpatch
 07_decrypt.dpatch
 08_core_action.dpatch
-10_autoconf.dpatch
 20_resize.dpatch
 21_security.dpatch
+22_security2.dpatch
+99_autoconf.dpatch

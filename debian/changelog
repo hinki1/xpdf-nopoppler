@@ -1,10 +1,18 @@
+xpdf (3.01-4) unstable; urgency=high
+
+  * SECURITY UPDATE: added additional precautionary checks
+    supplied by Martin Pitt, Chris Evans and Ludwid Nussel
+  * Changed build-dep on xlibs-dev to individual lib*-dev packages
+
+ -- Hamish Moffatt <hamish@debian.org>  Fri,  6 Jan 2006 18:55:24 +1100
+
 xpdf (3.01-3) unstable; urgency=high
 
   * SECURITY UPDATE: fix several potential buffer overflows:
     DCTStream Baseline Heap Overflow, DCTStream Progressive Heap Overflow,
     StreamPredictor Heap Overflow, JPX Stream Reader Heap Overflow 
     (closes: #322462) (21_security.dpatch)
-  * References: CAN-2005-3193
+  * References: CAN-2005-3193, CAN-2005-3191
 
  -- Hamish Moffatt <hamish@debian.org>  Tue,  6 Dec 2005 23:05:10 +0000
 
