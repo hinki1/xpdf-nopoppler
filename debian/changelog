@@ -1,3 +1,15 @@
+xpdf (3.01-6) unstable; urgency=high
+
+  * SECURITY UPDATE: fixed buffer overflow in splash image handling
+    (Splash/splash.cc) using patch supplied by Red Hat:
+    https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=179046
+    (closes: #350785, #350783)
+  * References: CVE-2006-0301
+  * My first upload from the side of the road on borrowed wifi
+    in a foreign country...
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed,  1 Feb 2006 22:42:42 +1300
+
 xpdf (3.01-5) unstable; urgency=low
 
   * Changed build-dep on libpaperg-dev to libpaper-dev (closes: #346397)
