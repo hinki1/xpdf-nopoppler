@@ -2,7 +2,7 @@
 ## 20_resize.dpatch by  <hamish@debian.org>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
+## DP: Upstream patch to fix resizing problems with some WMs
 
 @DPATCH@
 diff -urNad xpdf-3.01~/xpdf/XPDFCore.cc xpdf-3.01/xpdf/XPDFCore.cc

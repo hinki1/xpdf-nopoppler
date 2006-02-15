@@ -1,3 +1,12 @@
+xpdf (3.01-7) unstable; urgency=high
+
+  * SECURITY UPDATE: incorporated upstream patch revision 3.01pl2 
+    (obseletes several patches collected from Red Hat, Ubuntu etc).
+  * References: CAN-2005-3191/3192/3193/3624/3625/2626/2627/3628,
+    CAN-2006-0301 (all included, some improved by this patch)
+
+ -- Hamish Moffatt <hamish@debian.org>  Thu, 16 Feb 2006 00:22:13 +1100
+
 xpdf (3.01-6) unstable; urgency=high
 
   * SECURITY UPDATE: fixed buffer overflow in splash image handling

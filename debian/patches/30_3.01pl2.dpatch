@@ -1,0 +1,358 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 30_3.01pl2.dpatch by  <hamish@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: xpdf 3.01pl2 patch provided by upstream
+
+@DPATCH@
+diff -urNad xpdf-3.01~/goo/gmem.c xpdf-3.01/goo/gmem.c
+--- xpdf-3.01~/goo/gmem.c	2006-02-16 00:14:11.000000000 +1100
++++ xpdf-3.01/goo/gmem.c	2006-02-16 00:14:28.000000000 +1100
+@@ -11,6 +11,7 @@
+ #include <stdlib.h>
+ #include <stddef.h>
+ #include <string.h>
++#include <limits.h>
+ #include "gmem.h"
+ 
+ #ifdef DEBUG_MEM
+@@ -63,7 +64,7 @@
+   int lst;
+   unsigned long *trl, *p;
+ 
+-  if (size == 0)
++  if (size <= 0)
+     return NULL;
+   size1 = gMemDataSize(size);
+   if (!(mem = (char *)malloc(size1 + gMemHdrSize + gMemTrlSize))) {
+@@ -86,7 +87,7 @@
+ #else
+   void *p;
+ 
+-  if (size == 0)
++  if (size <= 0)
+     return NULL;
+   if (!(p = malloc(size))) {
+     fprintf(stderr, "Out of memory\n");
+@@ -102,7 +103,7 @@
+   void *q;
+   size_t oldSize;
+ 
+-  if (size == 0) {
++  if (size <= 0) {
+     if (p)
+       gfree(p);
+     return NULL;
+@@ -120,7 +121,7 @@
+ #else
+   void *q;
+ 
+-  if (size == 0) {
++  if (size <= 0) {
+     if (p)
+       free(p);
+     return NULL;
+@@ -140,8 +141,11 @@
+ void *gmallocn(int nObjs, size_t objSize) {
+   size_t n;
+ 
++  if (nObjs == 0) {
++    return NULL;
++  }
+   n = nObjs * objSize;
+-  if (objSize == 0 || n / objSize != nObjs) {
++  if (objSize <= 0 || nObjs < 0 || nObjs >= INT_MAX / objSize) {
+     fprintf(stderr, "Bogus memory allocation size\n");
+     exit(1);
+   }
+@@ -151,8 +155,14 @@
+ void *greallocn(void *p, int nObjs, size_t objSize) {
+   size_t n;
+ 
++  if (nObjs == 0) {
++    if (p) {
++      gfree(p);
++    }
++    return NULL;
++  }
+   n = nObjs * objSize;
+-  if (objSize == 0 || n / objSize != nObjs) {
++  if (objSize <= 0 || nObjs < 0 || nObjs >= INT_MAX / objSize) {
+     fprintf(stderr, "Bogus memory allocation size\n");
+     exit(1);
+   }
+diff -urNad xpdf-3.01~/splash/SplashXPathScanner.cc xpdf-3.01/splash/SplashXPathScanner.cc
+--- xpdf-3.01~/splash/SplashXPathScanner.cc	2005-08-17 15:34:31.000000000 +1000
++++ xpdf-3.01/splash/SplashXPathScanner.cc	2006-02-16 00:14:28.000000000 +1100
+@@ -186,7 +186,7 @@
+ }
+ 
+ void SplashXPathScanner::computeIntersections(int y) {
+-  SplashCoord ySegMin, ySegMax, xx0, xx1;
++  SplashCoord xSegMin, xSegMax, ySegMin, ySegMax, xx0, xx1;
+   SplashXPathSeg *seg;
+   int i, j;
+ 
+@@ -236,19 +236,27 @@
+     } else if (seg->flags & splashXPathVert) {
+       xx0 = xx1 = seg->x0;
+     } else {
+-      if (ySegMin <= y) {
+-	// intersection with top edge
+-	xx0 = seg->x0 + ((SplashCoord)y - seg->y0) * seg->dxdy;
++      if (seg->x0 < seg->x1) {
++	xSegMin = seg->x0;
++	xSegMax = seg->x1;
+       } else {
+-	// x coord of segment endpoint with min y coord
+-	xx0 = (seg->flags & splashXPathFlip) ? seg->x1 : seg->x0;
++	xSegMin = seg->x1;
++	xSegMax = seg->x0;
+       }
+-      if (ySegMax >= y + 1) {
+-	// intersection with bottom edge
+-	xx1 = seg->x0 + ((SplashCoord)y + 1 - seg->y0) * seg->dxdy;
+-      } else {
+-	// x coord of segment endpoint with max y coord
+-	xx1 = (seg->flags & splashXPathFlip) ? seg->x0 : seg->x1;
++      // intersection with top edge
++      xx0 = seg->x0 + ((SplashCoord)y - seg->y0) * seg->dxdy;
++      // intersection with bottom edge
++      xx1 = seg->x0 + ((SplashCoord)y + 1 - seg->y0) * seg->dxdy;
++      // the segment may not actually extend to the top and/or bottom edges
++      if (xx0 < xSegMin) {
++	xx0 = xSegMin;
++      } else if (xx0 > xSegMax) {
++	xx0 = xSegMax;
++      }
++      if (xx1 < xSegMin) {
++	xx1 = xSegMin;
++      } else if (xx1 > xSegMax) {
++	xx1 = xSegMax;
+       }
+     }
+     if (xx0 < xx1) {
+diff -urNad xpdf-3.01~/xpdf/JBIG2Stream.cc xpdf-3.01/xpdf/JBIG2Stream.cc
+--- xpdf-3.01~/xpdf/JBIG2Stream.cc	2006-02-15 23:57:30.000000000 +1100
++++ xpdf-3.01/xpdf/JBIG2Stream.cc	2006-02-16 00:14:28.000000000 +1100
+@@ -13,6 +13,7 @@
+ #endif
+ 
+ #include <stdlib.h>
++#include <limits.h>
+ #include "GList.h"
+ #include "Error.h"
+ #include "JArithmeticDecoder.h"
+@@ -681,6 +682,10 @@
+   w = wA;
+   h = hA;
+   line = (wA + 7) >> 3;
++  if (w <= 0 || h <= 0 || line <= 0 || h >= (INT_MAX - 1) / line) {
++    data = NULL;
++    return;
++  }
+   // need to allocate one extra guard byte for use in combine()
+   data = (Guchar *)gmalloc(h * line + 1);
+   data[h * line] = 0;
+@@ -692,6 +697,10 @@
+   w = bitmap->w;
+   h = bitmap->h;
+   line = bitmap->line;
++  if (w <= 0 || h <= 0 || line <= 0 || h >= (INT_MAX - 1) / line) {
++    data = NULL;
++    return;
++  }
+   // need to allocate one extra guard byte for use in combine()
+   data = (Guchar *)gmalloc(h * line + 1);
+   memcpy(data, bitmap->data, h * line);
+@@ -720,7 +729,7 @@
+ }
+ 
+ void JBIG2Bitmap::expand(int newH, Guint pixel) {
+-  if (newH <= h) {
++  if (newH <= h || line <= 0 || newH >= (INT_MAX - 1) / line) {
+     return;
+   }
+   // need to allocate one extra guard byte for use in combine()
+@@ -2294,6 +2303,14 @@
+       !readUWord(&stepX) || !readUWord(&stepY)) {
+     goto eofError;
+   }
++  if (w == 0 || h == 0 || w >= INT_MAX / h) {
++    error(getPos(), "Bad bitmap size in JBIG2 halftone segment");
++    return;
++  }
++  if (gridH == 0 || gridW >= INT_MAX / gridH) {
++    error(getPos(), "Bad grid size in JBIG2 halftone segment");
++    return;
++  }
+ 
+   // get pattern dictionary
+   if (nRefSegs != 1) {
+diff -urNad xpdf-3.01~/xpdf/JPXStream.cc xpdf-3.01/xpdf/JPXStream.cc
+--- xpdf-3.01~/xpdf/JPXStream.cc	2006-02-15 23:57:30.000000000 +1100
++++ xpdf-3.01/xpdf/JPXStream.cc	2006-02-16 00:14:28.000000000 +1100
+@@ -12,6 +12,7 @@
+ #pragma implementation
+ #endif
+ 
++#include <limits.h>
+ #include "gmem.h"
+ #include "Error.h"
+ #include "JArithmeticDecoder.h"
+@@ -818,6 +819,12 @@
+ 	            / img.xTileSize;
+       img.nYTiles = (img.ySize - img.yTileOffset + img.yTileSize - 1)
+ 	            / img.yTileSize;
++      // check for overflow before allocating memory
++      if (img.nXTiles <= 0 || img.nYTiles <= 0 ||
++	  img.nXTiles >= INT_MAX / img.nYTiles) {
++	error(getPos(), "Bad tile count in JPX SIZ marker segment");
++	return gFalse;
++      }
+       img.tiles = (JPXTile *)gmallocn(img.nXTiles * img.nYTiles,
+ 				      sizeof(JPXTile));
+       for (i = 0; i < img.nXTiles * img.nYTiles; ++i) {
+diff -urNad xpdf-3.01~/xpdf/Stream.cc xpdf-3.01/xpdf/Stream.cc
+--- xpdf-3.01~/xpdf/Stream.cc	2006-02-15 23:57:30.000000000 +1100
++++ xpdf-3.01/xpdf/Stream.cc	2006-02-16 00:14:28.000000000 +1100
+@@ -15,6 +15,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <stddef.h>
++#include <limits.h>
+ #ifndef WIN32
+ #include <unistd.h>
+ #endif
+@@ -406,13 +407,26 @@
+   width = widthA;
+   nComps = nCompsA;
+   nBits = nBitsA;
++  predLine = NULL;
++  ok = gFalse;
+ 
+   nVals = width * nComps;
++  if (width <= 0 || nComps <= 0 || nBits <= 0 ||
++      nComps >= INT_MAX / nBits ||
++      width >= INT_MAX / nComps / nBits ||
++      nVals * nBits + 7 < 0) {
++    return;
++  }
+   pixBytes = (nComps * nBits + 7) >> 3;
+   rowBytes = ((nVals * nBits + 7) >> 3) + pixBytes;
++  if (rowBytes <= 0) {
++    return;
++  }
+   predLine = (Guchar *)gmalloc(rowBytes);
+   memset(predLine, 0, rowBytes);
+   predIdx = rowBytes;
++
++  ok = gTrue;
+ }
+ 
+ StreamPredictor::~StreamPredictor() {
+@@ -1004,6 +1018,10 @@
+     FilterStream(strA) {
+   if (predictor != 1) {
+     pred = new StreamPredictor(this, predictor, columns, colors, bits);
++    if (!pred->isOk()) {
++      delete pred;
++      pred = NULL;
++    }
+   } else {
+     pred = NULL;
+   }
+@@ -1259,6 +1277,9 @@
+   if (columns < 1) {
+     columns = 1;
+   }
++  if (columns + 4 <= 0) {
++    columns = INT_MAX - 4;
++  }
+   rows = rowsA;
+   endOfBlock = endOfBlockA;
+   black = blackA;
+@@ -2899,6 +2920,11 @@
+   height = read16();
+   width = read16();
+   numComps = str->getChar();
++  if (numComps <= 0 || numComps > 4) {
++    error(getPos(), "Bad number of components in DCT stream");
++    numComps = 0;
++    return gFalse;
++  }
+   if (prec != 8) {
+     error(getPos(), "Bad DCT precision %d", prec);
+     return gFalse;
+@@ -2925,6 +2951,11 @@
+   height = read16();
+   width = read16();
+   numComps = str->getChar();
++  if (numComps <= 0 || numComps > 4) {
++    error(getPos(), "Bad number of components in DCT stream");
++    numComps = 0;
++    return gFalse;
++  }
+   if (prec != 8) {
+     error(getPos(), "Bad DCT precision %d", prec);
+     return gFalse;
+@@ -2947,6 +2978,11 @@
+ 
+   length = read16() - 2;
+   scanInfo.numComps = str->getChar();
++  if (scanInfo.numComps <= 0 || scanInfo.numComps > 4) {
++    error(getPos(), "Bad number of components in DCT stream");
++    scanInfo.numComps = 0;
++    return gFalse;
++  }
+   --length;
+   if (length != 2 * scanInfo.numComps + 3) {
+     error(getPos(), "Bad DCT scan info block");
+@@ -3041,6 +3077,7 @@
+ 	numACHuffTables = index+1;
+       tbl = &acHuffTables[index];
+     } else {
++      index &= 0x0f;
+       if (index >= numDCHuffTables)
+ 	numDCHuffTables = index+1;
+       tbl = &dcHuffTables[index];
+@@ -3827,6 +3864,10 @@
+     FilterStream(strA) {
+   if (predictor != 1) {
+     pred = new StreamPredictor(this, predictor, columns, colors, bits);
++    if (!pred->isOk()) {
++      delete pred;
++      pred = NULL;
++    }
+   } else {
+     pred = NULL;
+   }
+diff -urNad xpdf-3.01~/xpdf/Stream.h xpdf-3.01/xpdf/Stream.h
+--- xpdf-3.01~/xpdf/Stream.h	2006-02-15 23:57:30.000000000 +1100
++++ xpdf-3.01/xpdf/Stream.h	2006-02-16 00:14:28.000000000 +1100
+@@ -232,6 +232,8 @@
+ 
+   ~StreamPredictor();
+ 
++  GBool isOk() { return ok; }
++
+   int lookChar();
+   int getChar();
+ 
+@@ -249,6 +251,7 @@
+   int rowBytes;			// bytes per line
+   Guchar *predLine;		// line buffer
+   int predIdx;			// current index in predLine
++  GBool ok;
+ };
+ 
+ //------------------------------------------------------------------------
+@@ -527,7 +530,7 @@
+   short getWhiteCode();
+   short getBlackCode();
+   short lookBits(int n);
+-  void eatBits(int n) { inputBits -= n; }
++  void eatBits(int n) { if ((inputBits -= n) < 0) inputBits = 0; }
+ };
+ 
+ //------------------------------------------------------------------------

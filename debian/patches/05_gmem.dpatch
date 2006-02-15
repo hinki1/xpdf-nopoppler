@@ -2,7 +2,7 @@
 ## 05_gmem.dpatch by  <hamish@debian.org>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
+## DP: Change all size parameters to size_t (why?)
 
 @DPATCH@
 diff -urNad --exclude=CVS --exclude=.svn ./goo/gmem.c /tmp/dpep-work.0qyf6L/xpdf-3.01/goo/gmem.c

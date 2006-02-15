@@ -2,7 +2,7 @@
 ## 03_freetype-build.dpatch by  <hamish@debian.org>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
+## DP: Use pkg-config to locate FreeType build information
 
 @DPATCH@
 diff -urNad --exclude=CVS --exclude=.svn ./configure.in /tmp/dpep-work.9fnwEh/xpdf-3.01/configure.in

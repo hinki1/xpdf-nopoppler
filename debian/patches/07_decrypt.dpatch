@@ -2,7 +2,7 @@
 ## 07_decrypt.dpatch by  <hamish@debian.org>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
+## DP: Avoid potential buffer overruns during decryption
 
 @DPATCH@
 diff -urNad --exclude=CVS --exclude=.svn ./xpdf/Decrypt.cc /tmp/dpep-work.wRRwAu/xpdf-3.01/xpdf/Decrypt.cc

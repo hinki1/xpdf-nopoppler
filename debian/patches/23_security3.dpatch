@@ -2,7 +2,7 @@
 ## 23_security3.dpatch by  <hamish@debian.org>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
+## DP: Red Hat-supplied patch for CAN-2006-0301
 
 @DPATCH@
 diff -urNad xpdf-3.01~/splash/Splash.cc xpdf-3.01/splash/Splash.cc
