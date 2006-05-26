@@ -2,6 +2,7 @@
 02_permissions.dpatch
 03_freetype-build.dpatch
 04_freetype-glyph.dpatch
+05_freetype-2.2.dpatch
 05_gmem.dpatch
 06_splashpath.dpatch
 07_decrypt.dpatch

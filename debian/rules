@@ -2,12 +2,22 @@
 # 							-*- makefile -*-
 # debian.rules file for the Debian GNU/Linux xpdf package
 # Copyright 1996,1997,1998 by Dirk Eddelbuettel <edd@debian.org>
-# Copyright 1998-2003 by Hamish Moffatt <hamish@debian.org>
+# Copyright 1998-2006 by Hamish Moffatt <hamish@debian.org>
 
 build: build-stamp
 build-stamp: patch
 	dh_testdir
-	./configure --prefix=/usr --with-gzip --with-x --with-freetype2-includes=/usr/include/freetype2 --sysconfdir=/etc/xpdf --enable-freetype2 --with-t1-includes=/usr/include
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc/xpdf \
+		--mandir=/usr/share/man \
+		--with-x \
+		--enable-freetype2 \
+		--enable-opi \
+		--enable-wordlist \
+		--enable-multithreaded \
+		--with-freetype2-includes=/usr/include/freetype2 \
+		--with-t1-includes=/usr/include
 	$(MAKE) 
 	touch build-stamp
 
@@ -52,7 +62,6 @@ binary-arch:    build
 	mkdir -p debian/tmp
 	mkdir -p debian/tmp/usr/share
 	$(MAKE) install DESTDIR=`pwd`/debian/tmp
-	mv debian/tmp/usr/man debian/tmp/usr/share
 
 	ln -sf xpdf-common debian/xpdf-reader/usr/share/doc/xpdf-reader
 	ln -sf xpdf-common debian/xpdf-utils/usr/share/doc/xpdf-utils
