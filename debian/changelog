@@ -1,3 +1,17 @@
+xpdf (3.01-9) unstable; urgency=low
+
+  * Incorporate patches from Eugeniy Meshcheryakov and Junichi Uekawa to
+    fix fullscreen mode when using a NETWM-compliant window manager
+    (closes: #247602, #362496, #367845, #168970, #192397, #165047)
+    (31_fullscreen.dpatch, 32_vscroll.dpatch)
+  * Nasty, nasty patch to workaround FTBFS due to incompatility
+    between latest g++-4.1 and lesstif - bug#377230 (40_lesstif_copy.dpatch,
+    41_lesstif_cpp.dpatch)
+  * Upgrade to standards-revision 3.7.2
+  * Made xpdf-common recommend gsfonts-x11 (closes: #329804)
+
+ -- Hamish Moffatt <hamish@debian.org>  Sat, 15 Jul 2006 16:01:16 +1000
+
 xpdf (3.01-8) unstable; urgency=low
 
   * Add patch 05_freetype-2.2.dpatch: make splash/SplashFTFont.cc

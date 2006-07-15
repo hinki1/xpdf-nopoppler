@@ -1,0 +1,30 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 41_lesstif_cpp.dpatch by  <hamish@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Work around mixed C/C++ linkages in lesstif - #377230
+
+@DPATCH@
+diff -urNad xpdf-3.01~/lesstif/Xm/VendorSP.h xpdf-3.01/lesstif/Xm/VendorSP.h
+--- xpdf-3.01~/lesstif/Xm/VendorSP.h	2006-05-28 08:30:56.000000000 +1000
++++ xpdf-3.01/lesstif/Xm/VendorSP.h	2006-07-15 14:42:38.000000000 +1000
+@@ -30,10 +30,6 @@
+ #include <Xm/VendorS.h>
+ #include <X11/ShellP.h>
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ XMLIBEXPORT extern Cardinal _XmFilterResources(XtResource *resources,
+ 				   Cardinal numResources,
+ 				   WidgetClass filterClass,
+@@ -58,8 +54,5 @@
+ XMLIBEXPORT extern VendorShellClassRec  vendorShellClassRec;
+ 
+ 
+-#ifdef __cplusplus
+-}
+-#endif
+ 
+ #endif /* _XM_VENDORSP_H */

@@ -7,6 +7,7 @@
 build: build-stamp
 build-stamp: patch
 	dh_testdir
+	#CC=gcc-4.0 CXX=g++-4.0 ./configure
 	./configure \
 		--prefix=/usr \
 		--sysconfdir=/etc/xpdf \
@@ -16,6 +17,7 @@ build-stamp: patch
 		--enable-opi \
 		--enable-wordlist \
 		--enable-multithreaded \
+		--with-Xm-includes=$(shell pwd)/lesstif
 		--with-freetype2-includes=/usr/include/freetype2 \
 		--with-t1-includes=/usr/include
 	$(MAKE) 

@@ -10,4 +10,8 @@
 20_resize.dpatch
 23_security3.dpatch
 30_3.01pl2.dpatch
+31_fullscreen.dpatch
+32_vscroll.dpatch
+40_lesstif_copy.dpatch
+41_lesstif_cpp.dpatch
 99_autoconf.dpatch

@@ -2,10 +2,9 @@ Source: xpdf
 Section: text
 Priority: optional
 Maintainer: Hamish Moffatt <hamish@debian.org>
-Standards-Version: 3.6.2
-Build-Depends: libt1-dev (>= 5.0.2-3), libxext-dev | xlibs-dev, libxp-dev | xlibs-dev, libxt-dev | xlibs-dev, libxpm-dev | xlibs-dev, libx11-dev | xlibs-dev, lesstif2-dev | libmotif-dev, x-dev | xlibs-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaper-dev | libpaperg-dev, pkg-config, dpatch, automake1.9, autoconf
+Standards-Version: 3.7.2
+Build-Depends: libt1-dev (>= 5.0.2-3), libxext-dev | xlibs-dev, libxp-dev | xlibs-dev, libxt-dev | xlibs-dev, libxpm-dev | xlibs-dev, libx11-dev | xlibs-dev, lesstif2-dev | libmotif-dev, x-dev | xlibs-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaper-dev | libpaperg-dev, pkg-config, dpatch, automake1.9, autoconf, debhelper (>= 4)
 Build-Conflicts: libttf-dev, libstroke0-dev, autoconf2.13
-Build-Depends-Indep: debhelper (>= 4)
 
 Package: xpdf
 Architecture: all
@@ -28,6 +27,7 @@ Architecture: all
 Conflicts: xpdf (<= 0.93-6), xpdf-cyrillic, xpdf-greek, xpdf-hebrew, xpdf-latin2, xpdf-thai, xpdf-turkish
 Replaces: xpdf-cyrillic, xpdf-greek, xpdf-hebrew, xpdf-latin2, xpdf-thai, xpdf-turkish
 Suggests: xpdf-reader | xpdf-utils
+Recommends: gsfonts-x11
 Description: Portable Document Format (PDF) suite -- common files
  xpdf is a suite of tools for Portable Document Format (PDF) files. (These are
  sometimes called 'Acrobat' files after the name of Adobe's PDF software.)

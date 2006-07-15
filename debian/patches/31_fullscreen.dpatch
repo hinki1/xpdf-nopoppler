@@ -1,0 +1,45 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 31_fullscreen.dpatch by Junichi Uekawa <dancer@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: NETWM support, rediff of 247602 by Eugeniy Meshcheryakov <eugen@univ.kiev.ua>
+
+@DPATCH@
+diff -urNad xpdf-3.01~/xpdf/XPDFViewer.cc xpdf-3.01/xpdf/XPDFViewer.cc
+--- xpdf-3.01~/xpdf/XPDFViewer.cc	2006-07-12 23:58:06.000000000 +0900
++++ xpdf-3.01/xpdf/XPDFViewer.cc	2006-07-12 23:59:42.000000000 +0900
+@@ -1049,6 +1049,9 @@
+ #endif
+   int depth;
+   Pixel fg, bg, arm;
++  Atom wmStateAtom;
++  Atom wmStateFullscreenAtom;
++  XClientMessageEvent event;
+ 
+   // show the window
+   XtPopup(win, XtGrabNone);
+@@ -1240,6 +1243,24 @@
+ 					    about_height,
+ 					    fg, arm, depth),
+ 		NULL);
++  if (app->getFullScreen()) {
++    XtUnmanageChild(toolBar);
++    wmStateAtom = XInternAtom(display, "_NET_WM_STATE", False);
++    wmStateFullscreenAtom = XInternAtom(display, "_NET_WM_STATE_FULLSCREEN", False);
++    event.type = ClientMessage;
++    event.serial = 0;
++    event.send_event = True;
++    event.window = XtWindow(win);
++    event.message_type = wmStateAtom;
++    event.format = 32;
++    event.data.l[0] = 1; /* _NET_WM_STATE_ADD */
++    event.data.l[1] = wmStateFullscreenAtom;
++    event.data.l[2] = 0;
++    event.data.l[3] = 0;
++    event.data.l[4] = 0;
++    XSendEvent(display, RootWindow(display, screenNum), False,
++		    SubstructureRedirectMask | SubstructureNotifyMask, (XEvent *)&event);
++  }
+ }
+ 
+ void XPDFViewer::closeWindow() {

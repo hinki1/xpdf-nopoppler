@@ -1,0 +1,18 @@
+#! /bin/sh -e
+## DP: make local copy of lesstif headers for use in patch 41
+
+dpatch_patch ()
+{
+	mkdir lesstif
+	cp -a /usr/include/Xm lesstif/
+}
+
+dpatch_unpatch ()
+{
+	rm -rf lesstif
+}
+
+DPATCH_LIB_NO_DEFAULT=1
+
+. /usr/share/dpatch/dpatch.lib.sh
+
