@@ -10,11 +10,13 @@ set -e
 
 file=
 flags=
+title="zxpdf"
 while [ $# -gt 0 ]
 do
     case "$1" in
     -z|-g|-geometry|-remote|-rgb|-papercolor|-eucjp|-t1lib|-ps|-paperw|-paperh)
 	flags="$flags $1 $2"; shift ;;
+    -title) title="$2"; shift ;;
     -*) flags="$flags $1" ;;
     *.pdf|*.PDF) file="$1"; shift; pages="$@"; cat=; break ;;
     *.gz|*.Z) file="$1"; shift; pages="$@"; cat=zcat; break ;;
@@ -29,6 +31,11 @@ then
     echo >&2 "ERROR: Too many arguments"
 fi
 
+if [ x"$title" == x -a x"$tmp" != x ]
+then
+    title="zxpdf: $file"
+fi
+
 if [ -z "$cat" ]
 then
     tmp="$file"
@@ -39,7 +46,7 @@ else
 fi
 
 if [ "$tmp" == "" ]; then
-    exec xpdf $flags
+    exec xpdf -title $title $flags
 else
-    exec xpdf $flags "$tmp" $pages
+    exec xpdf -title $title $flags "$tmp" $pages
 fi

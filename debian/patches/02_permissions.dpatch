@@ -5,9 +5,9 @@
 ## DP: Remove PDF file permission checks
 
 @DPATCH@
-diff -urNad --exclude=CVS --exclude=.svn ./xpdf/PDFCore.cc /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/PDFCore.cc
---- ./xpdf/PDFCore.cc	2005-08-19 17:23:25.000000000 +1000
-+++ /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/PDFCore.cc	2005-08-19 17:24:53.000000000 +1000
+diff -urNad xpdf-3.02~/xpdf/PDFCore.cc xpdf-3.02/xpdf/PDFCore.cc
+--- xpdf-3.02~/xpdf/PDFCore.cc	2007-02-28 09:05:52.000000000 +1100
++++ xpdf-3.02/xpdf/PDFCore.cc	2007-04-24 23:43:59.000000000 +1000
 @@ -4,6 +4,8 @@
  //
  // Copyright 2004 Glyph & Cog, LLC
@@ -17,7 +17,7 @@ diff -urNad --exclude=CVS --exclude=.svn ./xpdf/PDFCore.cc /tmp/dpep-work.9JGuq6
  //========================================================================
  
  #include <aconf.h>
-@@ -1273,9 +1275,11 @@
+@@ -1563,9 +1565,11 @@
    int x0, y0, x1, y1, t;
    GString *s;
  
@@ -29,9 +29,74 @@ diff -urNad --exclude=CVS --exclude=.svn ./xpdf/PDFCore.cc /tmp/dpep-work.9JGuq6
    if ((page = findPage(pg))) {
      cvtUserToDev(pg, xMin, yMin, &x0, &y0);
      cvtUserToDev(pg, xMax, yMax, &x1, &y1);
-diff -urNad --exclude=CVS --exclude=.svn ./xpdf/pdfimages.cc /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/pdfimages.cc
---- ./xpdf/pdfimages.cc	2005-08-19 17:23:25.000000000 +1000
-+++ /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/pdfimages.cc	2005-08-19 17:24:53.000000000 +1000
+diff -urNad xpdf-3.02~/xpdf/XPDFCore.cc xpdf-3.02/xpdf/XPDFCore.cc
+--- xpdf-3.02~/xpdf/XPDFCore.cc	2007-02-28 09:05:52.000000000 +1100
++++ xpdf-3.02/xpdf/XPDFCore.cc	2007-04-24 23:46:39.000000000 +1000
+@@ -4,6 +4,8 @@
+ //
+ // Copyright 2002-2003 Glyph & Cog, LLC
+ //
++// Modified for Debian by Hamish Moffatt, 22 May 2002.
++//
+ //========================================================================
+ 
+ #include <aconf.h>
+@@ -384,11 +386,15 @@
+ #ifndef NO_TEXT_SELECT
+       if (selectULX != selectLRX &&
+ 	  selectULY != selectLRY) {
++#ifdef ENFORCE_PERMISSIONS
+ 	if (doc->okToCopy()) {
+ 	  copySelection();
+ 	} else {
+ 	  error(-1, "Copying of text from this document is not allowed.");
+ 	}
++#else
++        copySelection();
++#endif
+       }
+ #endif
+     }
+@@ -407,9 +413,11 @@
+   int pg;
+   double ulx, uly, lrx, lry;
+ 
++#ifdef ENFORCE_PERMISSIONS
+   if (!doc->okToCopy()) {
+     return;
+   }
++#endif
+   if (getSelection(&pg, &ulx, &uly, &lrx, &lry)) {
+     //~ for multithreading: need a mutex here
+     if (currentSelection) {
+diff -urNad xpdf-3.02~/xpdf/XPDFViewer.cc xpdf-3.02/xpdf/XPDFViewer.cc
+--- xpdf-3.02~/xpdf/XPDFViewer.cc	2007-02-28 09:05:52.000000000 +1100
++++ xpdf-3.02/xpdf/XPDFViewer.cc	2007-04-24 23:43:59.000000000 +1000
+@@ -4,6 +4,8 @@
+ //
+ // Copyright 2002-2003 Glyph & Cog, LLC
+ //
++// Modified for Debian by Hamish Moffatt, 22 May 2002.
++//
+ //========================================================================
+ 
+ #include <aconf.h>
+@@ -3406,10 +3408,12 @@
+   PSOutputDev *psOut;
+ 
+   doc = viewer->core->getDoc();
++#ifdef ENFORCE_PERMISSIONS
+   if (!doc->okToPrint()) {
+     error(-1, "Printing this document is not allowed.");
+     return;
+   }
++#endif
+ 
+   viewer->core->setBusyCursor(gTrue);
+ 
+diff -urNad xpdf-3.02~/xpdf/pdfimages.cc xpdf-3.02/xpdf/pdfimages.cc
+--- xpdf-3.02~/xpdf/pdfimages.cc	2007-02-28 09:05:52.000000000 +1100
++++ xpdf-3.02/xpdf/pdfimages.cc	2007-04-24 23:43:59.000000000 +1000
 @@ -4,6 +4,8 @@
  //
  // Copyright 1998-2003 Glyph & Cog, LLC
@@ -55,9 +120,9 @@ diff -urNad --exclude=CVS --exclude=.svn ./xpdf/pdfimages.cc /tmp/dpep-work.9JGu
  
    // get page range
    if (firstPage < 1)
-diff -urNad --exclude=CVS --exclude=.svn ./xpdf/pdftops.cc /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/pdftops.cc
---- ./xpdf/pdftops.cc	2005-08-19 17:23:25.000000000 +1000
-+++ /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/pdftops.cc	2005-08-19 17:24:53.000000000 +1000
+diff -urNad xpdf-3.02~/xpdf/pdftops.cc xpdf-3.02/xpdf/pdftops.cc
+--- xpdf-3.02~/xpdf/pdftops.cc	2007-02-28 09:05:52.000000000 +1100
++++ xpdf-3.02/xpdf/pdftops.cc	2007-04-24 23:43:59.000000000 +1000
 @@ -4,6 +4,8 @@
  //
  // Copyright 1996-2003 Glyph & Cog, LLC
@@ -67,7 +132,7 @@ diff -urNad --exclude=CVS --exclude=.svn ./xpdf/pdftops.cc /tmp/dpep-work.9JGuq6
  //========================================================================
  
  #include <aconf.h>
-@@ -269,12 +271,14 @@
+@@ -278,12 +280,14 @@
      goto err1;
    }
  
@@ -82,9 +147,9 @@ diff -urNad --exclude=CVS --exclude=.svn ./xpdf/pdftops.cc /tmp/dpep-work.9JGuq6
  
    // construct PostScript file name
    if (argc == 3) {
-diff -urNad --exclude=CVS --exclude=.svn ./xpdf/pdftotext.cc /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/pdftotext.cc
---- ./xpdf/pdftotext.cc	2005-08-19 17:23:25.000000000 +1000
-+++ /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/pdftotext.cc	2005-08-19 17:24:53.000000000 +1000
+diff -urNad xpdf-3.02~/xpdf/pdftotext.cc xpdf-3.02/xpdf/pdftotext.cc
+--- xpdf-3.02~/xpdf/pdftotext.cc	2007-02-28 09:05:52.000000000 +1100
++++ xpdf-3.02/xpdf/pdftotext.cc	2007-04-24 23:43:59.000000000 +1000
 @@ -4,6 +4,8 @@
  //
  // Copyright 1997-2003 Glyph & Cog, LLC
@@ -109,71 +174,3 @@ diff -urNad --exclude=CVS --exclude=.svn ./xpdf/pdftotext.cc /tmp/dpep-work.9JGu
  
    // construct text file name
    if (argc == 3) {
-diff -urNad --exclude=CVS --exclude=.svn ./xpdf/XPDFCore.cc /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/XPDFCore.cc
---- ./xpdf/XPDFCore.cc	2005-08-19 17:23:25.000000000 +1000
-+++ /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/XPDFCore.cc	2005-08-19 17:25:02.000000000 +1000
-@@ -4,6 +4,8 @@
- //
- // Copyright 2002-2003 Glyph & Cog, LLC
- //
-+// Modified for Debian by Hamish Moffatt, 22 May 2002.
-+//
- //========================================================================
- 
- #include <aconf.h>
-@@ -377,9 +379,11 @@
-   int pg;
-   double ulx, uly, lrx, lry;
- 
-+#ifdef ENFORCE_PERMISSIONS
-   if (!doc->okToCopy()) {
-     return;
-   }
-+#endif
-   if (getSelection(&pg, &ulx, &uly, &lrx, &lry)) {
-     //~ for multithreading: need a mutex here
-     if (currentSelection) {
-@@ -1108,12 +1112,18 @@
- #ifndef NO_TEXT_SELECT
- 	  if (core->selectULX != core->selectLRX &&
- 	      core->selectULY != core->selectLRY) {
-+#ifdef ENFORCE_PERMISSIONS
- 	    if (core->doc->okToCopy()) {
-+#endif
- 	      core->copySelection();
-+#ifdef ENFORCE_PERMISSIONS
- 	    } else {
- 	      error(-1, "Copying of text from this document is not allowed.");
- 	    }
-+#endif
- 	  }
-+#else
-+      core->copySelection();
- #endif
- 	}
- 	if (ok && core->hyperlinksEnabled) {
-diff -urNad --exclude=CVS --exclude=.svn ./xpdf/XPDFViewer.cc /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/XPDFViewer.cc
---- ./xpdf/XPDFViewer.cc	2005-08-19 17:23:25.000000000 +1000
-+++ /tmp/dpep-work.9JGuq6/xpdf-3.01/xpdf/XPDFViewer.cc	2005-08-19 17:24:53.000000000 +1000
-@@ -4,6 +4,8 @@
- //
- // Copyright 2002-2003 Glyph & Cog, LLC
- //
-+// Modified for Debian by Hamish Moffatt, 22 May 2002.
-+//
- //========================================================================
- 
- #include <aconf.h>
-@@ -2391,10 +2393,12 @@
-   PSOutputDev *psOut;
- 
-   doc = viewer->core->getDoc();
-+#ifdef ENFORCE_PERMISSIONS
-   if (!doc->okToPrint()) {
-     error(-1, "Printing this document is not allowed.");
-     return;
-   }
-+#endif
- 
-   viewer->core->setBusyCursor(gTrue);
- 

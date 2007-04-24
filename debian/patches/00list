@@ -1,17 +1,18 @@
 01_manpage.dpatch
 02_permissions.dpatch
-03_freetype-build.dpatch
-04_freetype-glyph.dpatch
-05_freetype-2.2.dpatch
-05_gmem.dpatch
-06_splashpath.dpatch
-07_decrypt.dpatch
-08_core_action.dpatch
-20_resize.dpatch
-23_security3.dpatch
-30_3.01pl2.dpatch
-31_fullscreen.dpatch
-32_vscroll.dpatch
+#10_add_accelerators.dpatch # doesn't work
+
+# Security fixes:
+#04_freetype-glyph.dpatch # Not obvious
+#05_gmem.dpatch # Not obvious
+#06_splashpath.dpatch # Not obvious
+#07_decrypt.dpatch # Not obvious
+#08_core_action.dpatch # Not obvious
+#23_security3.dpatch # Not obvious
+
+# Lesstif bug#377230 workaround:
 40_lesstif_copy.dpatch
 41_lesstif_cpp.dpatch
+
+# Final cleanup:
 99_autoconf.dpatch

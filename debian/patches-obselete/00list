@@ -1,0 +1,10 @@
+# Security fixes:
+04_freetype-glyph.dpatch
+05_gmem.dpatch
+06_splashpath.dpatch
+07_decrypt.dpatch
+08_core_action.dpatch
+23_security3.dpatch
+# Fix for full screen handling (bug#247602)
+31_fullscreen.patch
+32_vscroll.patch

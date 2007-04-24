@@ -3,12 +3,12 @@ Section: text
 Priority: optional
 Maintainer: Hamish Moffatt <hamish@debian.org>
 Standards-Version: 3.7.2
-Build-Depends: libt1-dev (>= 5.0.2-3), libxext-dev | xlibs-dev, libxp-dev | xlibs-dev, libxt-dev | xlibs-dev, libxpm-dev | xlibs-dev, libx11-dev | xlibs-dev, lesstif2-dev | libmotif-dev, x-dev | xlibs-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaper-dev | libpaperg-dev, pkg-config, dpatch, automake1.9, autoconf, debhelper (>= 4)
+Build-Depends: libt1-dev (>= 5.0.2-3), libxext-dev, libxp-dev, libxt-dev, libxpm-dev, libx11-dev, lesstif2-dev | libmotif-dev, x-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaper-dev | libpaperg-dev, pkg-config, dpatch, automake1.9, autoconf
 Build-Conflicts: libttf-dev, libstroke0-dev, autoconf2.13
 
 Package: xpdf
 Architecture: all
-Depends: xpdf-reader (= ${Source-Version}), xpdf-utils (= ${Source-Version}), xpdf-common (= ${Source-Version})
+Depends: xpdf-reader, xpdf-utils, xpdf-common
 Conflicts: xpdf-i (<= 0.90-8)
 Replaces: xpdf-i (<= 0.90-8)
 Description: Portable Document Format (PDF) suite
@@ -36,7 +36,7 @@ Description: Portable Document Format (PDF) suite -- common files
 
 Package: xpdf-reader
 Architecture: any
-Depends: ${shlibs:Depends}, gsfonts (>= 6.0-1), xpdf-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, gsfonts (>= 6.0-1), xpdf-common (>= ${source:Version}), xpdf-common (<< ${source:Version}.1~)
 Provides: pdf-viewer, postscript-preview
 Conflicts: xpdf-i (<= 0.90-8), xpdf (<= 0.93-6)
 Suggests: www-browser
@@ -56,7 +56,7 @@ Description: Portable Document Format (PDF) suite -- viewer for X11
 
 Package: xpdf-utils
 Architecture: any
-Depends: ${shlibs:Depends}, xpdf-common (= ${Source-Version})
+Depends: ${shlibs:Depends}, gsfonts (>= 6.0-1), xpdf-common (>= ${source:Version}), xpdf-common (<< ${source:Version}.1~)
 Provides: pdf-viewer, postscript-preview, poppler-utils
 Conflicts: xpdf-i (<= 0.90-8), xpdf (<= 0.93-6), poppler-utils
 Replaces: poppler-utils

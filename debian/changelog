@@ -1,3 +1,30 @@
+xpdf (3.02-1) unstable; urgency=low
+
+  * New upstream release (closes: #413611)
+    * Adds PDF 1.6 and 1.7 support (closes: #320509, #329372)
+    * Fixes segfault on Postscript conversion (in xpdf or pdftops)
+      with libc6 2.5-1, though probably also fixed in libc6 already
+      (closes: #419618)
+    * Improved rendering of some PDFs (closes: #409759, #242294, #280767)
+    * Improved full screen handling (obseletes patches incorporated
+      in 3.01-9; 31_fullscreen.dpatch, 32_vscroll.dpatch)
+    * Adds new options to the xpdfrc(5) (closes: #384024)
+    * Fixed handling of some broken PDFs (closes: #330711)
+    * On-the-fly switch to full screen is possible (closes: #281479)
+    * Adds configurable keybindings
+
+  * Patched Latin2 unicode map to include IJ sequences; thanks to
+    Petr Peringer for the patch (closes: #402757)
+  * Fix reference to /etc/xpdf/xpdf-* -> /etc/xpdf/xpdfrc-* in
+    update-xpdfrc(8) (closes: #402852)
+  * Added -title support to zxpdf (closes: #338096)
+  * Updated debian/copyright (closes: #407888)
+  * Modified xpdfrc(5) to note that options are case sensitive (closes:
+    #417979)
+  * Fix package relationships so that package is bin-NMU safe
+
+ -- Hamish Moffatt <hamish@debian.org>  Wed, 25 Apr 2007 02:42:16 +1000
+
 xpdf (3.01-9) unstable; urgency=low
 
   * Incorporate patches from Eugeniy Meshcheryakov and Junichi Uekawa to
