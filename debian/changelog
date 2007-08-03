@@ -1,3 +1,25 @@
+xpdf (3.00-13.7) oldstable-security; urgency=high
+
+  * Fix integer overflow in stream predictor (CVE-2007-3387).
+
+ -- Moritz Muehlenhoff <jmm@debian.org>  Fri,  3 Aug 2007 17:13:32 +0200
+
+xpdf (3.00-13.6) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Backported upstream patch by Derek Noonburg to fix several
+    vulnerabilities [splash/SplashXPathScanner.cc, xpdf/JBIG2Stream.cc,
+    xpdf/Stream.h, goo/gmem.c]
+
+ -- Martin Schulze <joey@infodrom.org>  Wed, 15 Feb 2006 08:29:48 +0100
+
+xpdf (3.00-13.5) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Ported patch to fix buffer overflow [splash/Splash.cc, CVE-2006-0301]
+
+ -- Martin Schulze <joey@infodrom.org>  Sat,  4 Feb 2006 17:42:24 +0100
+
 xpdf (3.00-13.4) stable-security; urgency=high
 
   * Non-maintainer upload by the Security Team

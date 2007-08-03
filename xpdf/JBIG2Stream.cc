@@ -683,7 +683,7 @@ JBIG2Bitmap::JBIG2Bitmap(Guint segNumA, int wA, int hA):
   h = hA;
   line = (wA + 7) >> 3;
 
-  if (h < 0 || line <= 0 || h >= (INT_MAX-1) / line)
+  if (w <= 0 || h <= 0 || line <= 0 || h >= (INT_MAX - 1) / line)
     data = NULL;
   else {
     // need to allocate one extra guard byte for use in combine()
@@ -2259,6 +2259,15 @@ void JBIG2Stream::readHalftoneRegionSeg(Guint segNum, GBool imm,
       !readLong(&gridX) || !readLong(&gridY) ||
       !readUWord(&stepX) || !readUWord(&stepY)) {
     goto eofError;
+  }
+
+  if (w == 0 || h == 0 || w >= INT_MAX / h) {
+    error(getPos(), "Bad bitmap size in JBIG2 halftone segment");
+    return;
+  }
+  if (gridH == 0 || gridW >= INT_MAX / gridH) {
+    error(getPos(), "Bad grid size in JBIG2 halftone segment");
+    return;
   }
 
   // get pattern dictionary

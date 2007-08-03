@@ -33,6 +33,7 @@
 #include "JBIG2Stream.h"
 #include "JPXStream.h"
 #include "Stream-CCITT.h"
+#include "GfxState.h"
 
 #ifdef __DJGPP__
 static GBool setDJSYSFLAGS = gFalse;
@@ -435,7 +436,10 @@ StreamPredictor::StreamPredictor(Stream *strA, int predictorA,
   }
   pixBytes = (nComps * nBits + 7) >> 3;
   rowBytes = ((totalBits + 7) >> 3) + pixBytes;
-  if (rowBytes < 0) {
+  if (nComps > gfxColorMaxComps ||
+      nBits > 16 ||
+      width >= INT_MAX / nComps ||      // check for overflow in nVals 
+      nVals >= (INT_MAX - 7) / nBits) { // check for overflow in rowBytes
     return;
   }
   predLine = (Guchar *)gmalloc(rowBytes);
