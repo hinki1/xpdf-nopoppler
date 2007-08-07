@@ -16,3 +16,6 @@
 
 # Final cleanup:
 99_autoconf.dpatch
+
+# Fix CVE-2007-3387
+post-3.5.7-kdegraphics-CVE-2007-3387.diff.dpatch
