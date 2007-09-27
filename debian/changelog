@@ -1,3 +1,13 @@
+xpdf (3.02-1.2) unstable; urgency=high
+
+  * Non-maintainer upload by testing security team.
+  * Removed post-3.5.7-kdegraphics-CVE-2007-3387.diff.dpatch and
+    created fix-CVE-2007-3387_CVE-2007-5049.dpatch to have a fix
+    for CVE-2007-3387 and a buffer overflow in GetNextLine()
+    (CVE-2007-5049) since they are related (Closes: #443906).
+
+ -- Nico Golde <nion@debian.org>  Thu, 27 Sep 2007 12:05:46 +0200
+
 xpdf (3.02-1.1) unstable; urgency=high
 
   * Non-maintainer upload with permission of the maintainer
