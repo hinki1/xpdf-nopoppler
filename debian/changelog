@@ -1,3 +1,17 @@
+xpdf (3.02-1.3) unstable; urgency=high
+
+  * Non-maintainer upload by testing security team.
+  * Included fix-CVE-2007-5393_2007-5392_2007-4352.dpatch to address the
+    following security issues (Closes: #450629)
+    - CVE-2007-5393 buffer overflow in the CCITTFaxStream::lookChar leading
+      to arbitrary code execution via a crafted pdf file.
+    - CVE-2007-5392 integer overflow in the DCTStream::reset resulting in a
+      heap based buffer overflow allows code execution.
+    - CVE-2007-4352 array index error in DCTStream::readProgressiveDataUnit
+      leads to memory corruption and possibly arbitrary code execution.
+
+ -- Nico Golde <nion@debian.org>  Fri, 09 Nov 2007 09:22:19 +0100
+
 xpdf (3.02-1.2) unstable; urgency=high
 
   * Non-maintainer upload by testing security team.
