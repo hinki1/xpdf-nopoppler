@@ -22,3 +22,19 @@ fix-CVE-2007-3387_CVE-2007-5049.dpatch
 
 # Fix CVE-2007-5393, CVE-2007-5392, CVE-2007-4352
 fix-CVE-2007-5393_2007-5392_2007-4352.dpatch
+
+# Fix http://bugs.debian.org/462544:
+# segmentation fault in image handling by off-by-one error
+fix-462544.dpatch
+
+# Fix http://bugs.debian.org/437725:
+# segmentation fault when pressing Ctrl-W in full screen mode
+fix-437725.dpatch
+
+# Fix http://bugs.debian.org/479467;
+# segmentation fault when pressing g in full screen mode
+fix-479467.dpatch
+
+# Fix http://bugs.debian.org/444648:
+# Do proper PS stream encoding on 64 bit architectures (#444648)
+fix-444648.dpatch
