@@ -1,6 +1,6 @@
 ?package(xpdf-reader):\
 	needs="x11" \
-	section="Apps/Viewers" \
+	section="Applications/Viewers" \
 	command="/usr/bin/xpdf" \
 	title="Xpdf" \
 	hints="Documents" \

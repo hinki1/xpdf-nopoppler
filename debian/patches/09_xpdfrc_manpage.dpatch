@@ -1,0 +1,27 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 09_xpdfrc_manpage.dpatch by  <andy@andrewprice.me.uk>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fixes the path to the global xpdfrc in the xpdfrc manpage.
+
+@DPATCH@
+--- a/doc/xpdfrc.5
++++ b/doc/xpdfrc.5
+@@ -7,7 +7,7 @@
+ .I .xpdfrc
+ file in your home directory, it will be read.  Otherwise, a
+ system-wide configuration file will be read from
+-.IR /usr/local/etc/xpdfrc ,
++.IR /etc/xpdf/xpdfrc ,
+ if it exists.  (This is its default location; depending on build
+ options, it may be placed elsewhere.)  On Win32 systems, the
+ .I xpdfrc
+@@ -599,7 +599,7 @@
+ .fi
+ .SH FILES
+ .TP
+-.B /usr/local/etc/xpdfrc
++.B /etc/xpdf/xpdfrc
+ This is the default location for the system-wide configuration file.
+ Depending on build options, it may be placed elsewhere.
+ .TP

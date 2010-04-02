@@ -1,14 +1,15 @@
 Source: xpdf
 Section: text
 Priority: optional
-Maintainer: Hamish Moffatt <hamish@debian.org>
-Standards-Version: 3.7.2
-Build-Depends: libt1-dev (>= 5.0.2-3), libxext-dev, libxp-dev, libxt-dev, libxpm-dev, libx11-dev, lesstif2-dev | libmotif-dev, x-dev, debhelper (>= 4.2.21), libfreetype6-dev (>= 2.1.2-1), libpaper-dev | libpaperg-dev, pkg-config, dpatch, automake1.9, autoconf
+Maintainer: Michael Gilbert <michael.s.gilbert@gmail.com>
+Standards-Version: 3.8.4
+Build-Depends: autoconf, automake, debhelper (>= 5), lesstif2-dev (>= 1:0.95.0) | libmotif-dev, libfreetype6-dev (>= 2.1.2), libpaper-dev | libpaperg-dev, libt1-dev (>= 5.0.2), libx11-dev, libxext-dev, libxp-dev, libxpm-dev, libxt-dev, pkg-config, x11proto-core-dev
 Build-Conflicts: libttf-dev, libstroke0-dev, autoconf2.13
+Homepage: http://www.foolabs.com/xpdf/
 
 Package: xpdf
 Architecture: all
-Depends: xpdf-reader, xpdf-utils, xpdf-common
+Depends: xpdf-reader, xpdf-utils, xpdf-common, ${misc:Depends}
 Conflicts: xpdf-i (<= 0.90-8)
 Replaces: xpdf-i (<= 0.90-8)
 Description: Portable Document Format (PDF) suite
@@ -24,6 +25,7 @@ Description: Portable Document Format (PDF) suite
 
 Package: xpdf-common
 Architecture: all
+Depends: ${misc:Depends}
 Conflicts: xpdf (<= 0.93-6), xpdf-cyrillic, xpdf-greek, xpdf-hebrew, xpdf-latin2, xpdf-thai, xpdf-turkish
 Replaces: xpdf-cyrillic, xpdf-greek, xpdf-hebrew, xpdf-latin2, xpdf-thai, xpdf-turkish
 Suggests: xpdf-reader | xpdf-utils
@@ -36,7 +38,7 @@ Description: Portable Document Format (PDF) suite -- common files
 
 Package: xpdf-reader
 Architecture: any
-Depends: ${shlibs:Depends}, gsfonts (>= 6.0-1), xpdf-common (>= ${source:Version}), xpdf-common (<< ${source:Version}.1~)
+Depends: ${shlibs:Depends}, gsfonts (>= 6.0-1), xpdf-common (>= ${source:Version}), xpdf-common (<< ${source:Version}.1~), xpdf-utils | poppler-utils, ${misc:Depends}
 Provides: pdf-viewer, postscript-preview
 Conflicts: xpdf-i (<= 0.90-8), xpdf (<= 0.93-6)
 Suggests: www-browser
@@ -56,7 +58,7 @@ Description: Portable Document Format (PDF) suite -- viewer for X11
 
 Package: xpdf-utils
 Architecture: any
-Depends: ${shlibs:Depends}, gsfonts (>= 6.0-1), xpdf-common (>= ${source:Version}), xpdf-common (<< ${source:Version}.1~)
+Depends: ${shlibs:Depends}, gsfonts (>= 6.0-1), xpdf-common (>= ${source:Version}), xpdf-common (<< ${source:Version}.1~), ${misc:Depends}
 Provides: pdf-viewer, postscript-preview, poppler-utils
 Conflicts: xpdf-i (<= 0.90-8), xpdf (<= 0.93-6), poppler-utils
 Replaces: poppler-utils
@@ -72,4 +74,3 @@ Description: Portable Document Format (PDF) suite -- utilities
  .
  To view PDF files, see the xpdf-reader package. That package
  also contains pdftoppm (PDF to Portable Bitmap converter).
-

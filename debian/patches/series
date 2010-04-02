@@ -11,11 +11,11 @@
 #23_security3.dpatch # Not obvious
 
 # Lesstif bug#377230 workaround:
-40_lesstif_copy.dpatch
-41_lesstif_cpp.dpatch
+#40_lesstif_copy.dpatch
+#41_lesstif_cpp.dpatch
 
 # Final cleanup:
-99_autoconf.dpatch
+#99_autoconf.dpatch
 
 # Fix CVE-2007-3387 and CVE-2007-5049
 fix-CVE-2007-3387_CVE-2007-5049.dpatch
@@ -38,3 +38,17 @@ fix-479467.dpatch
 # Fix http://bugs.debian.org/444648:
 # Do proper PS stream encoding on 64 bit architectures (#444648)
 fix-444648.dpatch
+
+#Fix CVE-2009-0146,0147,0165,0166,0799,0800,1179-1183
+fix-CVE-2009-0146,0147,0165,0166,0799,0800,1179-1183.dpatch
+80-fix-hypens-in-manpages.patch
+09_xpdfrc_manpage.dpatch
+bug_408502_message_5.mbox
+xpdf-zoom-height.patch
+#slideshow.patch.2
+
+fix-CVE-2009-3603+CVE-2009-1188.patch
+fix-CVE-2009-3604.patch
+fix-CVE-2009-3606.patch
+fix-CVE-2009-3608.patch
+fix-CVE-2009-3609.patch

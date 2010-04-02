@@ -1,13 +1,12 @@
 #!/usr/bin/make -f
-# 							-*- makefile -*-
+# -*- makefile -*-
 # debian.rules file for the Debian GNU/Linux xpdf package
 # Copyright 1996,1997,1998 by Dirk Eddelbuettel <edd@debian.org>
 # Copyright 1998-2006 by Hamish Moffatt <hamish@debian.org>
 
-build: build-stamp
-build-stamp: patch
+configure: configure-stamp
+configure-stamp:
 	dh_testdir
-	#CC=gcc-4.0 CXX=g++-4.0 ./configure
 	./configure \
 		--prefix=/usr \
 		--sysconfdir=/etc/xpdf \
@@ -17,21 +16,28 @@ build-stamp: patch
 		--enable-opi \
 		--enable-wordlist \
 		--enable-multithreaded \
-		--with-Xm-includes=$(shell pwd)/lesstif \
+		--with-Xm-includes=/usr/include/Xm \
 		--with-freetype2-includes=/usr/include/freetype2 \
 		--with-t1-includes=/usr/include
-	$(MAKE) 
-	touch build-stamp
+	touch $@
 
-clean: clean1 unpatch
+
+build: build-stamp
+build-stamp: configure-stamp
+	dh_testdir
+	$(MAKE) 
+	touch $@
+
+clean: clean1
 clean1:
 	dh_testdir
-	-$(MAKE) -i distclean
-	rm -rf *~ debian/*~ debian/files* build-stamp aconf.h
-	rm -rf fofi/Makefile splash/Makefile
+	[ ! -f Makefile ] || $(MAKE) -i distclean
+	rm -f build-stamp configure-stamp
+	rm -rf *~ debian/*~ debian/files* aconf.h
+	rm -f fofi/Makefile splash/Makefile config.log
 	dh_clean
 
-binary-indep:   # Nothing to build
+binary-indep:
 	dh_testdir
 	dh_installdirs -i
 	ln -sf xpdf-common debian/xpdf/usr/share/doc/xpdf
@@ -57,7 +63,7 @@ binary-indep:   # Nothing to build
 	dh_md5sums -i
 	dh_builddeb -i
 
-binary-arch:    build
+binary-arch: build
 	dh_testdir
 
 	dh_installdirs -a
@@ -88,7 +94,6 @@ binary-arch:    build
 	dh_installmime -pxpdf-reader
 	dh_installmenu -pxpdf-reader
 	dh_strip -a
-	dh_desktop -a
 	dh_compress -a
 	dh_fixperms -a
 	dh_installdeb -a
@@ -97,14 +102,4 @@ binary-arch:    build
 	dh_md5sums -a
 	dh_builddeb -a
 
-patch: patch-stamp
-patch-stamp:
-	dpatch apply-all
-	#dpatch call-all -a=pkg-info >patch-stamp
-	touch patch-stamp
-
-unpatch:
-	dpatch deapply-all
-	rm -rf patch-stamp debian/patched
-
-binary:		binary-indep binary-arch
+binary:	binary-indep binary-arch

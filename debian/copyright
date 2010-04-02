@@ -1,4 +1,3 @@
-
 This is Debian GNU/Linux's prepackaged version of the 'xpdf' viewer written
 by Derek B. Noonburg. This package was original built by
 Dirk Eddelbuettel <edd@qed.econ.queensu.ca> and since 1998 has been
@@ -38,5 +37,4 @@ Glyph & Cog web site:
 
     http://www.glyphandcog.com/
 
-The full text of the GPL can be found in /usr/share/common-licenses/GPL.
-
+The full text of the GPL can be found in /usr/share/common-licenses/GPL-2.

@@ -5,10 +5,9 @@
 ## DP: Fix segmentation fault when pressing g in full screen mode
 
 @DPATCH@
-diff -ruN xpdf-3.02.old/xpdf/XPDFViewer.cc xpdf-3.02.fix/xpdf/XPDFViewer.cc
---- xpdf-3.02.old/xpdf/XPDFViewer.cc	2007-02-27 23:05:52.000000000 +0100
-+++ xpdf-3.02.fix/xpdf/XPDFViewer.cc	2008-05-04 21:29:34.000000000 +0200
-@@ -834,6 +834,9 @@
+--- a/xpdf/XPDFViewer.cc
++++ b/xpdf/XPDFViewer.cc
+@@ -839,6 +839,9 @@
  
  void XPDFViewer::cmdFocusToPageNum(GString *args[], int nArgs,
  				   XEvent *event) {

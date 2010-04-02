@@ -5,9 +5,9 @@
 ## DP: Fix segmentation fault in image handling
 
 @DPATCH@
---- xpdf-3.02/xpdf/SplashOutputDev.cc	2007-02-27 23:05:52.000000000 +0100
-+++ xpdf-3.02.new/xpdf/SplashOutputDev.cc	2008-02-17 17:28:46.000000000 +0100
-@@ -2475,14 +2461,14 @@
+--- a/xpdf/SplashOutputDev.cc
++++ b/xpdf/SplashOutputDev.cc
+@@ -2475,14 +2475,14 @@
    tx = (int)floor(xMin);
    if (tx < 0) {
      tx = 0;

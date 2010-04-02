@@ -5,9 +5,8 @@
 ## DP: Manual page updates
 
 @DPATCH@
-diff -urNad xpdf-3.02~/doc/pdffonts.1 xpdf-3.02/doc/pdffonts.1
---- xpdf-3.02~/doc/pdffonts.1	2007-04-25 01:26:52.000000000 +1000
-+++ xpdf-3.02/doc/pdffonts.1	2007-04-25 01:26:55.000000000 +1000
+--- a/doc/pdffonts.1
++++ b/doc/pdffonts.1
 @@ -73,9 +73,7 @@
  .SH CONFIGURATION FILE
  Pdffonts reads a configuration file at startup.  It first tries to
@@ -19,9 +18,8 @@ diff -urNad xpdf-3.02~/doc/pdffonts.1 xpdf-3.02/doc/pdffonts.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-diff -urNad xpdf-3.02~/doc/pdfimages.1 xpdf-3.02/doc/pdfimages.1
---- xpdf-3.02~/doc/pdfimages.1	2007-04-25 01:26:52.000000000 +1000
-+++ xpdf-3.02/doc/pdfimages.1	2007-04-25 01:26:55.000000000 +1000
+--- a/doc/pdfimages.1
++++ b/doc/pdfimages.1
 @@ -12,9 +12,9 @@
  saves images from a Portable Document Format (PDF) file as Portable
  Pixmap (PPM), Portable Bitmap (PBM), or JPEG files.
@@ -45,9 +43,8 @@ diff -urNad xpdf-3.02~/doc/pdfimages.1 xpdf-3.02/doc/pdfimages.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-diff -urNad xpdf-3.02~/doc/pdfinfo.1 xpdf-3.02/doc/pdfinfo.1
---- xpdf-3.02~/doc/pdfinfo.1	2007-04-25 01:26:52.000000000 +1000
-+++ xpdf-3.02/doc/pdfinfo.1	2007-04-25 01:26:55.000000000 +1000
+--- a/doc/pdfinfo.1
++++ b/doc/pdfinfo.1
 @@ -71,8 +71,7 @@
  .SH CONFIGURATION FILE
  Pdfinfo reads a configuration file at startup.  It first tries to find
@@ -58,9 +55,8 @@ diff -urNad xpdf-3.02~/doc/pdfinfo.1 xpdf-3.02/doc/pdfinfo.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-diff -urNad xpdf-3.02~/doc/pdftoppm.1 xpdf-3.02/doc/pdftoppm.1
---- xpdf-3.02~/doc/pdftoppm.1	2007-04-25 01:26:52.000000000 +1000
-+++ xpdf-3.02/doc/pdftoppm.1	2007-04-25 01:26:55.000000000 +1000
+--- a/doc/pdftoppm.1
++++ b/doc/pdftoppm.1
 @@ -24,9 +24,7 @@
  .SH CONFIGURATION FILE
  Pdftoppm reads a configuration file at startup.  It first tries to
@@ -72,9 +68,8 @@ diff -urNad xpdf-3.02~/doc/pdftoppm.1 xpdf-3.02/doc/pdftoppm.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-diff -urNad xpdf-3.02~/doc/pdftops.1 xpdf-3.02/doc/pdftops.1
---- xpdf-3.02~/doc/pdftops.1	2007-04-25 01:26:52.000000000 +1000
-+++ xpdf-3.02/doc/pdftops.1	2007-04-25 01:26:55.000000000 +1000
+--- a/doc/pdftops.1
++++ b/doc/pdftops.1
 @@ -31,8 +31,7 @@
  .SH CONFIGURATION FILE
  Pdftops reads a configuration file at startup.  It first tries to find
@@ -85,9 +80,8 @@ diff -urNad xpdf-3.02~/doc/pdftops.1 xpdf-3.02/doc/pdftops.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-diff -urNad xpdf-3.02~/doc/pdftotext.1 xpdf-3.02/doc/pdftotext.1
---- xpdf-3.02~/doc/pdftotext.1	2007-04-25 01:26:52.000000000 +1000
-+++ xpdf-3.02/doc/pdftotext.1	2007-04-25 01:26:55.000000000 +1000
+--- a/doc/pdftotext.1
++++ b/doc/pdftotext.1
 @@ -28,9 +28,7 @@
  .SH CONFIGURATION FILE
  Pdftotext reads a configuration file at startup.  It first tries to
@@ -99,9 +93,8 @@ diff -urNad xpdf-3.02~/doc/pdftotext.1 xpdf-3.02/doc/pdftotext.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-diff -urNad xpdf-3.02~/doc/xpdf.1 xpdf-3.02/doc/xpdf.1
---- xpdf-3.02~/doc/xpdf.1	2007-04-25 01:26:52.000000000 +1000
-+++ xpdf-3.02/doc/xpdf.1	2007-04-25 01:26:55.000000000 +1000
+--- a/doc/xpdf.1
++++ b/doc/xpdf.1
 @@ -7,10 +7,15 @@
  [options]
  .RI [ PDF-file
@@ -243,9 +236,8 @@ diff -urNad xpdf-3.02~/doc/xpdf.1 xpdf-3.02/doc/xpdf.1
  .PP
  .RS
  xpdf -remote myServer another.pdf 9
-diff -urNad xpdf-3.02~/doc/xpdfrc.5 xpdf-3.02/doc/xpdfrc.5
---- xpdf-3.02~/doc/xpdfrc.5	2007-02-28 09:05:51.000000000 +1100
-+++ xpdf-3.02/doc/xpdfrc.5	2007-04-25 01:28:30.000000000 +1000
+--- a/doc/xpdfrc.5
++++ b/doc/xpdfrc.5
 @@ -19,6 +19,9 @@
  .PP
  The following sections list all of the configuration options, sorted

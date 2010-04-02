@@ -5,8 +5,8 @@
 ## DP: Do proper PS stream encoding on 64 bit architectures
 
 @DPATCH@
---- a/xpdf/Stream.cc	2008-09-04 11:57:18.000000000 +0000
-+++ b/xpdf/Stream.cc	2008-09-04 12:33:13.000000000 +0000
+--- a/xpdf/Stream.cc
++++ b/xpdf/Stream.cc
 @@ -4514,7 +4514,7 @@
  GBool ASCII85Encoder::fillBuf() {
    Gulong t;

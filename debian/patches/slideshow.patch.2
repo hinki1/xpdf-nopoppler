@@ -1,0 +1,349 @@
+diff -u xpdf-3.00/doc/xpdf.1 xpdf-3.00/doc/xpdf.1
+--- xpdf-3.00/doc/xpdf.1
++++ xpdf-3.00/doc/xpdf.1
+@@ -173,12 +173,24 @@
+ .B \-reload
+ Reload xpdf remote server window (with -remote only).
+ .TP
++.B \-next
++Display next page in xpdf remote server window (with -remote only).
++.TP
++.B \-prev
++Display previous page in xpdf remote server window (with -remote only).
++.TP
+ .B \-raise
+ Raise xpdf remote server window (with -remote only).
+ .TP
+ .B \-quit
+ Kill xpdf remote server (with -remote only).
+ .TP
++.B \-loop
++Wrap to first page after the last.
++.TP
++.B \-slidedelay
++Delay in seconds for slideshow in -fullscreen mode.
++.TP
+ .B \-cmd
+ Print commands as they're executed (useful for debugging).
+ .RB "[config file: " printCommands ]
+diff -u xpdf-3.00/xpdf/XPDFCore.cc xpdf-3.00/xpdf/XPDFCore.cc
+--- xpdf-3.00/xpdf/XPDFCore.cc
++++ xpdf-3.00/xpdf/XPDFCore.cc
+@@ -105,6 +105,7 @@
+ 
+ XPDFCore::XPDFCore(Widget shellA, Widget parentWidgetA,
+ 		   SplashRGB8 paperColorA, GBool fullScreenA,
++		   GBool loopA, int slideDelayA,
+ 		   GBool reverseVideo, GBool installCmap, int rgbCubeSize) {
+   GString *initialZoom;
+   SplashColor paperColor2;
+@@ -118,6 +119,8 @@
+ 
+   paperColor = paperColorA;
+   fullScreen = fullScreenA;
++  loop = loopA;
++  slideDelay = slideDelayA;
+ 
+   // for some reason, querying XmNvisual doesn't work (even if done
+   // after the window is mapped)
+@@ -617,9 +620,9 @@
+   if (!doc || doc->getNumPages() == 0) {
+     return;
+   }
+-  if (page < doc->getNumPages()) {
++  if (page < doc->getNumPages() || loop) {
+     if ((pg = page + inc) > doc->getNumPages()) {
+-      pg = doc->getNumPages();
++      pg = loop ? 1 : doc->getNumPages();
+     }
+     displayPage(pg, zoom, rotate, top, gTrue);
+   } else {
+@@ -633,7 +636,7 @@
+   if (!doc || doc->getNumPages() == 0) {
+     return;
+   }
+-  if (page > 1) {
++  if (page > 1 || loop) {
+     if (!fullScreen && bottom) {
+       scrollY = out->getBitmapHeight() - drawAreaHeight;
+       if (scrollY < 0) {
+@@ -642,7 +645,7 @@
+       // displayPage will call updateScrollBars()
+     }
+     if ((pg = page - dec) < 1) {
+-      pg = 1;
++      pg = loop ? doc->getNumPages() : 1;
+     }
+     displayPage(pg, zoom, rotate, top, gTrue);
+   } else {
+diff -u xpdf-3.00/xpdf/XPDFViewer.cc xpdf-3.00/xpdf/XPDFViewer.cc
+--- xpdf-3.00/xpdf/XPDFViewer.cc
++++ xpdf-3.00/xpdf/XPDFViewer.cc
+@@ -17,6 +17,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <ctype.h>
++#include <signal.h>
+ #include <X11/cursorfont.h>
+ #ifdef HAVE_X11_XPM_H
+ #include <X11/xpm.h>
+@@ -112,6 +113,17 @@
+ 
+ //------------------------------------------------------------------------
+ 
++static XPDFViewer *alarm_viewer = NULL;
++static int alarm_slideDelay = 0;
++
++void alarm_hander(int sig) {
++  if(alarm_viewer)
++    alarm_viewer->next();
++  alarm(alarm_slideDelay);
++}
++
++//------------------------------------------------------------------------
++
+ XPDFViewer::XPDFViewer(XPDFApp *appA, GString *fileName,
+ 		       int pageA, GString *destName,
+ 		       GString *ownerPassword, GString *userPassword) {
+@@ -178,6 +190,13 @@
+     displayPage(pg, z, core->getRotate(), gTrue, gTrue);
+   }
+ 
++  if(app->getSlideDelay()) {
++    alarm_viewer = this;
++    alarm_slideDelay = app->getSlideDelay();
++    signal(SIGALRM, alarm_hander);
++    alarm(app->getSlideDelay());
++  }
++
+   ok = gTrue;
+ }
+ 
+@@ -269,6 +288,20 @@
+   displayPage(pg, core->getZoom(), core->getRotate(), gFalse, gFalse);
+ }
+ 
++void XPDFViewer::next() { /* callback for -remove -next */
++  if (!core->getDoc()) {
++    return;
++  }
++  core->gotoNextPage(1, gTrue);
++}
++
++void XPDFViewer::prev() { /* callback for -remove -prev */
++  if (!core->getDoc()) {
++    return;
++  }
++  core->gotoPrevPage(1, gTrue, gFalse);
++}
++
+ void XPDFViewer::displayPage(int pageA, double zoomA, int rotateA,
+ 			     GBool scrollToTop, GBool addToHist) {
+   core->displayPage(pageA, zoomA, rotateA, scrollToTop, addToHist);
+@@ -815,7 +848,8 @@
+ 
+     // core
+     core = new XPDFCore(win, form, app->getPaperRGB(),
+-			app->getFullScreen(), app->getReverseVideo(),
++			app->getFullScreen(), app->getLoop(), app->getSlideDelay(),
++			app->getReverseVideo(),
+ 			app->getInstallCmap(), app->getRGBCubeSize());
+     core->setUpdateCbk(&updateCbk, this);
+     core->setActionCbk(&actionCbk, this);
+@@ -873,7 +907,8 @@
+ 
+     // core
+     core = new XPDFCore(win, panedWin, app->getPaperRGB(),
+-			app->getFullScreen(), app->getReverseVideo(),
++			app->getFullScreen(), app->getLoop(), app->getSlideDelay(),
++			app->getReverseVideo(),
+ 			app->getInstallCmap(), app->getRGBCubeSize());
+     core->setUpdateCbk(&updateCbk, this);
+     core->setActionCbk(&actionCbk, this);
+diff -u xpdf-3.00/debian/changelog xpdf-3.00/debian/changelog
+--- xpdf-3.00/debian/changelog
++++ xpdf-3.00/debian/changelog
+@@ -1,3 +1,9 @@
++xpdf (3.00-13slideshow.1) unstable; urgency=low
++
++  * Patch for -slidedelay, -loop, -prev, and -next options.
++
++ -- Christoph Berg <cb@df7cb.de>  Sat, 21 May 2005 13:21:40 +0200
++
+ xpdf (3.00-13) unstable; urgency=low
+ 
+   * SECURITY UPDATE: fix buffer overflow for PDF documents with an /Encrypt
+only in patch2:
+unchanged:
+--- xpdf-3.00.orig/xpdf/XPDFApp.cc
++++ xpdf-3.00/xpdf/XPDFApp.cc
+@@ -331,6 +331,18 @@
+   XFlush(display);
+ }
+ 
++void XPDFApp::remoteNext() {
++  XChangeProperty(display, remoteXWin, remoteAtom, remoteAtom, 8,
++		  PropModeReplace, (Guchar *)"n", 2);
++  XFlush(display);
++}
++
++void XPDFApp::remotePrev() {
++  XChangeProperty(display, remoteXWin, remoteAtom, remoteAtom, 8,
++		  PropModeReplace, (Guchar *)"p", 2);
++  XFlush(display);
++}
++
+ void XPDFApp::remoteQuit() {
+   XChangeProperty(display, remoteXWin, remoteAtom, remoteAtom, 8,
+ 		  PropModeReplace, (Guchar *)"q", 2);
+@@ -395,6 +407,14 @@
+   } else if (cmd[0] == 'l' || cmd[0] == 'L') {
+     app->remoteViewer->reloadFile();
+ 
++  // next
++  } else if (cmd[0] == 'n') {
++    app->remoteViewer->next();
++
++  // prev
++  } else if (cmd[0] == 'p') {
++    app->remoteViewer->prev();
++
+   // quit
+   } else if (cmd[0] == 'q') {
+     app->quit();
+only in patch2:
+unchanged:
+--- xpdf-3.00.orig/xpdf/XPDFApp.h
++++ xpdf-3.00/xpdf/XPDFApp.h
+@@ -57,6 +57,8 @@
+   void remoteOpenAtDest(GString *fileName, GString *dest, GBool raise);
+   void remoteReload(GBool raise);
+   void remoteRaise();
++  void remoteNext();
++  void remotePrev();
+   void remoteQuit();
+ 
+   //----- resource/option values
+@@ -71,6 +73,10 @@
+   GBool getViKeys() { return viKeys; }
+   void setFullScreen(GBool fullScreenA) { fullScreen = fullScreenA; }
+   GBool getFullScreen() { return fullScreen; }
++  void setSlideDelay(int slideDelayA) { slideDelay = slideDelayA; }
++  GBool getSlideDelay() { return slideDelay; }
++  void setLoop(GBool loopA) { loop = loopA; }
++  GBool getLoop() { return loop; }
+ 
+   XtAppContext getAppContext() { return appContext; }
+   Widget getAppShell() { return appShell; }
+@@ -103,6 +109,8 @@
+   GString *initialZoom;
+   GBool viKeys;
+   GBool fullScreen;
++  int slideDelay;
++  GBool loop;
+ };
+ 
+ #endif
+only in patch2:
+unchanged:
+--- xpdf-3.00.orig/xpdf/XPDFCore.h
++++ xpdf-3.00/xpdf/XPDFCore.h
+@@ -88,6 +88,7 @@
+   // Create viewer core inside <parentWidgetA>.
+   XPDFCore(Widget shellA, Widget parentWidgetA,
+ 	   SplashRGB8 paperColorA, GBool fullScreenA,
++	   GBool loopA, int slideDelayA,
+ 	   GBool reverseVideo, GBool installCmap, int rgbCubeSize);
+ 
+   ~XPDFCore();
+@@ -231,6 +232,8 @@
+ 
+   SplashRGB8 paperColor;
+   GBool fullScreen;
++  GBool loop;
++  int slideDelay;
+ 
+   Display *display;
+   int screenNum;
+only in patch2:
+unchanged:
+--- xpdf-3.00.orig/xpdf/XPDFViewer.h
++++ xpdf-3.00/xpdf/XPDFViewer.h
+@@ -58,6 +58,8 @@
+   void open(GString *fileName, int pageA, GString *destName);
+   void clear();
+   void reloadFile();
++  void next();
++  void prev();
+ 
+   Widget getWindow() { return win; }
+ 
+only in patch2:
+unchanged:
+--- xpdf-3.00.orig/xpdf/xpdf.cc
++++ xpdf-3.00/xpdf/xpdf.cc
+@@ -36,8 +36,12 @@
+ static GBool fullScreen = gFalse;
+ static char remoteName[100] = "xpdf_";
+ static GBool doRemoteReload = gFalse;
++static GBool doRemoteNext = gFalse;
++static GBool doRemotePrev = gFalse;
+ static GBool doRemoteRaise = gFalse;
+ static GBool doRemoteQuit = gFalse;
++static GBool loop = gFalse;
++static int slidedelay = 0;
+ static GBool printCommands = gFalse;
+ static GBool quiet = gFalse;
+ static char cfgFileName[256] = "";
+@@ -95,10 +99,18 @@
+    "start/contact xpdf remote server with specified name"},
+   {"-reload",     argFlag,        &doRemoteReload, 0,
+    "reload xpdf remove server window (with -remote only)"},
++  {"-next",       argFlag,        &doRemoteNext,  0,
++   "display next page in xpdf remote server window (with -remote only)"},
++  {"-prev",       argFlag,        &doRemotePrev,  0,
++   "display previous page in xpdf remote server window (with -remote only)"},
+   {"-raise",      argFlag,        &doRemoteRaise, 0,
+    "raise xpdf remote server window (with -remote only)"},
+   {"-quit",       argFlag,        &doRemoteQuit,  0,
+    "kill xpdf remote server (with -remote only)"},
++  {"-loop",       argFlag,        &loop,          0,
++   "wrap to first page after the last"},
++  {"-slidedelay", argInt,         &slidedelay,    0,
++   "delay in seconds for slideshow in -fullscreen mode"},
+   {"-cmd",        argFlag,        &printCommands, 0,
+    "print commands as they're executed"},
+   {"-q",          argFlag,        &quiet,         0,
+@@ -209,6 +221,12 @@
+   if (doRemoteReload) {
+     ok = ok && remoteName[5] && !doRemoteQuit && argc == 1;
+   }
++  if (doRemoteNext) {
++    ok = ok && remoteName[5] && !doRemoteQuit && !doRemotePrev;
++  }
++  if (doRemotePrev) {
++    ok = ok && remoteName[5] && !doRemoteQuit && !doRemoteNext;
++  }
+   if (doRemoteRaise) {
+     ok = ok && remoteName[5] && !doRemoteQuit;
+   }
+@@ -251,6 +269,10 @@
+ 	}
+       } else if (doRemoteReload) {
+ 	app->remoteReload(doRemoteRaise);
++      } else if (doRemoteNext) {
++	app->remoteNext();
++      } else if (doRemotePrev) {
++	app->remotePrev();
+       } else if (doRemoteRaise) {
+ 	app->remoteRaise();
+       } else if (doRemoteQuit) {
+@@ -265,6 +287,8 @@
+ 
+   // set options
+   app->setFullScreen(fullScreen);
++  app->setLoop(loop);
++  app->setSlideDelay(slidedelay);
+ 
+   // check for password string(s)
+   ownerPasswordStr = ownerPassword[0] != '\001' ? new GString(ownerPassword)

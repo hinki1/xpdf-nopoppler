@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=xpdf
 GenericName=PDF viewer
 Comment=View PDF files
@@ -8,4 +7,4 @@ Icon=xpdf.xpm
 Terminal=false
 Type=Application
 MimeType=application/pdf;
-Categories=PDFViewer;Viewer;Graphics;
+Categories=Viewer;Graphics;
