@@ -1,3 +1,9 @@
+xpdf (3.02-6) UNRELEASED; urgency=low
+
+  * Remove outdated Debian README (information is no longer relevant).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 14 Jun 2010 23:07:31 -0400
+
 xpdf (3.02-5) unstable; urgency=low
 
   * Use poppler-data to provide support for additional languages
