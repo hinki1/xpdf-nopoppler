@@ -27,14 +27,14 @@ Description: Portable Document Format (PDF) reader
 
 Package: xpdf-common
 Architecture: all
-Depends: ${misc:Depends}, xpdf (= ${binary:Version})
+Depends: ${misc:Depends}, xpdf (>= ${source:Version})
 Description: Transitional package for xpdf
  This is a transitional package for xpdf, and can be safely removed
  after the installation is complete. 
 
 Package: xpdf-reader
 Architecture: all
-Depends: ${misc:Depends}, xpdf (= ${binary:Version}), xpdf-common(= ${binary:Version})
+Depends: ${misc:Depends}, xpdf (>= ${source:Version}), xpdf-common(>= ${source:Version})
 Description: Transitional package for xpdf
  This is a transitional package for xpdf, and can be safely removed
  after the installation is complete. 
