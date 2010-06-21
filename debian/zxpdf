@@ -18,7 +18,7 @@ do
 	flags="$flags $1 $2"; shift ;;
     -title) title="$2"; shift ;;
     -*) flags="$flags $1" ;;
-    *.pdf|*.PDF) file="$1"; shift; pages="$@"; cat=; break ;;
+    *.[pP][Dd][Ff]) file="$1"; shift; pages="$@"; cat=; break ;;
     *.gz|*.Z) file="$1"; shift; pages="$@"; cat=zcat; break ;;
     *.bz2) file="$1"; shift; pages="$@"; cat=bzcat; break ;;
     *.xz) file="$1"; shift; pages="$@"; cat=xzcat; break ;;
