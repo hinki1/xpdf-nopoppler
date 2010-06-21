@@ -21,6 +21,7 @@ do
     *.pdf|*.PDF) file="$1"; shift; pages="$@"; cat=; break ;;
     *.gz|*.Z) file="$1"; shift; pages="$@"; cat=zcat; break ;;
     *.bz2) file="$1"; shift; pages="$@"; cat=bzcat; break ;;
+    *.xz) file="$1"; shift; pages="$@"; cat=xzcat; break ;;
     *) echo >&2 "ERROR: unknown suffix in file \`$1'"; exit 1 ;;
     esac
     shift
