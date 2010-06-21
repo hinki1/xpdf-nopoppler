@@ -1,4 +1,4 @@
-xpdf (3.02-6) UNRELEASED; urgency=low
+xpdf (3.02-6) unstable; urgency=low
 
   [Michael Gilbert]
   * Remove outdated README.Debian (information is no longer relevant).
