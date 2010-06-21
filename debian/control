@@ -26,21 +26,21 @@ Description: Portable Document Format (PDF) suite
  sometimes called 'Acrobat' files after the name of Adobe's PDF software.)
 
 Package: xpdf-common
-Architecture: any
+Architecture: all
 Depends: ${misc:Depends}, xpdf (= ${binary:Version})
 Description: Transitional package for xpdf
  This is a transitional package for xpdf, and can be safely removed
  after the installation is complete. 
 
 Package: xpdf-reader
-Architecture: any
+Architecture: all
 Depends: ${misc:Depends}, xpdf (= ${binary:Version}), xpdf-common(= ${binary:Version})
 Description: Transitional package for xpdf
  This is a transitional package for xpdf, and can be safely removed
  after the installation is complete. 
 
 Package: xpdf-utils
-Architecture: any
+Architecture: all
 Depends: ${misc:Depends}, poppler-utils
 Description: Transitional package for poppler-utils
  This is a transitional package for poppler-utils, and can be safely removed
