@@ -1,12 +1,16 @@
 #!/bin/sh
 set -e
 
-if [ "$1" = "configure" ]; then
+if [ "$1" = "configure" ] || [ "$1" = "triggered" ] ; then
+	for lang in arabic chinese-simplified chinese-traditional cyrillic greek hebrew japanese korean latin2 thai turkish ; do
+		if [ -e /usr/share/poppler/cMap ] ; then
+			cp /usr/share/xpdf/xpdfrc-$lang /etc/xpdf
+		else
+			rm /etc/xpdf/xpdfrc-$lang
+		fi
+	done
 	update-xpdfrc
 fi
-
-# Remove old /etc/xpdfrc if present
-rm -f /etc/xpdfrc
 
 # Move accidental /etc/xpdf/xpdf-* language files
 # to their proper names (bug in 2.01-1)
