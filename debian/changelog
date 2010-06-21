@@ -1,3 +1,12 @@
+xpdf (3.02-7) unstable; urgency=low
+
+  * Fix xpdf package long description.
+  * Bump compat version to 7.
+  * Drop legacy support for xpdf 2.0.
+  * Add in LDFLAGS to xpdf compilation.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 21 Jun 2010 00:43:13 -0400
+
 xpdf (3.02-6) unstable; urgency=low
 
   [Michael Gilbert]

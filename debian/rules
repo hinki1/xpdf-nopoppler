@@ -25,7 +25,7 @@ prepare::
 	cp xpdf/config.h xpdf/about-text.h xpdf/*.xbm xpdf/xpdfIcon.xpm build
 
 override_dh_auto_build: prepare build/CoreOutputDev.o build/GlobalParams.o build/PDFCore.o build/XPDFApp.o build/XPDFCore.o build/XPDFTree.o build/XPDFViewer.o build/parseargs.o build/xpdf.o
-	$(CXX) -o build/xpdf build/*.o $(LIBS)
+	$(CXX) $(LDFLAGS) -o build/xpdf build/*.o $(LIBS)
 
 %:
 	dh ${@}

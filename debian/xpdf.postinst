@@ -12,12 +12,4 @@ if [ "$1" = "configure" ] || [ "$1" = "triggered" ] ; then
 	update-xpdfrc
 fi
 
-# Move accidental /etc/xpdf/xpdf-* language files
-# to their proper names (bug in 2.01-1)
-for i in cyrillic greek hebrew latin2 thai turkish; do
-	if [ -e /etc/xpdf/xpdf-$i ]; then
-		mv /etc/xpdf/xpdf-$i /etc/xpdf/xpdfrc-$i
-	fi
-done
-
 #DEBHELPER#
