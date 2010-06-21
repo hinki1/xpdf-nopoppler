@@ -40,8 +40,7 @@ Description: Transitional package for xpdf
 
 Package: xpdf-utils
 Architecture: any
-Depends: ${misc:Depends}
-Recommends: poppler-utils
+Depends: ${misc:Depends} , poppler-utils
 Description: Transitional package for poppler-utils
  This is a transitional package for poppler-utils, and can be safely removed
  after the installation is complete. 

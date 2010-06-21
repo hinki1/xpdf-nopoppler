@@ -1,9 +1,14 @@
 xpdf (3.02-6) UNRELEASED; urgency=low
 
-  * Remove outdated Debian README (information is no longer relevant).
-  * Trigger an xpdfrc refresh when poppler-data is installed/uninstalled (to
-    keep available languages up to date).
-  * Fix warning message in /etc/xpdf/includes.
+  [Michael Gilbert]
+  * Remove outdated README.Debian (information is no longer relevant).
+  * Trigger an xpdfrc refresh when poppler-data is installed/uninstalled
+    - This makes it possible to provide poppler-data cmaps while avoiding
+      poppler-data as a dependency (a 12 MiB package).
+  * Fix the warning message printed to /etc/xpdf/includes.
+
+  [Rogério Brito]
+  * Add "-mattecolor" to help output (closes: 458468).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 14 Jun 2010 23:07:31 -0400
 

@@ -6,6 +6,7 @@
 # various bug fies
 fix-408502.patch
 fix-437725.patch
+fix-458468.patch
 fix-479467.patch
 
 # patches to use poppler
