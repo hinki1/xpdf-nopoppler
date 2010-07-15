@@ -1,3 +1,18 @@
+xpdf (3.02-8) UNRELEASED; urgency=low
+
+  [Michael Gilbert]
+  * Bump standards version to 3.9.0 (no changes required).
+  * Clean up formatting of debian/control.
+  * xpdf.postrm: remove languages from /etc/xpdf.
+
+  [Rogério Brito]
+  * Don't specify icon extension name in xpdf.desktop (closes: #551544).
+  * zxpdf: support file extensions with any capitalization of 'pdf'.
+  * zxdpf: add support for xz compression.
+  * Make transitional packages architecture independent.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Wed, 14 Jul 2010 20:46:02 -0400
+
 xpdf (3.02-7) unstable; urgency=low
 
   * Fix xpdf package long description.

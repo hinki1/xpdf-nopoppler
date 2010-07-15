@@ -17,6 +17,3 @@ use-poppler-fix-filespecname.patch
 use-poppler-fix-psoutputdev.patch
 
 fix-floating-point-comparison.patch
-
-# currently disabled since it breaks zoom-fit and zoom-width:
-#xpdf-zoom-height.patch
