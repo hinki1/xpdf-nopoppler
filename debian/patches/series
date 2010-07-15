@@ -17,3 +17,5 @@ use-poppler-fix-filespecname.patch
 use-poppler-fix-psoutputdev.patch
 
 fix-floating-point-comparison.patch
+
+flexibilize-zoom-levels.patch
