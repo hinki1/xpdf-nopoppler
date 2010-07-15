@@ -1,0 +1,44 @@
+# upstream files
+ANNOUNCE
+CHANGES
+COPYING
+INSTALL
+Makefile.in
+README
+aclocal.m4
+aconf-dj.h
+aconf-win32.h
+aconf.h.in
+aconf2.h
+configure
+configure.in
+dj_make.bat
+build
+doc
+fofi
+goo
+install-sh
+misc
+ms_make.bat
+splash
+vms_make.com
+xpdf
+
+# automatically generated debian files
+debian/files
+debian/xpdf-common.debhelper.log
+debian/xpdf-common.substvars
+debian/xpdf-common/
+debian/xpdf-reader.debhelper.log
+debian/xpdf-reader.substvars
+debian/xpdf-reader/
+debian/xpdf-utils.debhelper.log
+debian/xpdf-utils.substvars
+debian/xpdf-utils/
+debian/xpdf.debhelper.log
+debian/xpdf.postinst.debhelper
+debian/xpdf.postrm.debhelper
+debian/xpdf.substvars
+
+# quilt patch control directory
+.pc
