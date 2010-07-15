@@ -1,54 +1,21 @@
-01_manpage.dpatch
-02_permissions.dpatch
-#10_add_accelerators.dpatch # doesn't work
+01-manpage.patch
+02-permissions.patch
+09-xpdfrc-manpage.patch
+11-fix-hyphens-in-manpages.patch
 
-# Security fixes:
-#04_freetype-glyph.dpatch # Not obvious
-#05_gmem.dpatch # Not obvious
-#06_splashpath.dpatch # Not obvious
-#07_decrypt.dpatch # Not obvious
-#08_core_action.dpatch # Not obvious
-#23_security3.dpatch # Not obvious
+# various bug fies
+fix-408502.patch
+fix-437725.patch
+fix-458468.patch
+fix-479467.patch
 
-# Lesstif bug#377230 workaround:
-#40_lesstif_copy.dpatch
-#41_lesstif_cpp.dpatch
+# patches to use poppler
+use-system-xpdfrc.patch
+use-poppler-get-cmap-arguments.patch
+use-poppler-private-textpage-destructor.patch
+use-poppler-fix-filespecname.patch
+use-poppler-fix-psoutputdev.patch
 
-# Final cleanup:
-#99_autoconf.dpatch
-
-# Fix CVE-2007-3387 and CVE-2007-5049
-fix-CVE-2007-3387_CVE-2007-5049.dpatch
-
-# Fix CVE-2007-5393, CVE-2007-5392, CVE-2007-4352
-fix-CVE-2007-5393_2007-5392_2007-4352.dpatch
-
-# Fix http://bugs.debian.org/462544:
-# segmentation fault in image handling by off-by-one error
-fix-462544.dpatch
-
-# Fix http://bugs.debian.org/437725:
-# segmentation fault when pressing Ctrl-W in full screen mode
-fix-437725.dpatch
-
-# Fix http://bugs.debian.org/479467;
-# segmentation fault when pressing g in full screen mode
-fix-479467.dpatch
-
-# Fix http://bugs.debian.org/444648:
-# Do proper PS stream encoding on 64 bit architectures (#444648)
-fix-444648.dpatch
-
-#Fix CVE-2009-0146,0147,0165,0166,0799,0800,1179-1183
-fix-CVE-2009-0146,0147,0165,0166,0799,0800,1179-1183.dpatch
-80-fix-hypens-in-manpages.patch
-09_xpdfrc_manpage.dpatch
-bug_408502_message_5.mbox
-xpdf-zoom-height.patch
-#slideshow.patch.2
-
-fix-CVE-2009-3603+CVE-2009-1188.patch
-fix-CVE-2009-3604.patch
-fix-CVE-2009-3606.patch
-fix-CVE-2009-3608.patch
-fix-CVE-2009-3609.patch
+# various newer bug fixes
+fix-577031.patch
+fix-580495.patch

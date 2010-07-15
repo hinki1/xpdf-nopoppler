@@ -1,0 +1,49 @@
+Description: fixes for differences in poppler's cmap
+origin: gentoo's xpdf-poppler patches
+Index: xpdf-3.02/xpdf/GlobalParams.cc
+===================================================================
+--- xpdf-3.02.orig/xpdf/GlobalParams.cc	2010-06-14 20:42:09.000000000 -0400
++++ xpdf-3.02/xpdf/GlobalParams.cc	2010-06-14 20:42:39.000000000 -0400
+@@ -2535,11 +2535,11 @@
+   return map;
+ }
+ 
+-CMap *GlobalParams::getCMap(GString *collection, GString *cMapName) {
++CMap *GlobalParams::getCMap(GString *collection, GString *cMapName, Stream *stream) {
+   CMap *cMap;
+ 
+   lockCMapCache;
+-  cMap = cMapCache->getCMap(collection, cMapName);
++  cMap = cMapCache->getCMap(collection, cMapName, stream);
+   unlockCMapCache;
+   return cMap;
+ }
+Index: xpdf-3.02/xpdf/GlobalParams.h
+===================================================================
+--- xpdf-3.02.orig/xpdf/GlobalParams.h	2010-06-14 20:42:09.000000000 -0400
++++ xpdf-3.02/xpdf/GlobalParams.h	2010-06-14 20:42:55.000000000 -0400
+@@ -18,6 +18,7 @@
+ #include <stdio.h>
+ #include "gtypes.h"
+ #include "CharTypes.h"
++#include "config.h"
+ 
+ #if MULTITHREADED
+ #include "GMutex.h"
+@@ -35,6 +36,7 @@
+ class CMapCache;
+ struct XpdfSecurityHandler;
+ class GlobalParams;
++class Stream;
+ #ifdef WIN32
+ class WinFontList;
+ #endif
+@@ -263,7 +265,7 @@
+   CharCodeToUnicode *getCIDToUnicode(GString *collection);
+   CharCodeToUnicode *getUnicodeToUnicode(GString *fontName);
+   UnicodeMap *getUnicodeMap(GString *encodingName);
+-  CMap *getCMap(GString *collection, GString *cMapName);
++  CMap *getCMap(GString *collection, GString *cMapName, Stream *stream);
+   UnicodeMap *getTextEncoding();
+ 
+   //----- functions to set parameters

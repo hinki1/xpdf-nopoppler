@@ -1,3 +1,90 @@
+xpdf (3.02-8) unstable; urgency=low
+
+  [Michael Gilbert]
+  * Bump standards version to 3.9.0 (no changes required).
+  * Clean up formatting of debian/control.
+  * xpdf.postrm: remove languages from /etc/xpdf.
+
+  [Rogério Brito]
+  * Don't specify icon extension name in xpdf.desktop (closes: #551544).
+  * zxpdf: support file extensions with any capitalization of 'pdf'.
+  * zxpdf: add support for xz compression.
+  * Make transitional packages architecture independent.
+  * Add patch to make zoom levels more flexible (closes: #580495).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Wed, 14 Jul 2010 20:46:02 -0400
+
+xpdf (3.02-7) unstable; urgency=low
+
+  * Fix xpdf package long description.
+  * Bump compat version to 7.
+  * Drop legacy support for xpdf 2.0.
+  * Add in LDFLAGS to xpdf compilation.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 21 Jun 2010 00:43:13 -0400
+
+xpdf (3.02-6) unstable; urgency=low
+
+  [Michael Gilbert]
+  * Remove outdated README.Debian (information is no longer relevant).
+  * Trigger an xpdfrc refresh when poppler-data is installed/uninstalled
+    - This makes it possible to provide poppler-data cmaps while avoiding
+      poppler-data as a dependency (a 12 MiB package).
+  * Fix the warning message printed to /etc/xpdf/includes.
+
+  [Rogério Brito]
+  * Add "-mattecolor" to help output (closes: 458468).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 14 Jun 2010 23:07:31 -0400
+
+xpdf (3.02-5) unstable; urgency=low
+
+  * Use poppler-data to provide support for additional languages
+    (closes: #461411, #548182, #548183, #548184, #548185, #577917).
+    - Eliminates the need for the xpdf-* language packages.
+    - Thanks to Hideki Yamane!
+  * Reestablish /etc/xpdf/xpdfrc as the resource file (this was inadvertantly
+    dropped in the conversion to poppler since we are no longer using configure,
+    but is now fixed).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 14 Jun 2010 18:29:34 -0400
+
+xpdf (3.02-4) experimental; urgency=low
+
+  * Version the dependency on libpoppler-dev.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 04 Jun 2010 00:32:40 -0400
+
+xpdf (3.02-3) experimental; urgency=low
+
+  * Use system poppler library (closes: #351279).
+    - Thanks to Martin Pitt for the initial work on xpdf-poppler and to
+      Gentoo for maintaining that in their archive for the past couple years.
+    - Drop xpdf-utils package; no reason to duplicate poppler-utils anymore
+      (closes: #576683).
+    - Eliminate xpdf-reader and xpdf-common (no reason to separate these from
+      xpdf anymore).
+    - Drop the following patches (this code is no longer built here; it is
+      provided by poppler):
+      - fix-444648.patch
+      - fix-462544.patch
+      - fix-CVE-2007-3387_CVE-2007-5049.dpatch
+      - fix-CVE-2007-5393_2007-5392_2007-4352.dpatch
+      - fix-CVE-2009-0146,0147,0165,0166,0799,0800,1179-1183.dpatch
+      - fix-CVE-2009-3603+CVE-2009-1188.patch
+      - fix-CVE-2009-3604.patch
+      - fix-CVE-2009-3606.patch
+      - fix-CVE-2009-3608.patch
+      - fix-CVE-2009-3609.patch
+  * Add some patch descriptions.
+  * Remove last remnants of dpatch (the package now uses quilt).
+  * Fix a quirky floating point comparison that was leading to problems on
+    i386 with gcc 4.4 (closes: #577031, #577086).
+  * Revert zoomFitHeight patch since it breaks zoomFitPage and zoomFitWidth
+    (closes: #576543, 578892).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Wed, 26 May 2010 22:34:38 -0400
+
 xpdf (3.02-2) unstable; urgency=high
 
   [Michael Gilbert]

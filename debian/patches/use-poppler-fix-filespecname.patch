@@ -1,0 +1,46 @@
+description: make filespec call compatible with poppler
+origin: gentoo xpdf-poppler patches
+Index: xpdf-3.02/xpdf/config.h
+===================================================================
+--- xpdf-3.02.orig/xpdf/config.h	2010-06-01 01:05:15.000000000 -0400
++++ xpdf-3.02/xpdf/config.h	2010-06-01 01:05:56.000000000 -0400
+@@ -28,6 +28,7 @@
+ #define supportedPDFVersionNum 1.7
+ 
+ // copyright notice
++#undef xpdfCopyright
+ #define xpdfCopyright "Copyright 1996-2007 Glyph & Cog, LLC"
+ 
+ // Windows resource file stuff
+Index: xpdf-3.02/xpdf/XPDFCore.cc
+===================================================================
+--- xpdf-3.02.orig/xpdf/XPDFCore.cc	2010-06-01 01:05:15.000000000 -0400
++++ xpdf-3.02/xpdf/XPDFCore.cc	2010-06-01 01:16:19.000000000 -0400
+@@ -24,6 +24,7 @@
+ #include "GlobalParams.h"
+ #include "PDFDoc.h"
+ #include "Link.h"
++#include "FileSpec.h"
+ #include "ErrorCodes.h"
+ #include "GfxState.h"
+ #include "CoreOutputDev.h"
+@@ -473,7 +474,7 @@
+   GString *fileName, *fileName2;
+   GString *cmd;
+   GString *actionName;
+-  Object movieAnnot, obj1, obj2;
++  Object movieAnnot, obj1, obj2, obj3;
+   GString *msg;
+   int i;
+ 
+@@ -639,7 +640,9 @@
+     if (movieAnnot.isDict()) {
+       if (movieAnnot.dictLookup("Movie", &obj1)->isDict()) {
+ 	if (obj1.dictLookup("F", &obj2)) {
+-	  if ((fileName = LinkAction::getFileSpecName(&obj2))) {
++	  if (getFileSpecNameForPlatform(&obj2, &obj3)) {
++	    fileName = obj3.getString()->copy();
++	    obj3.free();
+ 	    if (!isAbsolutePath(fileName->getCString())) {
+ 	      fileName2 = appendToPath(
+ 			      grabPath(doc->getFileName()->getCString()),

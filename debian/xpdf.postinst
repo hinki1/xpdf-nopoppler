@@ -1,18 +1,15 @@
 #!/bin/sh
 set -e
 
-# Attempt to remove the /usr/share/doc/xpdf directory.
-# If it exists. dpkg won't replace it with the symbolic
-# link.
-
-if [ "$1" = "configure" ]; then
-
-	if [ -d /usr/share/doc/xpdf ]; then
-		rm -rf /usr/share/doc/xpdf
-		ln -sf xpdf-common /usr/share/doc/xpdf
-	fi
-
+if [ "$1" = "configure" ] || [ "$1" = "triggered" ] ; then
+	for lang in arabic chinese-simplified chinese-traditional cyrillic greek hebrew japanese korean latin2 thai turkish ; do
+		if [ -e /usr/share/poppler/cMap ] ; then
+			cp /usr/share/xpdf/xpdfrc-$lang /etc/xpdf
+		else
+			rm -f /etc/xpdf/xpdfrc-$lang
+		fi
+	done
+	update-xpdfrc
 fi
 
 #DEBHELPER#
-

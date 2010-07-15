@@ -1,105 +1,31 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-# debian.rules file for the Debian GNU/Linux xpdf package
-# Copyright 1996,1997,1998 by Dirk Eddelbuettel <edd@debian.org>
-# Copyright 1998-2006 by Hamish Moffatt <hamish@debian.org>
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	./configure \
-		--prefix=/usr \
-		--sysconfdir=/etc/xpdf \
-		--mandir=/usr/share/man \
-		--with-x \
-		--enable-freetype2 \
-		--enable-opi \
-		--enable-wordlist \
-		--enable-multithreaded \
-		--with-Xm-includes=/usr/include/Xm \
-		--with-freetype2-includes=/usr/include/freetype2 \
-		--with-t1-includes=/usr/include
-	touch $@
+LIBS=-lXm $(shell pkg-config --libs poppler)
+INCLUDES=$(strip $(shell pkg-config --cflags poppler))
+CPPFLAGS+=$(INCLUDES) $(INCLUDES)/goo $(INCLUDES)/splash -Wno-write-strings -DHAVE_DIRENT_H
 
-
-build: build-stamp
-build-stamp: configure-stamp
-	dh_testdir
-	$(MAKE) 
-	touch $@
-
-clean: clean1
-clean1:
-	dh_testdir
-	[ ! -f Makefile ] || $(MAKE) -i distclean
-	rm -f build-stamp configure-stamp
-	rm -rf *~ debian/*~ debian/files* aconf.h
-	rm -f fofi/Makefile splash/Makefile config.log
+override_dh_clean:
 	dh_clean
+	rm -rf build
 
-binary-indep:
-	dh_testdir
-	dh_installdirs -i
-	ln -sf xpdf-common debian/xpdf/usr/share/doc/xpdf
+override_dh_auto_configure:
 
-	cp doc/xpdfrc.5 debian/xpdf-common/usr/share/man/man5
-	cp debian/xpdfrc debian/xpdf-common/usr/share/doc/xpdf-common/examples/sample-xpdfrc
-	cp debian/update-xpdfrc debian/xpdf-common/usr/sbin
-	chmod +x debian/xpdf-common/usr/sbin/update-xpdfrc
-	cp debian/xpdfrc debian/xpdf-common/etc/xpdf
-	cp debian/xpdf-bug-control debian/xpdf/usr/share/bug/xpdf/control
+prepare::
+	mkdir -p build
+	cp goo/parseargs.* xpdf/CoreOutputDev.* xpdf/GlobalParams.* build
+	cp xpdf/PDFCore.* xpdf/XPDFApp.* xpdf/XPDFCore.* xpdf/XPDFTree.* build
+	cp xpdf/XPDFTreeP.h xpdf/XPDFViewer.* xpdf/xpdf.cc build
+	
+	# perform extensive goo rename (as required by poppler)
+	sed -i s/GString/GooString/g build/*
+	sed -i s/GMutex/GooMutex/g build/*
+	sed -i s/GHash/GooHash/g build/*
+	sed -i s/GList/GooList/g build/*
+	sed -i s/\<aconf\.h\>/\<poppler-config\.h\>/g build/*
+	cp xpdf/config.h xpdf/about-text.h xpdf/*.xbm xpdf/xpdfIcon.xpm build
 
-	dh_installdocs -pxpdf-common README debian/README.Debian
-	dh_installchangelogs -pxpdf-common CHANGES
-	cp debian/update-xpdfrc.8 debian/xpdf-common/usr/share/man/man8
+override_dh_auto_build: prepare build/CoreOutputDev.o build/GlobalParams.o build/PDFCore.o build/XPDFApp.o build/XPDFCore.o build/XPDFTree.o build/XPDFViewer.o build/parseargs.o build/xpdf.o
+	$(CXX) $(LDFLAGS) -o build/xpdf build/*.o $(LIBS)
 
-	cp -a debian/lang/* debian/xpdf-common/
-
-	dh_compress -i
-	dh_fixperms -i
-	dh_installdeb -i
-	dh_shlibdeps -i
-	dh_gencontrol -i
-	dh_md5sums -i
-	dh_builddeb -i
-
-binary-arch: build
-	dh_testdir
-
-	dh_installdirs -a
-	mkdir -p debian/tmp
-	mkdir -p debian/tmp/usr/share
-	$(MAKE) install DESTDIR=`pwd`/debian/tmp
-
-	ln -sf xpdf-common debian/xpdf-reader/usr/share/doc/xpdf-reader
-	ln -sf xpdf-common debian/xpdf-utils/usr/share/doc/xpdf-utils
-
-	cp debian/zxpdf debian/xpdf-reader/usr/bin
-	chmod +x debian/xpdf-reader/usr/bin/zxpdf
-	ln -sf xpdf.1.gz debian/xpdf-reader/usr/share/man/man1/zxpdf.1.gz
-	ln -sf xpdf.1.gz debian/xpdf-reader/usr/share/man/man1/xpdf.bin.1.gz
-
-	cp debian/xpdf.xpm debian/xpdf-reader/usr/share/pixmaps
-
-	dh_installdocs -a
-	dh_movefiles -a
-	rm -rf debian/tmp
-
-	# rename xpdf binary and install wrapper script
-	mv debian/xpdf-reader/usr/bin/xpdf debian/xpdf-reader/usr/bin/xpdf.bin
-	cp debian/xpdf-wrapper debian/xpdf-reader/usr/bin/xpdf
-	chmod +x debian/xpdf-reader/usr/bin/xpdf
-	cp debian/xpdf.desktop debian/xpdf-reader/usr/share/applications/
-
-	dh_installmime -pxpdf-reader
-	dh_installmenu -pxpdf-reader
-	dh_strip -a
-	dh_compress -a
-	dh_fixperms -a
-	dh_installdeb -a
-	dh_shlibdeps -a
-	dh_gencontrol -a
-	dh_md5sums -a
-	dh_builddeb -a
-
-binary:	binary-indep binary-arch
+%:
+	dh ${@}
