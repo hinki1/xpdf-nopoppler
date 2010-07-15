@@ -16,6 +16,6 @@ use-poppler-private-textpage-destructor.patch
 use-poppler-fix-filespecname.patch
 use-poppler-fix-psoutputdev.patch
 
-fix-floating-point-comparison.patch
-
-flexibilize-zoom-levels.patch
+# various newer bug fixes
+fix-577031.patch
+fix-580495.patch

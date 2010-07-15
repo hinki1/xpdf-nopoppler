@@ -1,3 +1,6 @@
+description: add additional high zoom levels
+author: Rogério Brito 
+debian-bug: http://bugs.debian.org/580495
 --- a/xpdf/XPDFViewer.cc
 +++ b/xpdf/XPDFViewer.cc
 @@ -140,7 +140,11 @@
