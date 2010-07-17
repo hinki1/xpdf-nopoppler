@@ -1,5 +1,9 @@
-description: add additional high zoom levels
-author: Rogério Brito 
+description: add additional zoom features
+ This merges 2 different feature patches into one working one.
+ http://bugs.debian.org/424178 hight patch
+ http://bugs.debian.org/578892 bug fix to hight patch
+ http://bugs.debian.org/580495 high mag zoom
+author: Rogério Brito, Josh Triplett, Emmanuel Thomé
 debian-bug: http://bugs.debian.org/580495
 --- a/xpdf/XPDFViewer.cc
 +++ b/xpdf/XPDFViewer.cc
@@ -16,8 +20,13 @@ debian-bug: http://bugs.debian.org/580495
    { "400%",      400 },
    { "200%",      200 },
    { "150%",      150 },
-@@ -153,11 +157,13 @@
-   { "fit width", zoomWidth }
+@@ -150,14 +154,18 @@
+   { "25%",        25 },
+   { "12.5%",      12.5 },
+   { "fit page",  zoomPage },
+-  { "fit width", zoomWidth }
++  { "fit width", zoomWidth },
++  { "fit height", zoomHeight }
  };
  
 +#define nZoomMenuItems (sizeof(zoomMenuInfo)/sizeof(struct ZoomMenuInfo))
@@ -28,13 +37,22 @@ debian-bug: http://bugs.debian.org/580495
 -#define zoomPageIdx  8
 -#define zoomWidthIdx 9
 +#define defZoomIdx   7
-+#define minZoomIdx   nZoomMenuItems - 3
-+#define zoomPageIdx  nZoomMenuItems - 2
-+#define zoomWidthIdx nZoomMenuItems - 1
++#define minZoomIdx   nZoomMenuItems - 4
++#define zoomPageIdx  nZoomMenuItems - 3
++#define zoomWidthIdx nZoomMenuItems - 2
++#define zoomHeightIdx nZoomMenuItems -1
  
  //------------------------------------------------------------------------
  
-@@ -361,6 +367,7 @@
+@@ -229,6 +237,7 @@
+   { "toggleFullScreenMode",    0, gFalse, gFalse, &XPDFViewer::cmdToggleFullScreenMode },
+   { "toggleOutline",           0, gFalse, gFalse, &XPDFViewer::cmdToggleOutline },
+   { "windowMode",              0, gFalse, gFalse, &XPDFViewer::cmdWindowMode },
++  { "zoomFitHeight",           0, gFalse, gFalse, &XPDFViewer::cmdZoomFitHeight },
+   { "zoomFitPage",             0, gFalse, gFalse, &XPDFViewer::cmdZoomFitPage },
+   { "zoomFitWidth",            0, gFalse, gFalse, &XPDFViewer::cmdZoomFitWidth },
+   { "zoomIn",                  0, gFalse, gFalse, &XPDFViewer::cmdZoomIn },
+@@ -361,6 +370,7 @@
  
  XPDFViewer::~XPDFViewer() {
    delete core;
@@ -42,7 +60,23 @@ debian-bug: http://bugs.debian.org/580495
    XmFontListFree(aboutBigFont);
    XmFontListFree(aboutVersionFont);
    XmFontListFree(aboutFixedFont);
-@@ -1731,6 +1738,7 @@
+@@ -1353,6 +1363,15 @@
+   }
+ }
+ 
++void XPDFViewer::cmdZoomFitHeight(GString *args[], int nArgs,
++				  XEvent *event) {
++  if (core->getZoom() != zoomHeight) {
++    setZoomIdx(zoomHeightIdx);
++    displayPage(core->getPageNum(), zoomHeight,
++		core->getRotate(), gTrue, gFalse);
++  }
++}
++
+ void XPDFViewer::cmdZoomIn(GString *args[], int nArgs,
+ 			   XEvent *event) {
+   int z;
+@@ -1731,6 +1750,7 @@
  #else
    Widget menuPane;
    char buf[16];
@@ -73,7 +107,15 @@ debian-bug: http://bugs.debian.org/580495
  // XPDFViewer
  //------------------------------------------------------------------------
  
-@@ -327,7 +324,7 @@
+@@ -167,6 +164,7 @@
+   void cmdWindowMode(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomFitPage(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomFitWidth(GString *args[], int nArgs, XEvent *event);
++  void cmdZoomFitHeight(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomIn(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomOut(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomPercent(GString *args[], int nArgs, XEvent *event);
+@@ -327,7 +325,7 @@
    Widget zoomComboBox;
  #else
    Widget zoomMenu;
@@ -82,3 +124,164 @@ debian-bug: http://bugs.debian.org/580495
  #endif
    Widget zoomWidget;
    Widget findBtn;
+--- a/doc/xpdf.1
++++ b/doc/xpdf.1
+@@ -103,9 +103,9 @@
+ .TP
+ .BI \-z " zoom"
+ Set the initial zoom factor.  A number specifies a zoom percentage,
+-where 100 means 72 dpi.You may also specify \'page', to fit the page
+-to the window size, or \'width', to fit the page width to the window
+-width.
++where 100 means 72 dpi.  You may also specify \'page', to fit the page
++to the window size, \'width', to fit the page width to the window width,
++or \'height', to fit the page height to the window height.
+ .RB "[config file: " initialZoom "; or X resource: " xpdf.initialZoom ]
+ .TP
+ .B \-cont
+@@ -434,6 +434,9 @@
+ .B w
+ Set the zoom factor to 'width' (fit page width to window).
+ .TP
++.B h
++Set the zoom factor to 'height' (fit page height to window).
++.TP
+ .B alt-F
+ Toggle full-screen mode.
+ .TP
+@@ -586,6 +589,9 @@
+ .B zoomFitWidth
+ Set the zoom factor to fit-width.
+ .TP
++.B zoomFitHeight
++Set the zoom factor to fit-height.
++.TP
+ .B zoomIn
+ Zoom in - go to the next higher zoom factor.
+ .TP
+@@ -794,6 +800,7 @@
+     bind -              any         zoomOut
+     bind z              any         zoomFitPage
+     bind w              any         zoomFitWidth
++    bind h              any         zoomFitHeight
+     bind alt-f          any         toggleFullScreenMode
+     bind ctrl-l         any         redraw
+     bind ctrl-w         any         closeWindow
+--- a/doc/xpdfrc.5
++++ b/doc/xpdfrc.5
+@@ -365,11 +365,11 @@
+ cross-hatching.  This defaults to "no".
+ .SH MISCELLANEOUS SETTINGS
+ .TP
+-.BR initialZoom " \fIpercentage\fR | page | width"
++.BR initialZoom " \fIpercentage\fR | page | width | height"
+ Sets the initial zoom factor.  A number specifies a zoom percentage,
+ where 100 means 72 dpi.  You may also specify \'page', to fit the page
+-to the window size, or \'width', to fit the page width to the window
+-width.
++to the window size, \'width', to fit the page width to the window width,
++or \'height', to fit the page height to the window height.
+ .TP
+ .BR continuousView " yes | no"
+ If set to "yes", xpdf will start in continuous view mode, i.e., with
+--- a/xpdf/GlobalParams.cc
++++ b/xpdf/GlobalParams.cc
+@@ -895,6 +895,8 @@
+ 				     xpdfKeyContextAny, "zoomFitPage"));
+   keyBindings->append(new KeyBinding('w', xpdfKeyModNone,
+ 				     xpdfKeyContextAny, "zoomFitWidth"));
++  keyBindings->append(new KeyBinding('h', xpdfKeyModNone,
++				     xpdfKeyContextAny, "zoomFitHeight"));
+   keyBindings->append(new KeyBinding('f', xpdfKeyModAlt,
+ 				     xpdfKeyContextAny,
+ 				     "toggleFullScreenMode"));
+--- a/xpdf/PDFCore.cc
++++ b/xpdf/PDFCore.cc
+@@ -433,6 +433,12 @@
+     dpiA = (hDPI < vDPI) ? hDPI : vDPI;
+   } else if (zoomA == zoomWidth) {
+     dpiA = (drawAreaWidth / uw) * 72;
++  } else if (zoomA == zoomHeight) {
++    if (continuousMode) {
++      dpiA = ((drawAreaHeight - continuousModePageSpacing) / uh) * 72;
++    } else {
++      dpiA = (drawAreaHeight / uh) * 72;
++    }
+   } else {
+     dpiA = 0.01 * zoomA * 72;
+   }
+@@ -1162,6 +1168,24 @@
+     dpi1 = 72.0 * (double)drawAreaWidth / pageW;
+     sx = 0;
+ 
++  } else if (zoomA == zoomHeight) {
++    if (continuousMode) {
++      pageH = (rotate == 90 || rotate == 270) ? maxUnscaledPageW
++	                                      : maxUnscaledPageH;
++      dpi1 = 72.0 * (double)(drawAreaHeight - continuousModePageSpacing) / pageH;
++    } else {
++      rot = rotate + doc->getPageRotate(topPage);
++      if (rot >= 360) {
++	rot -= 360;
++      } else if (rot < 0) {
++	rot += 360;
++      }
++      pageH = (rot == 90 || rot == 270) ? doc->getPageCropWidth(topPage)
++	                                : doc->getPageCropHeight(topPage);
++      dpi1 = 72.0 * (double)drawAreaHeight / pageH;
++    }
++    sx = 0;
++
+   } else if (zoomA <= 0) {
+     return;
+ 
+--- a/xpdf/PDFCore.h
++++ b/xpdf/PDFCore.h
+@@ -39,6 +39,7 @@
+ 
+ #define zoomPage  -1
+ #define zoomWidth -2
++#define zoomHeight -3
+ #define defZoom   125
+ #define EPSILON   1.0e-7	// 32-bit floating point machine precision
+ 
+--- a/xpdf/XPDFCore.cc
++++ b/xpdf/XPDFCore.cc
+@@ -121,6 +121,8 @@
+       zoom = zoomPage;
+     } else if (!initialZoom->cmp("width")) {
+       zoom = zoomWidth;
++    } else if (!initialZoom->cmp("height")) {
++      zoom = zoomHeight;
+     } else {
+       zoom = atoi(initialZoom->getCString());
+       if (zoom <= 0) {
+@@ -249,7 +251,7 @@
+       width1 = doc->getPageCropWidth(pg);
+       height1 = doc->getPageCropHeight(pg);
+     }
+-    if (zoom == zoomPage || zoom == zoomWidth) {
++    if (zoom == zoomPage || zoom == zoomWidth || zoom == zoomHeight) {
+       width = (Dimension)(width1 * 0.01 * defZoom + 0.5);
+       height = (Dimension)(height1 * 0.01 * defZoom + 0.5);
+     } else {
+@@ -1039,7 +1041,7 @@
+   XtGetValues(core->drawArea, args, n);
+   core->drawAreaWidth = (int)w;
+   core->drawAreaHeight = (int)h;
+-  if (core->zoom == zoomPage || core->zoom == zoomWidth) {
++  if (core->zoom == zoomPage || core->zoom == zoomWidth || core->zoom == zoomHeight) {
+     sx = sy = -1;
+   } else {
+     sx = core->scrollX;
+--- a/xpdf/about-text.h
++++ b/xpdf/about-text.h
+@@ -36,7 +36,7 @@
+   "  v              = forward (history path)",
+   "  b              = backward (history path)",
+   "  0 / + / -      = zoom zero / in / out",
+-  "  z / w          = zoom page / page width",
++  "  z / w / h      = zoom page / page width / page height",
+   "  alt-F          = toggle full-screen mode",
+   "  ctrl-L         = redraw",
+   "  q              = quit",
