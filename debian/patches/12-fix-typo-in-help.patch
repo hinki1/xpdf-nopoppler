@@ -1,0 +1,15 @@
+Author: Osamu Aoki <osamu@debian.org>
+Description: Fixes --help message for xpdf
+Index: xpdf-3.02/xpdf/xpdf.cc
+===================================================================
+--- xpdf-3.02.orig/xpdf/xpdf.cc	2010-07-14 21:08:50.000000000 -0400
++++ xpdf-3.02/xpdf/xpdf.cc	2010-07-19 00:29:52.000000000 -0400
+@@ -105,7 +105,7 @@
+   {"-exec",       argString,      remoteCmd,      sizeof(remoteCmd),
+    "execute command on xpdf remote server (with -remote only)"},
+   {"-reload",     argFlag,        &doRemoteReload, 0,
+-   "reload xpdf remove server window (with -remote only)"},
++   "reload xpdf remote server window (with -remote only)"},
+   {"-raise",      argFlag,        &doRemoteRaise, 0,
+    "raise xpdf remote server window (with -remote only)"},
+   {"-quit",       argFlag,        &doRemoteQuit,  0,

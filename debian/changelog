@@ -3,6 +3,7 @@ xpdf (3.02-10) unstable; urgency=low
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).
   * zxpdf: remove temp file on exit (closes: #280460).
+  * Fix typo in "xpdf --help" output.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 19 Jul 2010 00:20:39 -0400
 

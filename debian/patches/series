@@ -19,3 +19,4 @@ use-poppler-fix-psoutputdev.patch
 # various newer bug fixes
 fix-577031.patch
 fix-580495.patch
+12-fix-typo-in-help.patch
