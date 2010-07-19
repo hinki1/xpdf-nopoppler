@@ -4,3 +4,4 @@ debian/xpdf.xpm /usr/share/pixmaps
 debian/update-xpdfrc /usr/sbin
 debian/xpdfrc /etc/xpdf
 debian/languages/* /usr/share/xpdf
+debian/xpdf.desktop /usr/share/applications

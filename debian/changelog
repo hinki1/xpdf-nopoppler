@@ -1,4 +1,4 @@
-xpdf (3.02-10) unstable; urgency=low
+xpdf (3.02-10) UNRELEASED; urgency=low
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).
@@ -7,6 +7,7 @@ xpdf (3.02-10) unstable; urgency=low
   * Fix typo in "xpdf --help" output.
   * Explain zoom (+-) only after "0" (closes: #426502).
   * update-xpdfrc: ignore hidden files on update (closes: #437529).
+  * Restore xpdf.desktop file (closes: #589542).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 19 Jul 2010 00:20:39 -0400
 
