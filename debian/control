@@ -17,7 +17,6 @@ Package: xpdf
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Conflicts: 
- xpdf-common,
  xpdf-i,
  xpdf-cyrillic,
  xpdf-greek,
@@ -30,6 +29,7 @@ Conflicts:
  xpdf-chinese-simplified,
  xpdf-chinese-traditional 
 Breaks:
+ xpdf-common (<< 3.02-10),
  xpdf-reader (<< 3.02-10)
 Replaces:
  xpdf-common,
