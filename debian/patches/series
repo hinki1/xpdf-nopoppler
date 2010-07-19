@@ -2,6 +2,7 @@
 02-permissions.patch
 09-xpdfrc-manpage.patch
 11-fix-hyphens-in-manpages.patch
+12-fix-typo-in-help.patch
 
 # various bug fies
 fix-408502.patch
@@ -19,4 +20,3 @@ use-poppler-fix-psoutputdev.patch
 # various newer bug fixes
 fix-577031.patch
 fix-580495.patch
-12-fix-typo-in-help.patch

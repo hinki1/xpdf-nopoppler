@@ -1,7 +1,8 @@
 build/xpdf /usr/bin
 debian/zxpdf /usr/bin
-debian/xpdf.xpm /usr/share/pixmaps
 debian/update-xpdfrc /usr/sbin
-debian/xpdfrc /etc/xpdf
+debian/xpdf.xpm /usr/share/pixmaps
 debian/languages/* /usr/share/xpdf
 debian/xpdf.desktop /usr/share/applications
+debian/xpdfrc /etc/xpdf
+debian/Xresources/xpdf /etc/X11/Xresources
