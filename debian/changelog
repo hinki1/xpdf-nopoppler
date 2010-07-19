@@ -1,3 +1,10 @@
+xpdf (3.02-10) unstable; urgency=low
+
+  [Osamu Aoki]
+  * Remove xpdf-common and clean up dependencies (closes: #589425).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 19 Jul 2010 00:20:39 -0400
+
 xpdf (3.02-9) unstable; urgency=low
 
   * Reactivate zoomFitHeight properly by merging it into fix-580495.patch.

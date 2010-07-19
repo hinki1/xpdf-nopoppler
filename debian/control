@@ -6,7 +6,8 @@ Uploaders: Osamu Aoki <osamu@debian.org>
 Standards-Version: 3.9.0
 Build-Depends: 
  debhelper (>= 7.0.50~),
- pkg-config, libx11-dev,
+ pkg-config,
+ libx11-dev,
  lesstif2-dev,
  libpoppler-dev (>= 0.12.4)
 Homepage: http://www.foolabs.com/xpdf/
@@ -17,7 +18,8 @@ Package: xpdf
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Conflicts: 
- xpdf-i (<= 0.90-8),
+ xpdf-common,
+ xpdf-i,
  xpdf-cyrillic,
  xpdf-greek,
  xpdf-hebrew,
@@ -27,11 +29,13 @@ Conflicts:
  xpdf-japanese,
  xpdf-korean,
  xpdf-chinese-simplified,
- xpdf-chinese-traditional 
+ xpdf-chinese-traditional
+Breaks:
+ xpdf-reader (<< 3.02-10)
 Replaces:
- xpdf-i (<= 0.90-8),
- xpdf-reader (<< 3.02-3),
- xpdf-common (<< 3.02-3),
+ xpdf-reader,
+ xpdf-common,
+ xpdf-i,
  xpdf-cyrillic,
  xpdf-greek,
  xpdf-hebrew,
@@ -53,21 +57,11 @@ Description: Portable Document Format (PDF) reader
  xpdf is a viewer for Portable Document Format (PDF) files.  These are,
  sometimes, called 'Acrobat' files after the name of Adobe's PDF software.
 
-Package: xpdf-common
-Architecture: all
-Depends:
- ${misc:Depends},
- xpdf (>= ${source:Version})
-Description: Transitional package for xpdf
- This is a transitional package for xpdf, and can be safely removed
- after the installation is complete. 
-
 Package: xpdf-reader
 Architecture: all
 Depends:
  ${misc:Depends},
- xpdf (>= ${source:Version}),
- xpdf-common(>= ${source:Version})
+ xpdf,
 Description: Transitional package for xpdf
  This is a transitional package for xpdf, and can be safely removed
  after the installation is complete. 
