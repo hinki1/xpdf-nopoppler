@@ -1,3 +1,17 @@
+xpdf (3.02-10) unstable; urgency=low
+
+  * Nuke xpdf-common and clean dependency (closes: #589425)
+  * zxpdf: remove its tmp file at exit (closes: #280460)
+  * Fix typo in "xpdf --help" message.
+  * Explain zoom(+-) only after "0". (closes: #426502)
+  * update-xpdfrc: ignore hidden files (closes: #437529)
+  * zxpdf to search compressed file names (closes: #501661)
+  * Install xpdf.desktop (closes: #589542)
+  * Set Xresources to xpdf*fileFilterStyle: filter_hidden_files 
+    (closes: #386433)
+
+ -- Osamu Aoki <osamu@debian.org>  Mon, 19 Jul 2010 14:26:37 +0900
+
 xpdf (3.02-9) unstable; urgency=low
 
   * Reactivate zoomFitHeight properly by merging it into fix-580495.patch.
