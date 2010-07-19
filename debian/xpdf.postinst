@@ -2,11 +2,12 @@
 set -e
 
 if [ "$1" = "configure" ] || [ "$1" = "triggered" ] ; then
-	for lang in arabic chinese-simplified chinese-traditional cyrillic greek hebrew japanese korean latin2 thai turkish ; do
+	cd /usr/share/xpdf
+	for lang in * ; do
 		if [ -e /usr/share/poppler/cMap ] ; then
-			cp /usr/share/xpdf/xpdfrc-$lang /etc/xpdf
+			ln -sf /usr/share/xpdf/$lang /etc/xpdf/$lang
 		else
-			rm -f /etc/xpdf/xpdfrc-$lang
+			rm -f /etc/xpdf/$lang
 		fi
 	done
 	update-xpdfrc
