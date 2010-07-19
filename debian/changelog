@@ -1,5 +1,9 @@
 xpdf (3.02-10) UNRELEASED; urgency=low
 
+  [Michael Gilbert]
+  * Use symbolic links for shared language files.
+  * Make language file installation slightly more robust/automatic.
+
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).
   * zxpdf: remove temp file on exit (closes: #280460).

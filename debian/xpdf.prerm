@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ] ; then
+	cd /usr/share/xpdf
+	for lang in * ; do
+		rm -f /etc/xpdf/*
+	done
+fi
+
+#DEBHELPER#
