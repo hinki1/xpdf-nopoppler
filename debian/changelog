@@ -5,6 +5,7 @@ xpdf (3.02-10) unstable; urgency=low
   * zxpdf: remove temp file on exit (closes: #280460).
   * Fix typo in "xpdf --help" output.
   * Explain zoom (+-) only after "0" (closes: #426502).
+  * update-xpdfrc: ignore hidden files on update (closes: #437529).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 19 Jul 2010 00:20:39 -0400
 
