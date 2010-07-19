@@ -1,3 +1,10 @@
+xpdf (3.02-9) unstable; urgency=low
+
+  * Reactivate zoomFitHeight properly by merging it into fix-580495.patch.
+  * Set VCS-* and Uploaders fields.
+
+ -- Osamu Aoki <osamu@debian.org>  Sat, 17 Jul 2010 16:00:23 +0900
+
 xpdf (3.02-8) unstable; urgency=low
 
   [Michael Gilbert]
