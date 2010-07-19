@@ -1,29 +1,3 @@
-# upstream files
-ANNOUNCE
-CHANGES
-COPYING
-INSTALL
-Makefile.in
-README
-aclocal.m4
-aconf-dj.h
-aconf-win32.h
-aconf.h.in
-aconf2.h
-configure
-configure.in
-dj_make.bat
-build
-doc
-fofi
-goo
-install-sh
-misc
-ms_make.bat
-splash
-vms_make.com
-xpdf
-
 # automatically generated debian files
 debian/files
 debian/xpdf-common.debhelper.log
@@ -39,6 +13,9 @@ debian/xpdf.debhelper.log
 debian/xpdf.postinst.debhelper
 debian/xpdf.postrm.debhelper
 debian/xpdf.substvars
+
+# automatically generated build files
+build/
 
 # quilt patch control directory
 .pc
