@@ -12,8 +12,9 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Explain zoom (+-) only after "0" (closes: #426502).
   * update-xpdfrc: ignore hidden files on update (closes: #437529).
   * Restore xpdf.desktop file (closes: #589542).
+  * Simplified installation scripts using premade files and symlink.
 
- -- Michael Gilbert <michael.s.gilbert@gmail.com>  Mon, 19 Jul 2010 00:20:39 -0400
+ -- Osamu Aoki <osamu@debian.org>  Wed, 21 Jul 2010 23:16:50 +0900
 
 xpdf (3.02-9) unstable; urgency=low
 
