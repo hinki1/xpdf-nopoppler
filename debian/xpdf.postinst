@@ -2,15 +2,11 @@
 set -e
 
 if [ "$1" = "configure" ] || [ "$1" = "triggered" ] ; then
-	cd /usr/share/xpdf
-	for lang in * ; do
-		if [ -e /usr/share/poppler/cMap ] ; then
-			ln -sf /usr/share/xpdf/$lang /etc/xpdf/$lang
-		else
-			rm -f /etc/xpdf/$lang
-		fi
-	done
-	update-xpdfrc
+	if [ -e /usr/share/poppler/cMap ] ; then
+		ln -sf /usr/share/xpdf/includes-poppler-yes /etc/xpdf/includes
+	else
+		ln -sf /usr/share/xpdf/includes-poppler-no /etc/xpdf/includes
+	fi
 fi
 
 #DEBHELPER#
