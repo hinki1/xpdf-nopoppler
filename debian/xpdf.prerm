@@ -5,8 +5,4 @@ if [ "$1" = "remove" ] ; then
 	rm -f /etc/xpdf/includes
 fi
 
-if [ "$1" = "purge" ] ; then
-	rm -f /etc/xpdf/*
-fi
-
 #DEBHELPER#

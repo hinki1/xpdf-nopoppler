@@ -1,5 +1,6 @@
 # automatically generated debian files
 debian/files
+debian/xpdf
 debian/xpdf-common.debhelper.log
 debian/xpdf-common.substvars
 debian/xpdf-common/
