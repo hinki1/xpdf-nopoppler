@@ -3,6 +3,8 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   [Michael Gilbert]
   * Make language file installation slightly more robust/automated.
   * Bind arrow keys to next/prev page actions by default (closes: #200610).
+  * Make lenny upgrades possible again (use conflicts with xpdf-common instead
+    of breaks).
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).

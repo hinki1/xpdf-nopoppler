@@ -27,9 +27,9 @@ Conflicts:
  xpdf-japanese,
  xpdf-korean,
  xpdf-chinese-simplified,
- xpdf-chinese-traditional 
+ xpdf-chinese-traditional,
+ xpdf-common
 Breaks:
- xpdf-common (<< 3.02-10),
  xpdf-reader (<< 3.02-10)
 Replaces:
  xpdf-common,
