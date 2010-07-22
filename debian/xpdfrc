@@ -91,6 +91,12 @@ psFile			"|lpr"
 
 urlCommand	"sensible-browser '%s'"
 
+# Bind arrow keys to next/prev page actions
+bind up any nextPage
+bind right any nextPage
+bind down any prevPage
+bind left any prevPage
+
 # Include the symlink to the configuration file matching poppler-data 
 # installation situation.
 include /etc/xpdf/includes

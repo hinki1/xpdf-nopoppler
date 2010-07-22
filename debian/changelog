@@ -2,6 +2,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
 
   [Michael Gilbert]
   * Make language file installation slightly more robust/automated.
+  * Bind arrow keys to next/prev page actions by default (closes: #200610).
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).
@@ -9,9 +10,9 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * zxpdf: search compressed file names (closes: #501661).
   * Fix typo in "xpdf --help" output.
   * Explain zoom (+-) only after "0" (closes: #426502).
-  * update-xpdfrc: ignore hidden files on update (closes: #437529).
   * Restore xpdf.desktop file (closes: #589542).
-  * Drop update-xpdfrc (no longer needed due to poppler transition).
+  * Drop update-xpdfrc: no longer needed due to poppler transition
+    (closes: #437529).
 
  -- Osamu Aoki <osamu@debian.org>  Wed, 21 Jul 2010 23:16:50 +0900
 
