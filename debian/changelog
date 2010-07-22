@@ -5,6 +5,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Bind arrow keys to next/prev page actions by default (closes: #200610).
   * Make lenny upgrades possible again (use conflicts with xpdf-common instead
     of breaks).
+  * Remove dangling symlink leftover by lenny xpdf package (closes: #589650).
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).
