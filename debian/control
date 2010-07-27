@@ -16,7 +16,10 @@ Vcs-Git: git://git.debian.org/collab-maint/xpdf.git
 
 Package: xpdf
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ gsfonts
 Conflicts: 
  xpdf-i,
  xpdf-cyrillic,
