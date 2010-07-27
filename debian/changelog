@@ -6,6 +6,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Make lenny upgrades possible again (use conflicts with xpdf-common instead
     of breaks).
   * Remove dangling symlink leftover by lenny xpdf package (closes: #589650).
+  * Bump standards version to 3.9.1 (no changes required).
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).

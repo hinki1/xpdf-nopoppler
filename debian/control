@@ -3,10 +3,11 @@ Section: text
 Priority: optional
 Maintainer: Michael Gilbert <michael.s.gilbert@gmail.com>
 Uploaders: Osamu Aoki <osamu@debian.org>
-Standards-Version: 3.9.0
+Standards-Version: 3.9.1
 Build-Depends: 
  debhelper (>= 7.0.50~),
- pkg-config, libx11-dev,
+ pkg-config,
+ libx11-dev,
  lesstif2-dev,
  libpoppler-dev (>= 0.12.4)
 Homepage: http://www.foolabs.com/xpdf/
