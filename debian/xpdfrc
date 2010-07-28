@@ -61,14 +61,13 @@ psFile			"|lpr"
 
 #----- text output control
 
-# Choose a text encoding for copy-and-paste and for pdftotext output.
-# The Latin1, ASCII7, and UTF-8 encodings are built into Xpdf.  Other
-# encodings are available in the language support packages.
+# Choose a text encoding for copy-and-paste output.  The Latin1, 
+# ASCII7, and UTF-8 encodings are built into Xpdf.
 
 #textEncoding		UTF-8
 
-# Choose the end-of-line convention for multi-line copy-and-past and
-# for pdftotext output.  The available options are unix, mac, and dos.
+# Choose the end-of-line convention for multi-line copy-and-paste.
+# The available options are unix, mac, and dos.
 
 #textEOL		unix
 
@@ -97,6 +96,8 @@ bind right any nextPage
 bind up any prevPage
 bind left any prevPage
 
-# Include the symlink to the configuration file matching poppler-data 
-# installation situation.
+# Include additional character maps (these are provided by the
+# poppler-data package). The /etc/xpdf/includes file is automatically
+# kept up to date by the package scripts.  See the file itself for
+# more details.
 include /etc/xpdf/includes
