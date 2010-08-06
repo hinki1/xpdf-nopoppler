@@ -3,6 +3,6 @@ set -e
 
 # remove dangling symlink leftover by lenny xpdf package weirdness
 # (this 'fix' can be safely removed for squeeze+1)
-rm -rf /usr/share/doc/xpdf
+test -h /usr/share/doc/xpdf && rm -f /usr/share/doc/xpdf || true
 
 #DEBHELPER#
