@@ -19,7 +19,6 @@ Architecture: any
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
- gsfonts,
  libexpat1 (>= 2.0.1-7)
 Conflicts: 
  xpdf-i,
@@ -52,7 +51,8 @@ Replaces:
  xpdf-chinese-traditional 
 Recommends:
  poppler-utils,
- poppler-data
+ poppler-data,
+ gsfonts-x11
 Provides:
  pdf-viewer,
  xpdf-common,

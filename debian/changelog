@@ -7,7 +7,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
     of breaks).
   * Remove dangling symlink leftover by lenny xpdf package (closes: #589650).
   * Bump standards version to 3.9.1 (no changes required).
-  * Depend on gsfonts package.
+  * Recommend gsfonts-x11 package.
   * Remove refrences to poppler-utils files in xpdfrc and clean it up a bit.
   * Include versioned depends on expat (closes: #591724).
 
