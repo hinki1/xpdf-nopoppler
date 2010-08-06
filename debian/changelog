@@ -9,6 +9,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Bump standards version to 3.9.1 (no changes required).
   * Depend on gsfonts package.
   * Remove refrences to poppler-utils files in xpdfrc and clean it up a bit.
+  * Include versioned depends on expat (closes: #591724).
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).

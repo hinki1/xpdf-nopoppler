@@ -19,7 +19,8 @@ Architecture: any
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
- gsfonts
+ gsfonts,
+ libexpat1 (>= 2.0.1-7)
 Conflicts: 
  xpdf-i,
  xpdf-cyrillic,
