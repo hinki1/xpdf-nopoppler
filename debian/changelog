@@ -27,6 +27,9 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Drop update-xpdfrc: no longer needed due to poppler transition
     (closes: #437529).
 
+  [Rogério Brito]
+  * Update debian/copyright to reflect change of maintainership.
+
  -- Osamu Aoki <osamu@debian.org>  Wed, 21 Jul 2010 23:16:50 +0900
 
 xpdf (3.02-9) unstable; urgency=low
