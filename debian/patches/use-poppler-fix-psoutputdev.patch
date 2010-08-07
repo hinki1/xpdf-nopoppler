@@ -1,5 +1,5 @@
 description: fixes for poppler's modified psoutputdev
-origin: gentoo xpdf-poppler patches 
+origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
 Index: xpdf-3.02/xpdf/XPDFViewer.cc
 ===================================================================
 --- xpdf-3.02.orig/xpdf/XPDFViewer.cc	2010-06-14 20:15:56.000000000 -0400

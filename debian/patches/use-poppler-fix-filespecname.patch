@@ -1,5 +1,5 @@
 description: make filespec call compatible with poppler
-origin: gentoo xpdf-poppler patches
+origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
 Index: xpdf-3.02/xpdf/config.h
 ===================================================================
 --- xpdf-3.02.orig/xpdf/config.h	2010-06-01 01:05:15.000000000 -0400

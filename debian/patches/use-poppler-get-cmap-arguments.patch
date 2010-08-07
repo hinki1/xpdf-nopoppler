@@ -1,5 +1,5 @@
 Description: fixes for differences in poppler's cmap
-origin: gentoo's xpdf-poppler patches
+origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
 Index: xpdf-3.02/xpdf/GlobalParams.cc
 ===================================================================
 --- xpdf-3.02.orig/xpdf/GlobalParams.cc	2010-06-14 20:42:09.000000000 -0400
