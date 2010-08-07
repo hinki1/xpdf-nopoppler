@@ -10,6 +10,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Recommend gsfonts-x11 package.
   * Remove refrences to poppler-utils files in xpdfrc and clean it up a bit.
   * Include versioned depends on expat (closes: #591724).
+  * Drop unneeded 'Provides'.
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).
