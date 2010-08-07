@@ -20,7 +20,7 @@ Depends:
  ${misc:Depends},
  ${shlibs:Depends},
  libexpat1 (>= 2.0.1-7)
-Conflicts: 
+Breaks:
  xpdf-i,
  xpdf-cyrillic,
  xpdf-greek,
@@ -32,8 +32,6 @@ Conflicts:
  xpdf-korean,
  xpdf-chinese-simplified,
  xpdf-chinese-traditional,
- xpdf-common
-Breaks:
  xpdf-reader (<< 3.02-10)
 Replaces:
  xpdf-common,

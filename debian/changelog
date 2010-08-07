@@ -3,8 +3,9 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   [Michael Gilbert]
   * Make language file installation slightly more robust/automated.
   * Bind arrow keys to next/prev page actions by default (closes: #200610).
-  * Make lenny upgrades possible again (use conflicts with xpdf-common instead
-    of breaks).
+  * Use Breaks instead of Conflicts.
+  * No need to break or conflict xpdf-common since replaces is enough to
+    enable successful lenny upgrades.
   * Remove dangling symlink leftover by lenny xpdf package (closes: #589650).
   * Bump standards version to 3.9.1 (no changes required).
   * Recommend gsfonts-x11 package.
