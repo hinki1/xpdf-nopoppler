@@ -15,6 +15,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Drop conflicts/breaks with packages that no longer exist in lenny.
   * Version all 'Breaks'.
   * Include references to origin of all poppler patches in headers.
+  * Include comment on debian-specific changes in use-system-xpdfrc.patch.
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).
