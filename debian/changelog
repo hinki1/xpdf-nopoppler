@@ -12,6 +12,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Remove refrences to poppler-utils files in xpdfrc and clean it up a bit.
   * Include versioned depends on expat (closes: #591724).
   * Drop unneeded 'Provides'.
+  * Drop conflicts/breaks with packages that no longer exist in lenny.
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).

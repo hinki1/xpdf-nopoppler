@@ -21,13 +21,6 @@ Depends:
  ${shlibs:Depends},
  libexpat1 (>= 2.0.1-7)
 Breaks:
- xpdf-i,
- xpdf-cyrillic,
- xpdf-greek,
- xpdf-hebrew,
- xpdf-latin2,
- xpdf-thai,
- xpdf-turkish,
  xpdf-japanese,
  xpdf-korean,
  xpdf-chinese-simplified,
@@ -36,13 +29,6 @@ Breaks:
 Replaces:
  xpdf-common,
  xpdf-reader,
- xpdf-i,
- xpdf-cyrillic,
- xpdf-greek,
- xpdf-hebrew,
- xpdf-latin2,
- xpdf-thai,
- xpdf-turkish,
  xpdf-japanese,
  xpdf-korean,
  xpdf-chinese-simplified,
