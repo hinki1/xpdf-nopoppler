@@ -16,6 +16,7 @@ xpdf (3.02-10) UNRELEASED; urgency=low
   * Version all 'Breaks'.
   * Include references to origin of all poppler patches in headers.
   * Include comment on debian-specific changes in use-system-xpdfrc.patch.
+  * Depend on poppler < 0.13 due to incompatible API changes.
 
   [Osamu Aoki]
   * Remove xpdf-common and clean up dependencies (closes: #589425).
