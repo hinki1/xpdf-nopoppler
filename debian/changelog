@@ -1,3 +1,11 @@
+xpdf (3.02-11) unstable; urgency=medium
+
+  * Apply arrow key bindings only in the fullscreen context
+    (closes: #595547, #595075).
+  * Also remove xpdf-reader dangling symlink (closes: #595076).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sun, 05 Sep 2010 17:57:28 -0400
+
 xpdf (3.02-10) unstable; urgency=low
 
   [Michael Gilbert]
