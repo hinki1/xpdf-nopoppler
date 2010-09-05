@@ -90,11 +90,23 @@ psFile			"|lpr"
 
 urlCommand	"sensible-browser '%s'"
 
-# Bind arrow keys to next/prev page actions
-bind down any nextPage
-bind right any nextPage
-bind up any prevPage
-bind left any prevPage
+# Unbind arrow keys so we can change fullscreen behavior
+unbind down any
+unbind right any
+unbind up any
+unbind left any
+
+# Rebind arrow keys to defaults in the windowed context
+bind down window scrollDown(16) 
+bind right window scrollRight(16)
+bind up window scrollUp(16)
+bind left window scrollLeft(16)
+
+# Bind arrow keys to next/prev page actions in the fullscreen context
+bind down fullScreen nextPage
+bind right fullScreen nextPage
+bind up fullScreen prevPage
+bind left fullScreen prevPage
 
 # Include additional character maps (these are provided by the
 # poppler-data package). The /etc/xpdf/includes file is automatically
