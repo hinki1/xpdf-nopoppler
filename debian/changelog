@@ -1,3 +1,9 @@
+xpdf (3.02-12) unstable; urgency=high
+
+  * zxpdf: don't erase original pdf file during clean up (closes: #598945).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sun, 19 Dec 2010 18:42:47 -0500
+
 xpdf (3.02-11) unstable; urgency=medium
 
   * Apply arrow key bindings only in the fullscreen context
