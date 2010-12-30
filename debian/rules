@@ -2,7 +2,7 @@
 
 LIBRARIES=-lXm $(shell pkg-config --libs poppler --libs xt --libs x11)
 INCLUDES=$(strip $(shell pkg-config --cflags poppler))
-CPPFLAGS+=$(INCLUDES) $(INCLUDES)/goo $(INCLUDES)/splash -Wno-write-strings -DHAVE_DIRENT_H
+CPPFLAGS=$(INCLUDES) $(INCLUDES)/goo $(INCLUDES)/splash -Wno-write-strings -DHAVE_DIRENT_H
 
 override_dh_clean:
 	dh_clean
