@@ -8,59 +8,39 @@
 
 set -e
 
-file=
-flags=
-title="zxpdf"
-while [ $# -gt 0 ]
-do
+flags=""
+while [ "$#" -gt "0" ]; do
     case "$1" in
     -z|-g|-geometry|-remote|-rgb|-papercolor|-eucjp|-t1lib|-ps|-paperw|-paperh)
 	flags="$flags $1 $2"; shift ;;
     -title) title="$2"; shift ;;
     -*) flags="$flags $1" ;;
     *.[pP][Dd][Ff]) 
-        file="$1"; shift; pages="$@"
-        if   [ -f $file ]      ; then cat=""
-        elif [ -f $file.Z   ]  ; then file=$file.Z   ; cat=zcat
-        elif [ -f $file.gz  ]  ; then file=$file.gz  ; cat=zcat
-        elif [ -f $file.bz2 ]  ; then file=$file.bz2 ; cat=bzcat
-        elif [ -f $file.xz  ]  ; then file=$file.xz  ; cat=xzcat
-        else echo >&2 "ERROR: file missing \`$file'"; exit 1
-	fi
-        break ;;
-    *.gz|*.Z) file="$1"; shift; pages="$@"; cat=zcat; break ;;
-    *.bz2) file="$1"; shift; pages="$@"; cat=bzcat; break ;;
-    *.xz) file="$1"; shift; pages="$@"; cat=xzcat; break ;;
-    *) echo >&2 "ERROR: unknown suffix in file \`$1'"; exit 1 ;;
+        cat=""
+        test -f "$1"     && cat="cat"   && file="$1"     || true
+        test -f "$1.Z"   && cat="zcat"  && file="$1.Z"   || true
+        test -f "$1.gz"  && cat="zcat"  && file="$1.gz"  || true
+        test -f "$1.bz2" && cat="bzcat" && file="$1.bz2" || true
+        test -f "$1.xz"  && cat="xzcat" && file="$1.xz"  || true
+        test "$cat" = "" && (echo >&2 "Error: file not found: '$1'" && false)
+        shift && pages="$@" && break ;;
+    *.gz|*.Z)
+        test -f "$1" && cat="zcat" && file="$1" && shift && pages="$@" && break ||
+            (echo >&2 "Error: file not found: '$1'" && false) ;;
+    *.bz2)
+        test -f "$1" && cat="bzcat" && file="$1" && shift && pages="$@" && break ||
+            (echo >&2 "Error: file not found: '$1'" && false) ;;
+    *.xz)
+        test -f "$1" && cat="xzcat" && file="$1" && shift && pages="$@" && break ||
+            (echo >&2 "Error: file not found: '$1'" && false) ;;
+    *)
+        echo >&2 "ERROR: unknown suffix in file: '$1'" && false ;;
     esac
     shift
 done
 
-if [ $# -ge 1 ] # optional page argument
-then
-    echo >&2 "ERROR: Too many arguments"
-fi
-
-if [ x"$title" == x -a x"$tmp" != x ]
-then
-    title="zxpdf: $file"
-fi
-
-if [ -z "$cat" ]
-then
-    tmp="$file"
-else
-    tmp=$(basename "$file")
-    tmp=$(tempfile -p "${tmp%.pdf*}" -s .pdf)
-    $cat "$file" >"$tmp"
-fi
-
-if [ "$tmp" == "" ]; then
-    exec xpdf -title $title $flags
-elif [ -z "$cat" ]; then
-    xpdf -title $title $flags "$tmp" $pages
-else
-    trap "rm -f \"$tmp\"" 0 1 2 15
-    xpdf -title $title $flags "$tmp" $pages
-
-fi
+test "$title" = "" && title="$file" || true
+tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
+$cat "$file" > "$tmp"
+xpdf -title $title $flags "$tmp" $pages || true
+rm -f "$tmp"
