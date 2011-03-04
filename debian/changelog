@@ -1,3 +1,16 @@
+xpdf (3.02-13) unstable; urgency=low
+
+  * Set DM-Upload-Allowed.
+  * Drop lenny->squeeze transitional packages.
+  * Provide zxpdf functionality automatically via new xpdf wrapper.
+  * Rewrite zxpdf to address input sanitization issues (closes: #607650,
+    #611522).
+  * Don't populate CPPFLAGS twice.
+  * Include explicit links to lesstif2 and x11 libraries (closes: #615802,
+    #600434).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 04 Mar 2011 18:03:04 -0500
+
 xpdf (3.02-12) unstable; urgency=high
 
   * zxpdf: don't erase original pdf file during clean up (closes: #598945).
