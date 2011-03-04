@@ -10,6 +10,7 @@ Build-Depends:
  libx11-dev,
  lesstif2-dev,
  libpoppler-dev (>= 0.12.4)
+DM-Upload-Allowed: yes
 Homepage: http://www.foolabs.com/xpdf/
 Vcs-Browser: http://git.debian.org/?p=collab-maint/xpdf.git
 Vcs-Git: git://git.debian.org/git/collab-maint/xpdf.git
