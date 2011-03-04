@@ -1,4 +1,4 @@
-xpdf (3.02-13) unstable; urgency=low
+xpdf (3.02-13) UNRELEASED; urgency=low
 
   * Process postinst on "upgrade" command as well (closes: #610441).
   * Set DM-Upload-Allowed.
