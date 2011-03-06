@@ -50,6 +50,6 @@ done
 
 test "$title" = "" && title="$file" || true
 tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
-$cat "$file" > "$tmp"
+cat "$file" > "$tmp"
 xpdf.real -title $title $flags "$tmp" $pages || true
 rm -f "$tmp"
