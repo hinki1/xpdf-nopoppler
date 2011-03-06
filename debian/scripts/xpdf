@@ -52,5 +52,5 @@ done
 test "$title" = "" && title="$file" || true
 tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
 $cat "$file" > "$tmp"
+trap "rm -f \"$tmp\"" 0 SIGHUP SIGINT SIGTERM 
 xpdf.real -title $title $flags "$tmp" $pages || true
-rm -f "$tmp"
