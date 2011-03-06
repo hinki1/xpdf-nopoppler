@@ -20,3 +20,6 @@ build/
 
 # quilt patch control directory
 .pc
+
+# vi swap files
+*.swp
