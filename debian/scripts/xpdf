@@ -17,7 +17,7 @@
 
 set -e
 
-cat="cat"
+cat=""
 flags=""
 while [ "$#" -gt "0" ]; do
     case "$1" in
@@ -51,6 +51,6 @@ done
 
 test "$title" = "" && title="$file" || true
 tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
-$cat "$file" > "$tmp"
+test "$cat" = "" || $cat "$file" > "$tmp"
 trap "rm -f \"$tmp\"" 0 SIGHUP SIGINT SIGTERM 
 xpdf.real -title $title $flags "$tmp" $pages || true
