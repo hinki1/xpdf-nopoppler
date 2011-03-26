@@ -1,6 +1,6 @@
 xpdf (3.02-13) UNRELEASED; urgency=low
 
-  * Introduce mxpdf script: open multiple files in xpdf.
+  * Introduce "-m" command-line option: easily open multiple files in xpdf.
   * Process postinst on "upgrade" command as well (closes: #610441).
   * Set DM-Upload-Allowed.
   * Drop lenny->squeeze transitional packages.

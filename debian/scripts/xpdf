@@ -1,6 +1,7 @@
 #!/bin/bash
 # Copyright (c) 2001 Alcove (Yann Dirson <yann.dirson@fr.alcove.com>) - http://www.alcove.com/
 # Copyright (C) 2011 Michael Gilbert <michael.s.gilbert@gmail.com>
+# Copyright (C) 2011 Osamu Aoki <osamu@debian.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,15 +19,24 @@
 set -e
 
 cat=""
-flags=""
+file=""
+pages=""
+cmd="xpdf.real"
 while [ "$#" -gt "0" ]; do
     case "$1" in
     -z|-g|-geometry|-remote|-rgb|-papercolor|-eucjp|-t1lib|-ps|-paperw|-paperh)
-	flags="$flags $1 $2"; shift ;;
-    -title) title="$2"; shift ;;
-    -*) flags="$flags $1" ;;
-    *.[pP][Dd][Ff]) 
-        cat=""
+	cmd="$cmd $1 $2"; shift ;;
+    -title)
+        title="$2" ;;
+    -m)
+        shift
+        while [ "$#" != "0" ]; do
+            xpdf "$1" &
+            shift
+        done ;;
+    -*) cmd="$cmd $1" ;;
+    *.[pP][Dd][Ff])
+        test "$title" != "" || title="$1"
         test -f "$1"     && cat="cat"   && file="$1"     || true
         test -f "$1.Z"   && cat="zcat"  && file="$1.Z"   || true
         test -f "$1.gz"  && cat="zcat"  && file="$1.gz"  || true
@@ -35,13 +45,13 @@ while [ "$#" -gt "0" ]; do
         test "$cat" = "" && (echo >&2 "Error: file not found: '$1'" && false)
         shift && pages="$@" && break ;;
     *.gz|*.Z)
-        test -f "$1" && cat="zcat" && file="$1" && shift && pages="$@" && break ||
+        test -f "$1" && cat="zcat" && title="$1" && file="$1" && shift && pages="$@" && break ||
             (echo >&2 "Error: file not found: '$1'" && false) ;;
     *.bz2)
-        test -f "$1" && cat="bzcat" && file="$1" && shift && pages="$@" && break ||
+        test -f "$1" && cat="bzcat" && title="$1" && file="$1" && shift && pages="$@" && break ||
             (echo >&2 "Error: file not found: '$1'" && false) ;;
     *.xz)
-        test -f "$1" && cat="xzcat" && file="$1" && shift && pages="$@" && break ||
+        test -f "$1" && cat="xzcat" && title="$1" && file="$1" && shift && pages="$@" && break ||
             (echo >&2 "Error: file not found: '$1'" && false) ;;
     *)
         echo >&2 "ERROR: unknown suffix in file: '$1'" && false ;;
@@ -49,8 +59,11 @@ while [ "$#" -gt "0" ]; do
     shift
 done
 
-test "$title" = "" && title="$file" || true
-tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
-test "$cat" = "" || $cat "$file" > "$tmp"
-trap "rm -f \"$tmp\"" EXIT SIGHUP SIGINT SIGTERM 
-xpdf.real -title $title $flags "$tmp" $pages || true
+if [ "$file" = "" ]; then
+    eval $cmd
+else
+    tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
+    test "$cat" = "" || $cat "$file" > "$tmp"
+    trap "rm -f \"$tmp\"" EXIT SIGHUP SIGINT SIGTERM 
+    eval $cmd -title \'$title\' $tmp $pages || true
+fi
