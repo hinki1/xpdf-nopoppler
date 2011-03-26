@@ -1,7 +1,6 @@
 build/xpdf.real /usr/bin
 debian/scripts/xpdf /usr/bin
 debian/scripts/zxpdf /usr/bin
-debian/scripts/mxpdf /usr/bin
 debian/xpdf.xpm /usr/share/pixmaps
 debian/languages/* /usr/share/xpdf
 debian/xpdf.desktop /usr/share/applications
