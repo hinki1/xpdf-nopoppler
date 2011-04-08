@@ -59,8 +59,8 @@ while [ "$#" -gt "0" ]; do
     shift
 done
 
-if [ "$file" = "" ]; then
-    eval $cmd
+if [ "$file" = "" ] || [ "$cat" = "cat" ]; then
+    eval $cmd $file $pages
 else
     tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
     test "$cat" = "" || $cat "$file" > "$tmp"
