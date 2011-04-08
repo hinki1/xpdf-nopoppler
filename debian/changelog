@@ -1,6 +1,7 @@
 xpdf (3.02-14) UNRELEASED; urgency=low
 
   * Only use temp files when viewing compressed files (closes: #621774).
+  * "-m" option no longer needs to be the last option.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 08 Apr 2011 15:07:17 -0400
 

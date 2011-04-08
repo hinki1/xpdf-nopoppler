@@ -20,20 +20,25 @@ set -e
 
 cat=""
 file=""
+many=""
 pages=""
 cmd="xpdf.real"
 while [ "$#" -gt "0" ]; do
     case "$1" in
     -z|-g|-geometry|-remote|-rgb|-papercolor|-eucjp|-t1lib|-ps|-paperw|-paperh)
-	cmd="$cmd $1 $2"; shift ;;
+	cmd="$cmd $1 $2" && shift ;;
     -title)
         title="$2" ;;
     -m)
         shift
-        while [ "$#" != "0" ]; do
-            xpdf "$1" &
+        while [ "$#" -gt "0" ]; do
+            case "$1" in
+                -*) break ;;
+                *) many="$many '$1'" ;;
+            esac
             shift
-        done ;;
+        done
+        break ;;
     -*) cmd="$cmd $1" ;;
     *.[pP][Dd][Ff])
         test "$title" != "" || title="$1"
@@ -59,7 +64,15 @@ while [ "$#" -gt "0" ]; do
     shift
 done
 
-if [ "$file" = "" ] || [ "$cat" = "cat" ]; then
+if [ "$many" != "" ]; then
+    n="2"
+    file="$(echo $many | cut -d\' -f$n)"
+    while [ "$file" != "" ]; do
+        eval $cmd \'$file\' &
+        n="$(expr $n + 2)"
+        file="$(echo $many | cut -d\' -f$n)"
+    done
+elif [ "$file" = "" ] || [ "$cat" = "cat" ]; then
     eval $cmd $file $pages
 else
     tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
