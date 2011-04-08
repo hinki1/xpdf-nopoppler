@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Copyright (c) 2001 Alcove (Yann Dirson <yann.dirson@fr.alcove.com>) - http://www.alcove.com/
 # Copyright (C) 2011 Michael Gilbert <michael.s.gilbert@gmail.com>
 # Copyright (C) 2011 Osamu Aoki <osamu@debian.org>
@@ -41,7 +41,7 @@ while [ "$#" -gt "0" ]; do
         break ;;
     -*) cmd="$cmd $1" ;;
     *.[pP][Dd][Ff])
-        test "$title" != "" || title="$1"
+        test "$title" != "" || title="Xpdf: $1"
         test -f "$1"     && cat="cat"   && file="$1"     || true
         test -f "$1.Z"   && cat="zcat"  && file="$1.Z"   || true
         test -f "$1.gz"  && cat="zcat"  && file="$1.gz"  || true
@@ -50,13 +50,13 @@ while [ "$#" -gt "0" ]; do
         test "$cat" = "" && (echo >&2 "Error: file not found: '$1'" && false)
         shift && pages="$@" && break ;;
     *.gz|*.Z)
-        test -f "$1" && cat="zcat" && title="$1" && file="$1" && shift && pages="$@" && break ||
+        test -f "$1" && cat="zcat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
             (echo >&2 "Error: file not found: '$1'" && false) ;;
     *.bz2)
-        test -f "$1" && cat="bzcat" && title="$1" && file="$1" && shift && pages="$@" && break ||
+        test -f "$1" && cat="bzcat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
             (echo >&2 "Error: file not found: '$1'" && false) ;;
     *.xz)
-        test -f "$1" && cat="xzcat" && title="$1" && file="$1" && shift && pages="$@" && break ||
+        test -f "$1" && cat="xzcat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
             (echo >&2 "Error: file not found: '$1'" && false) ;;
     *)
         echo >&2 "ERROR: unknown suffix in file: '$1'" && false ;;
