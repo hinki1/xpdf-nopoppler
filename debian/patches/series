@@ -20,3 +20,4 @@ use-poppler-fix-psoutputdev.patch
 # various newer bug fixes
 fix-577031.patch
 fix-580495.patch
+fix-627426.patch

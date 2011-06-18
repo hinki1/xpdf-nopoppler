@@ -1,0 +1,18 @@
+description: use poppler's naming for mouse button 1 binding
+author: Michael Gilbert <michael.s.gilbert@gmail.com>
+bug-debian: http://bugs.debian.org/621774
+--- xpdf-3.02.orig/xpdf/XPDFCore.cc
++++ xpdf-3.02/xpdf/XPDFCore.cc
+@@ -964,9 +964,9 @@ void XPDFCore::initWindow() {
+ 
+   // set up mouse motion translations
+   XtOverrideTranslations(drawArea, XtParseTranslationTable(
+-      "<Btn1Down>:DrawingAreaInput()\n"
+-      "<Btn1Up>:DrawingAreaInput()\n"
+-      "<Btn1Motion>:DrawingAreaInput()\n"
++      "<BtnDown>:DrawingAreaInput()\n"
++      "<BtnUp>:DrawingAreaInput()\n"
++      "<BtnMotion>:DrawingAreaInput()\n"
+       "<Motion>:DrawingAreaInput()"));
+ 
+   // can't create a GC until the window gets mapped
