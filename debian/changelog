@@ -1,9 +1,10 @@
 xpdf (3.02-14) unstable; urgency=low
 
   * Only use temp files when viewing compressed files (closes: #621774).
-  * "-m" option no longer needs to be the last option.
+  * "-m" option no longer needs to be last.
+  * Fix filenames with spaces issue in new xpdf wrapper script.
 
- -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 08 Apr 2011 15:07:17 -0400
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 18 Jun 2011 15:15:35 -0400
 
 xpdf (3.02-13) unstable; urgency=low
 

@@ -73,7 +73,7 @@ if [ "$many" != "" ]; then
         file="$(echo $many | cut -d\' -f$n)"
     done
 elif [ "$file" = "" ] || [ "$cat" = "cat" ]; then
-    eval $cmd $file $pages
+    eval $cmd \'$file\' $pages
 else
     tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
     test "$cat" = "" || $cat "$file" > "$tmp"
