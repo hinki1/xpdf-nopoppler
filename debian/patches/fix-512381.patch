@@ -1,0 +1,14 @@
+description: fix continuous mode crashiness
+author: Michael Gilbert <michael.s.gilbert@gmail.com>
+bug-debian: http://bugs.debian.org/521381
+--- xpdf-3.02.orig/xpdf/XPDFCore.cc
++++ xpdf-3.02/xpdf/XPDFCore.cc
+@@ -1348,7 +1348,7 @@ void XPDFCore::redrawRect(PDFCoreTile *t
+   }
+ 
+   // draw the document
+-  if (tile) {
++  if (tile && tile->image) {
+     XPutImage(display, drawAreaWin, drawAreaGC, tile->image,
+ 	      xSrc, ySrc, xDest, yDest, width, height);
+ 
