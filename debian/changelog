@@ -3,6 +3,7 @@ xpdf (3.02-14) unstable; urgency=low
   * Only use temp files when viewing compressed files (closes: #621774).
   * "-m" option no longer needs to be last.
   * Fix filenames with spaces issue in new xpdf wrapper script.
+  * Fix trap signal names.
   * Use poppler's naming for mouse button 1 binding (closes: #627426).
   * Fix continuous mode crashiness (closes: #521381).
   * Bump standards version to 3.9.2. 
