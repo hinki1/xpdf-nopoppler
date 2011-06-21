@@ -4,8 +4,9 @@ xpdf (3.02-15) unstable; urgency=low
     - document new xpdf usage.
     - drop fixes to no-longer built binaries.
     - merge all manpage fixes into one patch.
+  * launch xpdf from zxpdf deprecation script.
 
- -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 21 Jun 2011 18:35:42 -0400
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 21 Jun 2011 18:51:39 -0400
 
 xpdf (3.02-14) unstable; urgency=low
 

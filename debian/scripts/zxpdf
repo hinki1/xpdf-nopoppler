@@ -1,4 +1,4 @@
 #!/bin/sh
 echo "IMPORTANT: The zxpdf script has been deprecated.  Support for compressed pdf's"
 echo "           is now provided automatically by the standard xpdf command."
-exit 1
+xpdf $@
