@@ -7,8 +7,9 @@ xpdf (3.02-15) unstable; urgency=low
   * launch xpdf from zxpdf deprecation script.
   * support unsuffixed pdf files (closes: #631109).
   * fix another filename whitespace issue (closes: #611522).
+  * clean up debian/rules.
 
- -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 21 Jun 2011 19:02:21 -0400
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 21 Jun 2011 19:57:13 -0400
 
 xpdf (3.02-14) unstable; urgency=low
 

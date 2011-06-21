@@ -1,8 +1,15 @@
 #!/usr/bin/make -f
 
-LIBRARIES=-lXm $(shell pkg-config --libs poppler --libs xt --libs x11)
-INCLUDES=$(strip $(shell pkg-config --cflags poppler))
-CPPFLAGS=$(INCLUDES) $(INCLUDES)/goo $(INCLUDES)/splash -Wno-write-strings -DHAVE_DIRENT_H
+libraries=-lXm $(shell pkg-config --libs poppler --libs xt --libs x11)
+includes=$(strip $(shell pkg-config --cflags poppler))
+CPPFLAGS=$(includes) $(includes)/goo $(includes)/splash -Wno-write-strings -DHAVE_DIRENT_H
+
+files=goo/parseargs xpdf/CoreOutputDev xpdf/GlobalParams xpdf/PDFCore
+files+=xpdf/XPDFApp xpdf/XPDFCore xpdf/XPDFTree xpdf/XPDFViewer xpdf/xpdf
+headers=xpdf/config.h xpdf/XPDFTreeP.h xpdf/about-text.h xpdf/*.xbm xpdf/xpdfIcon.xpm
+
+sources=$(shell for file in $(files); do echo $$file.*; done) 
+objects=$(shell for file in $(files); do echo build/$$(basename $$file).o; done)
 
 override_dh_clean:
 	dh_clean
@@ -11,21 +18,18 @@ override_dh_clean:
 override_dh_auto_configure:
 
 prepare::
+	@echo $(objects)
 	mkdir -p build
-	cp goo/parseargs.* xpdf/CoreOutputDev.* xpdf/GlobalParams.* build
-	cp xpdf/PDFCore.* xpdf/XPDFApp.* xpdf/XPDFCore.* xpdf/XPDFTree.* build
-	cp xpdf/XPDFTreeP.h xpdf/XPDFViewer.* xpdf/xpdf.cc build
-	
-	# perform extensive goo rename (as required by poppler)
+	cp $(sources) build
 	sed -i s/GString/GooString/g build/*
 	sed -i s/GMutex/GooMutex/g build/*
 	sed -i s/GHash/GooHash/g build/*
 	sed -i s/GList/GooList/g build/*
 	sed -i s/\<aconf\.h\>/\<poppler-config\.h\>/g build/*
-	cp xpdf/config.h xpdf/about-text.h xpdf/*.xbm xpdf/xpdfIcon.xpm build
+	cp $(headers) build
 
-override_dh_auto_build: prepare build/CoreOutputDev.o build/GlobalParams.o build/PDFCore.o build/XPDFApp.o build/XPDFCore.o build/XPDFTree.o build/XPDFViewer.o build/parseargs.o build/xpdf.o
-	$(CXX) $(LDFLAGS) -o build/xpdf.real build/*.o $(LIBRARIES)
+override_dh_auto_build: prepare $(objects)
+	$(CXX) $(LDFLAGS) -o build/xpdf.real build/*.o $(libraries)
 
 %:
 	dh ${@}
