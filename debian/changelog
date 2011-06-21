@@ -5,8 +5,9 @@ xpdf (3.02-15) unstable; urgency=low
     - drop fixes to no-longer built binaries.
     - merge all manpage fixes into one patch.
   * launch xpdf from zxpdf deprecation script.
+  * support unsuffixed pdf files (closes: #631109)..
 
- -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 21 Jun 2011 18:51:39 -0400
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 21 Jun 2011 18:59:10 -0400
 
 xpdf (3.02-14) unstable; urgency=low
 

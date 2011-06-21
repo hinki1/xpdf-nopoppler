@@ -42,11 +42,11 @@ while [ "$#" -gt "0" ]; do
     -*) cmd="$cmd $1" ;;
     *.[pP][Dd][Ff])
         test "$title" != "" || title="Xpdf: $1"
-        test -f "$1"     && cat="cat"   && file="$1"     || true
         test -f "$1.Z"   && cat="zcat"  && file="$1.Z"   || true
         test -f "$1.gz"  && cat="zcat"  && file="$1.gz"  || true
         test -f "$1.bz2" && cat="bzcat" && file="$1.bz2" || true
         test -f "$1.xz"  && cat="xzcat" && file="$1.xz"  || true
+        test -f "$1"     && cat="cat"   && file="$1"     || true
         test "$cat" = "" && (echo >&2 "Error: file not found: '$1'" && false)
         shift && pages="$@" && break ;;
     *.gz|*.Z)
@@ -59,7 +59,8 @@ while [ "$#" -gt "0" ]; do
         test -f "$1" && cat="xzcat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
             (echo >&2 "Error: file not found: '$1'" && false) ;;
     *)
-        echo >&2 "ERROR: unknown suffix in file: '$1'" && false ;;
+        test -f "$1" && cat="cat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
+            (echo >&2 "Error: file not found: '$1'" && false) ;;
     esac
     shift
 done
