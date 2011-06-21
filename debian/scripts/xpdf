@@ -79,5 +79,5 @@ else
     tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
     test "$cat" = "" || $cat "$file" > "$tmp"
     trap "rm -f \"$tmp\"" EXIT HUP INT QUIT TERM 
-    eval $cmd -title \'$title\' $tmp $pages || true
+    eval $cmd -title \'$title\' \'$tmp\' $pages || true
 fi
