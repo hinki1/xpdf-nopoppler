@@ -1,6 +1,5 @@
 01-manpage.patch
 02-permissions.patch
-09-xpdfrc-manpage.patch
 11-fix-hyphens-in-manpages.patch
 12-fix-typo-in-help.patch
 

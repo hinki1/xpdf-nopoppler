@@ -1,92 +1,4 @@
 description: manpage updates
---- a/doc/pdffonts.1
-+++ b/doc/pdffonts.1
-@@ -73,9 +73,7 @@
- .SH CONFIGURATION FILE
- Pdffonts reads a configuration file at startup.  It first tries to
- find the user's private config file, ~/.xpdfrc.  If that doesn't
--exist, it looks for a system-wide config file, typically
--/usr/local/etc/xpdfrc (but this location can be changed when pdffonts
--is built).  See the
-+exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
- .BR xpdfrc (5)
- man page for details.
- .SH OPTIONS
---- a/doc/pdfimages.1
-+++ b/doc/pdfimages.1
-@@ -12,9 +12,9 @@
- saves images from a Portable Document Format (PDF) file as Portable
- Pixmap (PPM), Portable Bitmap (PBM), or JPEG files.
- .PP
--Pdfimages reads the PDF file, scans one or more pages,
-+Pdfimages reads the PDF file
- .IR PDF-file ,
--and writes one PPM, PBM, or JPEG file for each image,
-+scans one or more pages, and writes one PPM, PBM, or JPEG file for each image,
- .IR image-root - nnn . xxx ,
- where
- .I nnn
-@@ -28,9 +28,7 @@
- .SH CONFIGURATION FILE
- Pdfimages reads a configuration file at startup.  It first tries to
- find the user's private config file, ~/.xpdfrc.  If that doesn't
--exist, it looks for a system-wide config file, typically
--/usr/local/etc/xpdfrc (but this location can be changed when pdfimages
--is built).  See the
-+exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
- .BR xpdfrc (5)
- man page for details.
- .SH OPTIONS
---- a/doc/pdfinfo.1
-+++ b/doc/pdfinfo.1
-@@ -71,8 +71,7 @@
- .SH CONFIGURATION FILE
- Pdfinfo reads a configuration file at startup.  It first tries to find
- the user's private config file, ~/.xpdfrc.  If that doesn't exist, it
--looks for a system-wide config file, typically /usr/local/etc/xpdfrc
--(but this location can be changed when pdfinfo is built).  See the
-+looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
- .BR xpdfrc (5)
- man page for details.
- .SH OPTIONS
---- a/doc/pdftoppm.1
-+++ b/doc/pdftoppm.1
-@@ -24,9 +24,7 @@
- .SH CONFIGURATION FILE
- Pdftoppm reads a configuration file at startup.  It first tries to
- find the user's private config file, ~/.xpdfrc.  If that doesn't
--exist, it looks for a system-wide config file, typically
--/usr/local/etc/xpdfrc (but this location can be changed when pdftoppm
--is built).  See the
-+exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc. See the
- .BR xpdfrc (5)
- man page for details.
- .SH OPTIONS
---- a/doc/pdftops.1
-+++ b/doc/pdftops.1
-@@ -31,8 +31,7 @@
- .SH CONFIGURATION FILE
- Pdftops reads a configuration file at startup.  It first tries to find
- the user's private config file, ~/.xpdfrc.  If that doesn't exist, it
--looks for a system-wide config file, typically /usr/local/etc/xpdfrc
--(but this location can be changed when pdftops is built).  See the
-+looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
- .BR xpdfrc (5)
- man page for details.
- .SH OPTIONS
---- a/doc/pdftotext.1
-+++ b/doc/pdftotext.1
-@@ -28,9 +28,7 @@
- .SH CONFIGURATION FILE
- Pdftotext reads a configuration file at startup.  It first tries to
- find the user's private config file, ~/.xpdfrc.  If that doesn't
--exist, it looks for a system-wide config file, typically
--/usr/local/etc/xpdfrc (but this location can be changed when pdftotext
--is built).  See the
-+exist, it looks for a system-wide config file, /etc/xpdf/xpdfrc.  See the
- .BR xpdfrc (5)
- man page for details.
- .SH OPTIONS
 --- a/doc/xpdf.1
 +++ b/doc/xpdf.1
 @@ -7,10 +7,15 @@
@@ -232,6 +144,15 @@ description: manpage updates
  xpdf -remote myServer another.pdf 9
 --- a/doc/xpdfrc.5
 +++ b/doc/xpdfrc.5
+@@ -7,7 +7,7 @@
+ .I .xpdfrc
+ file in your home directory, it will be read.  Otherwise, a
+ system-wide configuration file will be read from
+-.IR /usr/local/etc/xpdfrc ,
++.IR /etc/xpdf/xpdfrc ,
+ if it exists.  (This is its default location; depending on build
+ options, it may be placed elsewhere.)  On Win32 systems, the
+ .I xpdfrc
 @@ -19,6 +19,9 @@
  .PP
  The following sections list all of the configuration options, sorted
@@ -242,3 +163,12 @@ description: manpage updates
  .SH INCLUDE FILES
  .TP
  .BI include " config\-file"
+@@ -599,7 +599,7 @@
+ .fi
+ .SH FILES
+ .TP
+-.B /usr/local/etc/xpdfrc
++.B /etc/xpdf/xpdfrc
+ This is the default location for the system-wide configuration file.
+ Depending on build options, it may be placed elsewhere.
+ .TP
