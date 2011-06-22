@@ -1,15 +1,15 @@
 xpdf (3.02-15) unstable; urgency=low
 
   * manpage updates:
-    - document new xpdf usage.
+    - document new xpdf usage (including new -m option).
     - remove references to zxpdf.
-    - drop fixes to manpages for no-longer built binaries.
+    - drop corrections to manpages for no-longer built binaries.
     - merge all manpage fixes into one patch.
   * launch xpdf from zxpdf deprecation script.
   * support unsuffixed pdf files (closes: #631109).
   * fix another filename whitespace issue (closes: #611522).
   * clean up debian/rules.
-  * lengthen the xpdf package long description.
+  * lengthen the package's long description.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 21 Jun 2011 20:01:49 -0400
 

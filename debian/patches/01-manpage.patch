@@ -1,8 +1,8 @@
 description: manpage updates
 Index: xpdf/doc/xpdf.1
 ===================================================================
---- xpdf.orig/doc/xpdf.1	2011-06-21 20:21:42.000000000 -0400
-+++ xpdf/doc/xpdf.1	2011-06-21 20:23:16.000000000 -0400
+--- xpdf.orig/doc/xpdf.1	2011-06-21 20:25:27.000000000 -0400
++++ xpdf/doc/xpdf.1	2011-06-21 20:31:38.000000000 -0400
 @@ -10,7 +10,7 @@
  .SH DESCRIPTION
  .B Xpdf
@@ -61,7 +61,20 @@ Index: xpdf/doc/xpdf.1
  .RB "[config file: " psFile ]
  .TP
  .BI \-paper " size"
-@@ -231,7 +237,7 @@
+@@ -210,6 +216,12 @@
+ .B \-\-help
+ are equivalent.)
+ .PP
++.TP
++.BI \-m " file1 file2 ..."
++Open multiple pdf files:
++.I file1 file2 ...
++etc.
++.PP
+ Several other standard X options and resources will work as expected:
+ .TP
+ .BI \-display " display"
+@@ -231,7 +243,7 @@
  .RB "[X resource: " xpdf*fontList ]
  .PP
  The color and font options only affect the user interface elements,
@@ -70,7 +83,7 @@ Index: xpdf/doc/xpdf.1
  .PP
  The following X resources do not have command line option equivalents:
  .TP
-@@ -254,7 +260,7 @@
+@@ -254,7 +266,7 @@
  .B "dashed left/right arrow buttons"
  Move backward or forward along the history path.
  .TP
@@ -79,7 +92,7 @@ Index: xpdf/doc/xpdf.1
  Move to a specific page number.  Click in the box to activate it, type
  the page number, then hit return.
  .TP
-@@ -267,17 +273,17 @@
+@@ -267,17 +279,17 @@
  .B "print button"
  Bring up a dialog for generating a PostScript file.  The dialog has
  options to set the pages to be printed and the PostScript file name.
@@ -103,7 +116,7 @@ Index: xpdf/doc/xpdf.1
  Quit xpdf.
  .PP
  .SS Menu
-@@ -333,9 +339,9 @@
+@@ -333,9 +345,9 @@
  .PP
  .SS Links
  Clicking on a hyperlink will jump to the link's destination.  A link
@@ -116,7 +129,7 @@ Index: xpdf/doc/xpdf.1
  command (see the
  .B WEB BROWSERS
  section below).
-@@ -458,7 +464,7 @@
+@@ -458,7 +470,7 @@
  .PP
  When you click on a URL link in a PDF file, xpdf will execute the
  command specified by the urlCommand config file option, replacing an
@@ -125,7 +138,7 @@ Index: xpdf/doc/xpdf.1
  the URL, add this line to your config file:
  .PP
  .RS
-@@ -809,8 +815,8 @@
+@@ -809,8 +821,8 @@
  xpdf -remote myServer file.pdf
  .RE
  .PP
@@ -138,8 +151,8 @@ Index: xpdf/doc/xpdf.1
  xpdf -remote myServer another.pdf 9
 Index: xpdf/doc/xpdfrc.5
 ===================================================================
---- xpdf.orig/doc/xpdfrc.5	2011-06-21 20:21:42.000000000 -0400
-+++ xpdf/doc/xpdfrc.5	2011-06-21 20:22:09.000000000 -0400
+--- xpdf.orig/doc/xpdfrc.5	2011-06-21 20:25:27.000000000 -0400
++++ xpdf/doc/xpdfrc.5	2011-06-21 20:27:25.000000000 -0400
 @@ -7,7 +7,7 @@
  .I .xpdfrc
  file in your home directory, it will be read.  Otherwise, a
