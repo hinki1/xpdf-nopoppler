@@ -18,7 +18,6 @@ override_dh_clean:
 override_dh_auto_configure:
 
 prepare::
-	@echo $(objects)
 	mkdir -p build
 	cp $(sources) build
 	sed -i s/GString/GooString/g build/*
