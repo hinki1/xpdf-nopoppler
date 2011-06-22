@@ -2,7 +2,8 @@ xpdf (3.02-15) unstable; urgency=low
 
   * manpage updates:
     - document new xpdf usage.
-    - drop fixes to no-longer built binaries.
+    - remove references to zxpdf.
+    - drop fixes to manpages for no-longer built binaries.
     - merge all manpage fixes into one patch.
   * launch xpdf from zxpdf deprecation script.
   * support unsuffixed pdf files (closes: #631109).

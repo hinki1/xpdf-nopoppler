@@ -1,15 +1,9 @@
 description: manpage updates
---- a/doc/xpdf.1
-+++ b/doc/xpdf.1
-@@ -7,10 +7,15 @@
- [options]
- .RI [ PDF-file
- .RI [ page " | +" dest ]]
-+.sp
-+.B zxpdf
-+[options]
-+.RI [ PDF-file
-+.RI [ page " | +" dest ]]
+Index: xpdf/doc/xpdf.1
+===================================================================
+--- xpdf.orig/doc/xpdf.1	2011-06-21 20:21:42.000000000 -0400
++++ xpdf/doc/xpdf.1	2011-06-21 20:23:16.000000000 -0400
+@@ -10,7 +10,7 @@
  .SH DESCRIPTION
  .B Xpdf
  is a viewer for Portable Document Format (PDF) files.  (These are also
@@ -18,7 +12,7 @@ description: manpage updates
  software.)  Xpdf runs under the X Window System on UNIX, VMS, and
  OS/2.
  .PP
-@@ -29,7 +34,7 @@
+@@ -29,7 +29,7 @@
  xpdf file.pdf 18
  .RE
  .PP
@@ -27,15 +21,15 @@ description: manpage updates
  the page number.  (This is only useful with PDF files that provide
  named destination targets.)
  .PP
-@@ -38,11 +43,17 @@
+@@ -38,11 +38,17 @@
  .RS
  xpdf
  .RE
 +.PP
-+Compressed files (gz and bz2) may be viewed using the command:
++Various compressed formats (gz, bz2, xz, and Z) are also supported, for example::
 +.PP
 +.RS
-+zxpdf file.pdf.gz
++xpdf file.pdf.gz
 +.RE
 +.PP
  .SH CONFIGURATION FILE
@@ -47,7 +41,7 @@ description: manpage updates
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-@@ -92,8 +103,8 @@
+@@ -92,8 +98,8 @@
  .TP
  .BI \-z " zoom"
  Set the initial zoom factor.  A number specifies a zoom percentage,
@@ -58,7 +52,7 @@ description: manpage updates
  width.
  .RB "[config file: " initialZoom "; or X resource: " xpdf.initialZoom ]
  .TP
-@@ -123,7 +134,7 @@
+@@ -123,7 +129,7 @@
  .BI \-ps " PS-file"
  Set the default file name for PostScript output (i.e., the name which
  will appear in the print dialog).  This can also be of the form
@@ -67,7 +61,7 @@ description: manpage updates
  .RB "[config file: " psFile ]
  .TP
  .BI \-paper " size"
-@@ -231,7 +242,7 @@
+@@ -231,7 +237,7 @@
  .RB "[X resource: " xpdf*fontList ]
  .PP
  The color and font options only affect the user interface elements,
@@ -76,7 +70,7 @@ description: manpage updates
  .PP
  The following X resources do not have command line option equivalents:
  .TP
-@@ -254,7 +265,7 @@
+@@ -254,7 +260,7 @@
  .B "dashed left/right arrow buttons"
  Move backward or forward along the history path.
  .TP
@@ -85,7 +79,7 @@ description: manpage updates
  Move to a specific page number.  Click in the box to activate it, type
  the page number, then hit return.
  .TP
-@@ -267,17 +278,17 @@
+@@ -267,17 +273,17 @@
  .B "print button"
  Bring up a dialog for generating a PostScript file.  The dialog has
  options to set the pages to be printed and the PostScript file name.
@@ -109,7 +103,7 @@ description: manpage updates
  Quit xpdf.
  .PP
  .SS Menu
-@@ -333,9 +344,9 @@
+@@ -333,9 +339,9 @@
  .PP
  .SS Links
  Clicking on a hyperlink will jump to the link's destination.  A link
@@ -122,7 +116,7 @@ description: manpage updates
  command (see the
  .B WEB BROWSERS
  section below).
-@@ -458,7 +469,7 @@
+@@ -458,7 +464,7 @@
  .PP
  When you click on a URL link in a PDF file, xpdf will execute the
  command specified by the urlCommand config file option, replacing an
@@ -131,7 +125,7 @@ description: manpage updates
  the URL, add this line to your config file:
  .PP
  .RS
-@@ -809,8 +820,8 @@
+@@ -809,8 +815,8 @@
  xpdf -remote myServer file.pdf
  .RE
  .PP
@@ -142,8 +136,10 @@ description: manpage updates
  .PP
  .RS
  xpdf -remote myServer another.pdf 9
---- a/doc/xpdfrc.5
-+++ b/doc/xpdfrc.5
+Index: xpdf/doc/xpdfrc.5
+===================================================================
+--- xpdf.orig/doc/xpdfrc.5	2011-06-21 20:21:42.000000000 -0400
++++ xpdf/doc/xpdfrc.5	2011-06-21 20:22:09.000000000 -0400
 @@ -7,7 +7,7 @@
  .I .xpdfrc
  file in your home directory, it will be read.  Otherwise, a
@@ -163,7 +159,7 @@ description: manpage updates
  .SH INCLUDE FILES
  .TP
  .BI include " config\-file"
-@@ -599,7 +599,7 @@
+@@ -596,7 +599,7 @@
  .fi
  .SH FILES
  .TP
