@@ -1,23 +1,27 @@
 description: fixes for poppler's modified psoutputdev
 origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
-Index: xpdf-3.02/xpdf/XPDFViewer.cc
+Index: xpdf/xpdf/XPDFViewer.cc
 ===================================================================
---- xpdf-3.02.orig/xpdf/XPDFViewer.cc	2010-06-14 20:15:56.000000000 -0400
-+++ xpdf-3.02/xpdf/XPDFViewer.cc	2010-06-14 20:28:42.000000000 -0400
-@@ -3606,7 +3606,7 @@
+--- xpdf.orig/xpdf/XPDFViewer.cc	2011-07-09 13:19:11.000000000 -0400
++++ xpdf/xpdf/XPDFViewer.cc	2011-07-09 14:25:12.000000000 -0400
+@@ -3605,8 +3605,8 @@
+   // Normal print mode
    if (printAll && !printBack)
    {
-     psOut = new PSOutputDev(psFileName->getCString(), doc->getXRef(),
+-    psOut = new PSOutputDev(psFileName->getCString(), doc->getXRef(),
 -          doc->getCatalog(), firstPage, lastPage,
++    psOut = new PSOutputDev(psFileName->getCString(), doc, doc->getXRef(),
 +          doc->getCatalog(), NULL, firstPage, lastPage,
            psModePS);
      if (psOut->isOk()) {
        doc->displayPages(psOut, firstPage, lastPage, 72, 72,
-@@ -3652,7 +3652,7 @@
+@@ -3651,8 +3651,8 @@
+     {
        for (i=beginPage;; i+=step)
        {
-         psOut = new PSOutputDev(psFileName->getCString(), doc->getXRef(),
+-        psOut = new PSOutputDev(psFileName->getCString(), doc->getXRef(),
 -              doc->getCatalog(), i, i, psModePS);
++        psOut = new PSOutputDev(psFileName->getCString(), doc, doc->getXRef(),
 +              doc->getCatalog(), NULL, i, i, psModePS);
          if (psOut->isOk()) {
            doc->displayPages(psOut, i, i, 72, 72,

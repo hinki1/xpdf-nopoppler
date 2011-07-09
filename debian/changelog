@@ -1,3 +1,12 @@
+xpdf (3.02-16) unstable; urgency=medium
+
+  * support poppler 0.16 (closes: #627667):
+    - rename parseargs.c to parseargs.cc (handles poppler's goo/gtypes.h
+      being a c++ header now).
+    - apply patch for another PSOutputDev api change.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 09 Jul 2011 14:18:07 -0400
+
 xpdf (3.02-15) unstable; urgency=low
 
   * manpage updates:
