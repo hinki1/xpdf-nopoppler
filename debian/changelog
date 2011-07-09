@@ -1,3 +1,9 @@
+xpdf (3.02-17) unstable; urgency=medium
+
+  * add missing poppler dependency bump.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 09 Jul 2011 14:43:54 -0400
+
 xpdf (3.02-16) unstable; urgency=medium
 
   * support poppler 0.16 (closes: #627667):
