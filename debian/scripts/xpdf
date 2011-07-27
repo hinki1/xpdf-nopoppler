@@ -25,7 +25,7 @@ pages=""
 cmd="xpdf.real"
 while [ "$#" -gt "0" ]; do
     case "$1" in
-    -z|-g|-geometry|-remote|-rgb|-papercolor|-eucjp|-t1lib|-ps|-paperw|-paperh)
+    -z|-g|-geometry|-remote|-rgb|-papercolor|-eucjp|-t1lib|-ps|-paperw|-paperh|-upw)
 	cmd="$cmd $1 $2" && shift ;;
     -title)
         title="$2" ;;
