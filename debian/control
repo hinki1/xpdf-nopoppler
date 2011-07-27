@@ -42,5 +42,5 @@ Provides:
 Description: Portable Document Format (PDF) reader
  xpdf is a light-weight open source viewer for Portable Document Format (PDF)
  files (also called 'Adobe Acrobat' or 'Acrobat' files).  This is just the
- xpdf viewer client; various command-line pdf tools are now provied via the
+ xpdf viewer client; various command-line pdf tools are now provided via the
  poppler-utils package.
