@@ -28,7 +28,7 @@ while [ "$#" -gt "0" ]; do
     -z|-g|-geometry|-remote|-rgb|-papercolor|-eucjp|-t1lib|-ps|-paperw|-paperh|-upw)
 	cmd="$cmd $1 '$2'" && shift ;;
     -title)
-        title="$2" ;;
+        title="$2" && shift ;;
     -m)
         shift
         while [ "$#" -gt "0" ]; do
@@ -41,13 +41,12 @@ while [ "$#" -gt "0" ]; do
         break ;;
     -*) cmd="$cmd $1" ;;
     *.[pP][Dd][Ff])
-        test "$title" != "" || title="Xpdf: $1"
         test -f "$1.Z"   && cat="zcat"  && file="$1.Z"   || true
         test -f "$1.gz"  && cat="zcat"  && file="$1.gz"  || true
         test -f "$1.bz2" && cat="bzcat" && file="$1.bz2" || true
         test -f "$1.xz"  && cat="xzcat" && file="$1.xz"  || true
         test -f "$1"     && cat="cat"   && file="$1"     || true
-        test "$cat" = "" && (echo >&2 "Error: file not found: '$1'" && false)
+        test "$cat" = "" && (echo >&2 "Error: file not found: $1" && false)
         shift && pages="$@" && break ;;
     *.gz|*.Z)
         test -f "$1" && cat="zcat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
@@ -65,6 +64,7 @@ while [ "$#" -gt "0" ]; do
     shift
 done
 
+test "$title" != "" || title="Xpdf: $file"
 if [ "$many" != "" ]; then
     n="2"
     file="$(echo $many | cut -d\' -f$n)"
@@ -76,10 +76,10 @@ if [ "$many" != "" ]; then
 elif [ "$file" = "" ]; then
     $cmd
 elif [ "$cat" = "cat" ]; then
-    $cmd "$file" $pages
+    $cmd -title "$title" "$file" $pages
 else
     tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
-    test "$cat" = "" || $cat "$file" > "$tmp"
+    $cat "$file" > "$tmp"
     trap "rm -f \"$tmp\"" EXIT HUP INT QUIT TERM 
-    $cmd -title \'$title\' \'$tmp\' $pages || true
+    $cmd -title "$title" "$tmp" $pages || true
 fi

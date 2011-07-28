@@ -5,6 +5,7 @@ xpdf (3.02-18) unstable; urgency=low
   * Quote arguments to commands (closes: #633069).
   * Handle file names with single quotes (closes: #631250).
   * Handle no file name correctly again.
+  * Fix title command handling (closes: #611522).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Thu, 28 Jul 2011 00:11:15 -0400
 
