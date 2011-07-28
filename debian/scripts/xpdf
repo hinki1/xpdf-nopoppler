@@ -74,10 +74,10 @@ if [ "$many" != "" ]; then
         file="$(echo $many | cut -d\' -f$n)"
     done
 elif [ "$file" = "" ] || [ "$cat" = "cat" ]; then
-    eval $cmd \'$file\' $pages
+    $cmd "$file" $pages
 else
     tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
     test "$cat" = "" || $cat "$file" > "$tmp"
     trap "rm -f \"$tmp\"" EXIT HUP INT QUIT TERM 
-    eval $cmd -title \'$title\' \'$tmp\' $pages || true
+    $cmd -title \'$title\' \'$tmp\' $pages || true
 fi

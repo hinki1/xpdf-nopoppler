@@ -3,6 +3,7 @@ xpdf (3.02-18) unstable; urgency=low
   * Fix spelling error in control file (closes: #631407).
   * Pass "-upw" with its second argument in xpdf wrapper (closes: #632826).
   * Quote arguments to commands (closes: #633069).
+  * Handle file names with single quotes (closes: #631250).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Wed, 27 Jul 2011 00:12:13 -0400
 
