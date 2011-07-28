@@ -73,7 +73,9 @@ if [ "$many" != "" ]; then
         n="$(expr $n + 2)"
         file="$(echo $many | cut -d\' -f$n)"
     done
-elif [ "$file" = "" ] || [ "$cat" = "cat" ]; then
+elif [ "$file" = "" ]; then
+    $cmd
+elif [ "$cat" = "cat" ]; then
     $cmd "$file" $pages
 else
     tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
