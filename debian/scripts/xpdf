@@ -78,7 +78,7 @@ elif [ "$file" = "" ]; then
 elif [ "$cat" = "cat" ]; then
     $cmd -title "$title" "$file" $pages
 else
-    tmp=$(tempfile -p "$(basename "$file")" -s .pdf)
+    tmp=$(tempfile -s .pdf)
     $cat "$file" > "$tmp"
     trap "rm -f \"$tmp\"" EXIT HUP INT QUIT TERM 
     $cmd -title "$title" "$tmp" $pages || true

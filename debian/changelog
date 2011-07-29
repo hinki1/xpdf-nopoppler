@@ -1,3 +1,9 @@
+xpdf (3.02-19) unstable; urgency=high
+
+  * Fix insecure tempfile usage (closes: #635849).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 29 Jul 2011 14:02:05 -0400
+
 xpdf (3.02-18) unstable; urgency=low
 
   * Fix spelling error in control file (closes: #631407).
