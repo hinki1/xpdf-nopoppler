@@ -50,7 +50,7 @@ done
 test "$title" != "" || title="Xpdf: $file"
 if [ "$many" != "" ]; then
     echo "$many" | while read file; do
-        test "$file" = "" || $0 "$file" &
+        test ! -f "$file" || $0 "$file" &
     done
 elif [ "$file" = "" ]; then
     $cmd -title "$title"
