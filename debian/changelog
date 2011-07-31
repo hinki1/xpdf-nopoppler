@@ -1,3 +1,9 @@
+xpdf (3.02-20) UNRELEASED; urgency=low
+
+  * Simplify wrapper logic.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sun, 31 Jul 2011 03:22:48 -0400
+
 xpdf (3.02-19) unstable; urgency=high
 
   * Fix insecure tempfile usage (closes: #635849).

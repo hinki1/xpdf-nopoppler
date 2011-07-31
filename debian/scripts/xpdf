@@ -18,7 +18,6 @@
 
 set -e
 
-cat=""
 file=""
 many=""
 pages=""
@@ -39,27 +38,11 @@ while [ "$#" -gt "0" ]; do
             shift
         done
         break ;;
-    -*) cmd="$cmd $1" ;;
-    *.[pP][Dd][Ff])
-        test -f "$1.Z"   && cat="zcat"  && file="$1.Z"   || true
-        test -f "$1.gz"  && cat="zcat"  && file="$1.gz"  || true
-        test -f "$1.bz2" && cat="bzcat" && file="$1.bz2" || true
-        test -f "$1.xz"  && cat="xzcat" && file="$1.xz"  || true
-        test -f "$1"     && cat="cat"   && file="$1"     || true
-        test "$cat" = "" && (echo >&2 "Error: file not found: $1" && false)
-        shift && pages="$@" && break ;;
-    *.gz|*.Z)
-        test -f "$1" && cat="zcat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
-            (echo >&2 "Error: file not found: '$1'" && false) ;;
-    *.bz2)
-        test -f "$1" && cat="bzcat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
-            (echo >&2 "Error: file not found: '$1'" && false) ;;
-    *.xz)
-        test -f "$1" && cat="xzcat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
-            (echo >&2 "Error: file not found: '$1'" && false) ;;
+    -*)
+        cmd="$cmd $1" ;;
     *)
-        test -f "$1" && cat="cat" && title="Xpdf: $1" && file="$1" && shift && pages="$@" && break ||
-            (echo >&2 "Error: file not found: '$1'" && false) ;;
+        test -f "$1" && file="$1" && shift && pages="$@" && break ||
+            ( echo "error: \"$1\" file not found" && false ) ;;
     esac
     shift
 done
@@ -73,13 +56,16 @@ if [ "$many" != "" ]; then
         n="$(expr $n + 2)"
         file="$(echo $many | cut -d\' -f$n)"
     done
-elif [ "$file" = "" ]; then
-    $cmd
-elif [ "$cat" = "cat" ]; then
-    $cmd -title "$title" "$file" $pages
+elif [ "$file" = "" ] ; then
+    $cmd -title "$title"
 else
     tmp=$(tempfile -s .pdf)
-    $cat "$file" > "$tmp"
     trap "rm -f \"$tmp\"" EXIT HUP INT QUIT TERM 
+    case "$file" in
+        *.gz|*.Z)  zcat "$file" > "$tmp" ;;
+        *.xz)     xzcat "$file" > "$tmp" ;;
+        *.bz2)    bzcat "$file" > "$tmp" ;;
+        *)          cat "$file" > "$tmp" ;;
+    esac
     $cmd -title "$title" "$tmp" $pages || true
 fi
