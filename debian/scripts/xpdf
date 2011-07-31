@@ -33,7 +33,7 @@ while [ "$#" -gt "0" ]; do
         while [ "$#" -gt "0" ]; do
             case "$1" in
                 -*) break ;;
-                *) many="$many '$1'" ;;
+                *) many="$many\n$1" ;;
             esac
             shift
         done
@@ -49,14 +49,10 @@ done
 
 test "$title" != "" || title="Xpdf: $file"
 if [ "$many" != "" ]; then
-    n="2"
-    file="$(echo $many | cut -d\' -f$n)"
-    while [ "$file" != "" ]; do
-        eval $cmd \'$file\' &
-        n="$(expr $n + 2)"
-        file="$(echo $many | cut -d\' -f$n)"
+    echo "$many" | while read file; do
+        test "$file" = "" || $0 "$file" &
     done
-elif [ "$file" = "" ] ; then
+elif [ "$file" = "" ]; then
     $cmd -title "$title"
 else
     tmp=$(tempfile -s .pdf)
