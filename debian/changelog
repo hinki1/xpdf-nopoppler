@@ -1,6 +1,9 @@
 xpdf (3.02-20) UNRELEASED; urgency=low
 
   * Simplify wrapper logic.
+  * Set up tempfile trap before extracting compressed pdf files
+    (closes: #635850).
+  * Fix titling on compressed files (closes: #635881).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sun, 31 Jul 2011 03:22:48 -0400
 
