@@ -1,10 +1,10 @@
-xpdf (3.02-20) UNRELEASED; urgency=low
+xpdf (3.02-20) unstable; urgency=low
 
   * Simplify wrapper logic.
   * Set up tempfile trap before extracting compressed pdf files
     (closes: #635850).
   * Fix titling on compressed files (closes: #635881).
-  * Use newlines to separate file names with "-m" option (closes: #635852).
+  * Use newlines to separate file names "-m" option handling (closes: #635852).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sun, 31 Jul 2011 03:22:48 -0400
 
