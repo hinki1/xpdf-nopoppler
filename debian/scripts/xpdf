@@ -49,6 +49,7 @@ done
 
 test "$title" != "" || title="Xpdf: $file"
 if [ "$many" != "" ]; then
+    cmd=$(echo "$cmd" | sed s/xpdf\.real/xpdf/g)
     printf "%s" "$many" | while read -r file; do
         test ! -f "$file" || $0 "$file" &
     done
