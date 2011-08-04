@@ -1,7 +1,8 @@
 xpdf (3.02-21) UNRELEASED; urgency=low
 
   * Pass real file name when not compressed (closes: #636432).
-  * Document quirks of "-m" (closes: #636449).
+  * Handle backslashes in filenames with -m option (closes: #636403).
+  * Document quirks of -m (closes: #636449).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Wed, 03 Aug 2011 22:55:26 -0400
 

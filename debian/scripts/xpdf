@@ -33,7 +33,7 @@ while [ "$#" -gt "0" ]; do
         while [ "$#" -gt "0" ]; do
             case "$1" in
                 -*) break ;;
-                *) many="$many\n$1" ;;
+                *) many=$(printf "%s\n%s" "$1" "$many") ;;
             esac
             shift
         done
@@ -49,7 +49,7 @@ done
 
 test "$title" != "" || title="Xpdf: $file"
 if [ "$many" != "" ]; then
-    echo "$many" | while read file; do
+    printf "%s" "$many" | while read -r file; do
         test ! -f "$file" || $0 "$file" &
     done
 elif [ "$file" = "" ]; then
