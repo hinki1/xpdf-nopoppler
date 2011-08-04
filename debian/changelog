@@ -1,3 +1,9 @@
+xpdf (3.02-22) UNRELEASED; urgency=low
+
+  * Really pass all arguments in -m.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Wed, 03 Aug 2011 23:58:42 -0400
+
 xpdf (3.02-21) unstable; urgency=low
 
   * Pass real file name when not compressed (closes: #636432).
