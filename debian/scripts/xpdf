@@ -61,7 +61,7 @@ else
         *.gz|*.Z)  zcat "$file" > "$tmp" ;;
         *.xz)     xzcat "$file" > "$tmp" ;;
         *.bz2)    bzcat "$file" > "$tmp" ;;
-        *)          cat "$file" > "$tmp" ;;
+        *) tmp="$file" ;;
     esac
     $cmd -title "$title" "$tmp" $pages || true
 fi
