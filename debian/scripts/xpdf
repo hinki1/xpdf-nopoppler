@@ -64,6 +64,5 @@ else
         *.bz2)    bzcat "$file" > "$tmp" ;;
         *) tmp="$file" ;;
     esac
-    echo $cmd -title "$title" "$tmp"
     $cmd -title "$title" "$tmp" $pages || true
 fi
