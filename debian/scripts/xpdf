@@ -25,7 +25,7 @@ cmd="xpdf.real"
 while [ "$#" -gt "0" ]; do
     case "$1" in
     -z|-g|-geometry|-remote|-rgb|-papercolor|-eucjp|-t1lib|-ps|-paperw|-paperh|-upw)
-	cmd="$cmd $1 '$2'" && shift ;;
+	cmd="$cmd $1 "$2"" && shift ;;
     -title)
         title="$2" && shift ;;
     -m)
@@ -64,5 +64,6 @@ else
         *.bz2)    bzcat "$file" > "$tmp" ;;
         *) tmp="$file" ;;
     esac
+    echo $cmd -title "$title" "$tmp"
     $cmd -title "$title" "$tmp" $pages || true
 fi
