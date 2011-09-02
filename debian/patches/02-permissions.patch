@@ -1,6 +1,8 @@
 description: remove pdf file permission checks
---- a/xpdf/PDFCore.cc
-+++ b/xpdf/PDFCore.cc
+Index: xpdf/xpdf/PDFCore.cc
+===================================================================
+--- xpdf.orig/xpdf/PDFCore.cc	2011-08-28 19:53:44.000000000 -0400
++++ xpdf/xpdf/PDFCore.cc	2011-08-28 19:54:16.000000000 -0400
 @@ -4,6 +4,8 @@
  //
  // Copyright 2004 Glyph & Cog, LLC
@@ -10,7 +12,7 @@ description: remove pdf file permission checks
  //========================================================================
  
  #include <aconf.h>
-@@ -1563,9 +1565,11 @@
+@@ -1619,9 +1621,11 @@
    int x0, y0, x1, y1, t;
    GString *s;
  
@@ -22,8 +24,10 @@ description: remove pdf file permission checks
    if ((page = findPage(pg))) {
      cvtUserToDev(pg, xMin, yMin, &x0, &y0);
      cvtUserToDev(pg, xMax, yMax, &x1, &y1);
---- a/xpdf/XPDFCore.cc
-+++ b/xpdf/XPDFCore.cc
+Index: xpdf/xpdf/XPDFCore.cc
+===================================================================
+--- xpdf.orig/xpdf/XPDFCore.cc	2011-08-28 19:53:44.000000000 -0400
++++ xpdf/xpdf/XPDFCore.cc	2011-08-28 19:54:16.000000000 -0400
 @@ -4,6 +4,8 @@
  //
  // Copyright 2002-2003 Glyph & Cog, LLC
@@ -33,7 +37,7 @@ description: remove pdf file permission checks
  //========================================================================
  
  #include <aconf.h>
-@@ -384,11 +386,15 @@
+@@ -384,12 +386,16 @@
  #ifndef NO_TEXT_SELECT
        if (selectULX != selectLRX &&
  	  selectULY != selectLRY) {
@@ -41,7 +45,8 @@ description: remove pdf file permission checks
  	if (doc->okToCopy()) {
  	  copySelection();
  	} else {
- 	  error(-1, "Copying of text from this document is not allowed.");
+ 	  error(errNotAllowed, -1,
+ 		"Copying of text from this document is not allowed.");
  	}
 +#else
 +        copySelection();
@@ -49,7 +54,7 @@ description: remove pdf file permission checks
        }
  #endif
      }
-@@ -407,9 +413,11 @@
+@@ -408,9 +414,11 @@
    int pg;
    double ulx, uly, lrx, lry;
  
@@ -61,8 +66,10 @@ description: remove pdf file permission checks
    if (getSelection(&pg, &ulx, &uly, &lrx, &lry)) {
      //~ for multithreading: need a mutex here
      if (currentSelection) {
---- a/xpdf/XPDFViewer.cc
-+++ b/xpdf/XPDFViewer.cc
+Index: xpdf/xpdf/XPDFViewer.cc
+===================================================================
+--- xpdf.orig/xpdf/XPDFViewer.cc	2011-08-28 19:53:44.000000000 -0400
++++ xpdf/xpdf/XPDFViewer.cc	2011-08-28 19:54:16.000000000 -0400
 @@ -4,6 +4,8 @@
  //
  // Copyright 2002-2003 Glyph & Cog, LLC
@@ -72,93 +79,16 @@ description: remove pdf file permission checks
  //========================================================================
  
  #include <aconf.h>
-@@ -3406,10 +3408,12 @@
+@@ -3492,10 +3494,12 @@
    PSOutputDev *psOut;
  
    doc = viewer->core->getDoc();
 +#ifdef ENFORCE_PERMISSIONS
    if (!doc->okToPrint()) {
-     error(-1, "Printing this document is not allowed.");
+     error(errNotAllowed, -1, "Printing this document is not allowed.");
      return;
    }
 +#endif
  
    viewer->core->setBusyCursor(gTrue);
  
---- a/xpdf/pdfimages.cc
-+++ b/xpdf/pdfimages.cc
-@@ -4,6 +4,8 @@
- //
- // Copyright 1998-2003 Glyph & Cog, LLC
- //
-+// Modified for Debian by Hamish Moffatt, 22 May 2002.
-+//
- //========================================================================
- 
- #include <aconf.h>
-@@ -119,11 +121,13 @@
-   }
- 
-   // check for copy permission
-+#ifdef ENFORCE_PERMISSIONS
-   if (!doc->okToCopy()) {
-     error(-1, "Copying of images from this document is not allowed.");
-     exitCode = 3;
-     goto err1;
-   }
-+#endif
- 
-   // get page range
-   if (firstPage < 1)
---- a/xpdf/pdftops.cc
-+++ b/xpdf/pdftops.cc
-@@ -4,6 +4,8 @@
- //
- // Copyright 1996-2003 Glyph & Cog, LLC
- //
-+// Modified for Debian by Hamish Moffatt, 22 May 2002.
-+//
- //========================================================================
- 
- #include <aconf.h>
-@@ -278,12 +280,14 @@
-     goto err1;
-   }
- 
-+#ifdef ENFORCE_PERMISSIONS
-   // check for print permission
-   if (!doc->okToPrint()) {
-     error(-1, "Printing this document is not allowed.");
-     exitCode = 3;
-     goto err1;
-   }
-+#endif
- 
-   // construct PostScript file name
-   if (argc == 3) {
---- a/xpdf/pdftotext.cc
-+++ b/xpdf/pdftotext.cc
-@@ -4,6 +4,8 @@
- //
- // Copyright 1997-2003 Glyph & Cog, LLC
- //
-+// Modified for Debian by Hamish Moffatt, 22 May 2002.
-+//
- //========================================================================
- 
- #include <aconf.h>
-@@ -160,12 +162,14 @@
-     goto err2;
-   }
- 
-+#ifdef ENFORCE_PERMISSIONS
-   // check for copy permission
-   if (!doc->okToCopy()) {
-     error(-1, "Copying of text from this document is not allowed.");
-     exitCode = 3;
-     goto err2;
-   }
-+#endif
- 
-   // construct text file name
-   if (argc == 3) {

@@ -5,8 +5,10 @@ description: add additional zoom features
  http://bugs.debian.org/580495 high mag zoom
 author: Rogério Brito, Josh Triplett, Emmanuel Thomé
 debian-bug: http://bugs.debian.org/580495
---- a/xpdf/XPDFViewer.cc
-+++ b/xpdf/XPDFViewer.cc
+Index: xpdf/xpdf/XPDFViewer.cc
+===================================================================
+--- xpdf.orig/xpdf/XPDFViewer.cc	2011-08-28 20:13:42.000000000 -0400
++++ xpdf/xpdf/XPDFViewer.cc	2011-08-28 20:18:49.000000000 -0400
 @@ -140,7 +140,11 @@
    double zoom;
  };
@@ -44,7 +46,7 @@ debian-bug: http://bugs.debian.org/580495
  
  //------------------------------------------------------------------------
  
-@@ -229,6 +237,7 @@
+@@ -232,6 +240,7 @@
    { "toggleFullScreenMode",    0, gFalse, gFalse, &XPDFViewer::cmdToggleFullScreenMode },
    { "toggleOutline",           0, gFalse, gFalse, &XPDFViewer::cmdToggleOutline },
    { "windowMode",              0, gFalse, gFalse, &XPDFViewer::cmdWindowMode },
@@ -52,15 +54,15 @@ debian-bug: http://bugs.debian.org/580495
    { "zoomFitPage",             0, gFalse, gFalse, &XPDFViewer::cmdZoomFitPage },
    { "zoomFitWidth",            0, gFalse, gFalse, &XPDFViewer::cmdZoomFitWidth },
    { "zoomIn",                  0, gFalse, gFalse, &XPDFViewer::cmdZoomIn },
-@@ -361,6 +370,7 @@
+@@ -364,6 +373,7 @@
  
  XPDFViewer::~XPDFViewer() {
    delete core;
 +  delete zoomMenuBtns;
-   XmFontListFree(aboutBigFont);
-   XmFontListFree(aboutVersionFont);
-   XmFontListFree(aboutFixedFont);
-@@ -1353,6 +1363,15 @@
+   if (aboutBigFont) {
+     XmFontListFree(aboutBigFont);
+   }
+@@ -1423,6 +1433,15 @@
    }
  }
  
@@ -76,7 +78,7 @@ debian-bug: http://bugs.debian.org/580495
  void XPDFViewer::cmdZoomIn(GString *args[], int nArgs,
  			   XEvent *event) {
    int z;
-@@ -1731,6 +1750,7 @@
+@@ -1801,6 +1820,7 @@
  #else
    Widget menuPane;
    char buf[16];
@@ -84,8 +86,10 @@ debian-bug: http://bugs.debian.org/580495
    n = 0;
    menuPane = XmCreatePulldownMenu(toolBar, "zoomMenuPane", args, n);
    for (i = 0; i < nZoomMenuItems; ++i) {
---- a/xpdf/XPDFViewer.h
-+++ b/xpdf/XPDFViewer.h
+Index: xpdf/xpdf/XPDFViewer.h
+===================================================================
+--- xpdf.orig/xpdf/XPDFViewer.h	2011-08-28 20:00:57.000000000 -0400
++++ xpdf/xpdf/XPDFViewer.h	2011-08-28 20:18:25.000000000 -0400
 @@ -40,11 +40,6 @@
  
  //------------------------------------------------------------------------
@@ -96,7 +100,7 @@ debian-bug: http://bugs.debian.org/580495
 -//------------------------------------------------------------------------
 -
  struct XPDFViewerCmd {
-   char *name;
+   const char *name;
    int nArgs;
 @@ -54,6 +49,8 @@
  };
@@ -107,7 +111,7 @@ debian-bug: http://bugs.debian.org/580495
  // XPDFViewer
  //------------------------------------------------------------------------
  
-@@ -167,6 +164,7 @@
+@@ -170,6 +167,7 @@
    void cmdWindowMode(GString *args[], int nArgs, XEvent *event);
    void cmdZoomFitPage(GString *args[], int nArgs, XEvent *event);
    void cmdZoomFitWidth(GString *args[], int nArgs, XEvent *event);
@@ -115,7 +119,7 @@ debian-bug: http://bugs.debian.org/580495
    void cmdZoomIn(GString *args[], int nArgs, XEvent *event);
    void cmdZoomOut(GString *args[], int nArgs, XEvent *event);
    void cmdZoomPercent(GString *args[], int nArgs, XEvent *event);
-@@ -327,7 +325,7 @@
+@@ -330,7 +328,7 @@
    Widget zoomComboBox;
  #else
    Widget zoomMenu;
@@ -124,22 +128,20 @@ debian-bug: http://bugs.debian.org/580495
  #endif
    Widget zoomWidget;
    Widget findBtn;
---- a/doc/xpdf.1
-+++ b/doc/xpdf.1
-@@ -103,9 +103,9 @@
- .TP
- .BI \-z " zoom"
+Index: xpdf/doc/xpdf.1
+===================================================================
+--- xpdf.orig/doc/xpdf.1	2011-08-28 19:56:32.000000000 -0400
++++ xpdf/doc/xpdf.1	2011-08-28 20:20:24.000000000 -0400
+@@ -100,7 +100,7 @@
  Set the initial zoom factor.  A number specifies a zoom percentage,
--where 100 means 72 dpi.You may also specify \'page', to fit the page
--to the window size, or \'width', to fit the page width to the window
+ where 100 means 72 dpi.  You may also specify \'page', to fit the page
+ to the window size, or \'width', to fit the page width to the window
 -width.
-+where 100 means 72 dpi.  You may also specify \'page', to fit the page
-+to the window size, \'width', to fit the page width to the window width,
-+or \'height', to fit the page height to the window height.
++width, or \'height', to fit the page height to the window height
  .RB "[config file: " initialZoom "; or X resource: " xpdf.initialZoom ]
  .TP
  .B \-cont
-@@ -434,6 +434,9 @@
+@@ -439,6 +439,9 @@
  .B w
  Set the zoom factor to 'width' (fit page width to window).
  .TP
@@ -149,7 +151,7 @@ debian-bug: http://bugs.debian.org/580495
  .B alt-F
  Toggle full-screen mode.
  .TP
-@@ -586,6 +589,9 @@
+@@ -591,6 +594,9 @@
  .B zoomFitWidth
  Set the zoom factor to fit-width.
  .TP
@@ -159,7 +161,7 @@ debian-bug: http://bugs.debian.org/580495
  .B zoomIn
  Zoom in - go to the next higher zoom factor.
  .TP
-@@ -794,6 +800,7 @@
+@@ -813,6 +819,7 @@
      bind -              any         zoomOut
      bind z              any         zoomFitPage
      bind w              any         zoomFitWidth
@@ -167,8 +169,10 @@ debian-bug: http://bugs.debian.org/580495
      bind alt-f          any         toggleFullScreenMode
      bind ctrl-l         any         redraw
      bind ctrl-w         any         closeWindow
---- a/doc/xpdfrc.5
-+++ b/doc/xpdfrc.5
+Index: xpdf/doc/xpdfrc.5
+===================================================================
+--- xpdf.orig/doc/xpdfrc.5	2011-08-28 19:54:15.000000000 -0400
++++ xpdf/doc/xpdfrc.5	2011-08-28 20:18:25.000000000 -0400
 @@ -365,11 +365,11 @@
  cross-hatching.  This defaults to "no".
  .SH MISCELLANEOUS SETTINGS
@@ -184,9 +188,11 @@ debian-bug: http://bugs.debian.org/580495
  .TP
  .BR continuousView " yes | no"
  If set to "yes", xpdf will start in continuous view mode, i.e., with
---- a/xpdf/GlobalParams.cc
-+++ b/xpdf/GlobalParams.cc
-@@ -895,6 +895,8 @@
+Index: xpdf/xpdf/GlobalParams.cc
+===================================================================
+--- xpdf.orig/xpdf/GlobalParams.cc	2011-08-28 20:11:40.000000000 -0400
++++ xpdf/xpdf/GlobalParams.cc	2011-08-28 20:18:25.000000000 -0400
+@@ -922,6 +922,8 @@
  				     xpdfKeyContextAny, "zoomFitPage"));
    keyBindings->append(new KeyBinding('w', xpdfKeyModNone,
  				     xpdfKeyContextAny, "zoomFitWidth"));
@@ -195,9 +201,11 @@ debian-bug: http://bugs.debian.org/580495
    keyBindings->append(new KeyBinding('f', xpdfKeyModAlt,
  				     xpdfKeyContextAny,
  				     "toggleFullScreenMode"));
---- a/xpdf/PDFCore.cc
-+++ b/xpdf/PDFCore.cc
-@@ -433,6 +433,12 @@
+Index: xpdf/xpdf/PDFCore.cc
+===================================================================
+--- xpdf.orig/xpdf/PDFCore.cc	2011-08-28 20:11:43.000000000 -0400
++++ xpdf/xpdf/PDFCore.cc	2011-08-28 20:18:25.000000000 -0400
+@@ -462,6 +462,12 @@
      dpiA = (hDPI < vDPI) ? hDPI : vDPI;
    } else if (zoomA == zoomWidth) {
      dpiA = (drawAreaWidth / uw) * 72;
@@ -210,7 +218,7 @@ debian-bug: http://bugs.debian.org/580495
    } else {
      dpiA = 0.01 * zoomA * 72;
    }
-@@ -1162,6 +1168,24 @@
+@@ -1216,6 +1222,24 @@
      dpi1 = 72.0 * (double)drawAreaWidth / pageW;
      sx = 0;
  
@@ -235,18 +243,22 @@ debian-bug: http://bugs.debian.org/580495
    } else if (zoomA <= 0) {
      return;
  
---- a/xpdf/PDFCore.h
-+++ b/xpdf/PDFCore.h
+Index: xpdf/xpdf/PDFCore.h
+===================================================================
+--- xpdf.orig/xpdf/PDFCore.h	2011-08-28 19:12:29.000000000 -0400
++++ xpdf/xpdf/PDFCore.h	2011-08-28 20:18:25.000000000 -0400
 @@ -39,6 +39,7 @@
  
  #define zoomPage  -1
  #define zoomWidth -2
 +#define zoomHeight -3
  #define defZoom   125
- #define EPSILON   1.0e-7	// 32-bit floating point machine precision
  
---- a/xpdf/XPDFCore.cc
-+++ b/xpdf/XPDFCore.cc
+ //------------------------------------------------------------------------
+Index: xpdf/xpdf/XPDFCore.cc
+===================================================================
+--- xpdf.orig/xpdf/XPDFCore.cc	2011-08-28 20:13:51.000000000 -0400
++++ xpdf/xpdf/XPDFCore.cc	2011-08-28 20:18:25.000000000 -0400
 @@ -121,6 +121,8 @@
        zoom = zoomPage;
      } else if (!initialZoom->cmp("width")) {
@@ -265,7 +277,7 @@ debian-bug: http://bugs.debian.org/580495
        width = (Dimension)(width1 * 0.01 * defZoom + 0.5);
        height = (Dimension)(height1 * 0.01 * defZoom + 0.5);
      } else {
-@@ -1039,7 +1041,7 @@
+@@ -1050,7 +1052,7 @@
    XtGetValues(core->drawArea, args, n);
    core->drawAreaWidth = (int)w;
    core->drawAreaHeight = (int)h;
@@ -274,14 +286,3 @@ debian-bug: http://bugs.debian.org/580495
      sx = sy = -1;
    } else {
      sx = core->scrollX;
---- a/xpdf/about-text.h
-+++ b/xpdf/about-text.h
-@@ -36,7 +36,7 @@
-   "  v              = forward (history path)",
-   "  b              = backward (history path)",
-   "  0 / + / -      = zoom zero / in / out",
--  "  z / w          = zoom page / page width",
-+  "  z / w / h      = zoom page / page width / page height",
-   "  alt-F          = toggle full-screen mode",
-   "  ctrl-L         = redraw",
-   "  q              = quit",

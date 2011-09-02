@@ -1,18 +1,9 @@
 Description: Fix hyphens in manpages 
---- a/doc/xpdf.1
-+++ b/doc/xpdf.1
-@@ -103,8 +103,8 @@
- .TP
- .BI \-z " zoom"
- Set the initial zoom factor.  A number specifies a zoom percentage,
--where 100 means 72 dpi.You may also specify 'page', to fit the page
--to the window size, or 'width', to fit the page width to the window
-+where 100 means 72 dpi.You may also specify \'page', to fit the page
-+to the window size, or \'width', to fit the page width to the window
- width.
- .RB "[config file: " initialZoom "; or X resource: " xpdf.initialZoom ]
- .TP
-@@ -133,8 +133,8 @@
+Index: xpdf/doc/xpdf.1
+===================================================================
+--- xpdf.orig/doc/xpdf.1	2011-08-28 19:54:15.000000000 -0400
++++ xpdf/doc/xpdf.1	2011-08-28 19:56:32.000000000 -0400
+@@ -128,8 +128,8 @@
  .TP
  .BI \-ps " PS-file"
  Set the default file name for PostScript output (i.e., the name which
@@ -23,37 +14,7 @@ Description: Fix hyphens in manpages
  .RB "[config file: " psFile ]
  .TP
  .BI \-paper " size"
-@@ -187,16 +187,16 @@
- .BI \-exec " command"
- Execute a command (see the
- .B COMMANDS
--section below) in an xpdf remote server window (with -remote only).
-+section below) in an xpdf remote server window (with \-remote only).
- .TP
- .B \-reload
--Reload xpdf remote server window (with -remote only).
-+Reload xpdf remote server window (with \-remote only).
- .TP
- .B \-raise
--Raise xpdf remote server window (with -remote only).
-+Raise xpdf remote server window (with \-remote only).
- .TP
- .B \-quit
--Kill xpdf remote server (with -remote only).
-+Kill xpdf remote server (with \-remote only).
- .TP
- .B \-cmd
- Print commands as they're executed (useful for debugging).
-@@ -270,7 +270,7 @@
- the page number, then hit return.
- .TP
- .B "zoom popup menu"
--Change the zoom factor (see the description of the -z option above).
-+Change the zoom factor (see the description of the \-z option above).
- .TP
- .B "binoculars button"
- Find a text string.
-@@ -420,7 +420,7 @@
+@@ -425,7 +425,7 @@
  Activate the page number text field ("goto page").
  .TP
  .B 0
@@ -62,154 +23,3 @@ Description: Fix hyphens in manpages
  .TP
  .B +
  Zoom in (increment the zoom factor by 1).
-@@ -462,7 +462,7 @@
- # Use xpdf to view PDF files.
- .RE
- .RS
--application/pdf; xpdf -q %s
-+application/pdf; xpdf \-q %s
- .RE
- .PP
- Make sure that xpdf is on your executable search path.
-@@ -473,7 +473,7 @@
- the URL, add this line to your config file:
- .PP
- .RS
--urlCommand "netscape -remote 'openURL(%s)'"
-+urlCommand "netscape \-remote 'openURL(%s)'"
- .RE
- .SH COMMANDS
- Xpdf's key and mouse bindings are user-configurable, using the bind and
-@@ -817,14 +817,14 @@
- (in addition to the file name and page number).  For example:
- .PP
- .RS
--xpdf -remote myServer file.pdf
-+xpdf \-remote myServer file.pdf
- .RE
- .PP
- If there is currently no xpdf running in server mode with the name 'myServer',
- a new xpdf window will be opened.  If another command:
- .PP
- .RS
--xpdf -remote myServer another.pdf 9
-+xpdf \-remote myServer another.pdf 9
- .RE
- .PP
- is issued, a new copy of xpdf will not be started.  Instead, the first
-@@ -833,15 +833,15 @@
- and display page nine.  If the file name is the same:
- .PP
- .RS
--xpdf -remote myServer another.pdf 4
-+xpdf \-remote myServer another.pdf 4
- .RE
- .PP
- the xpdf server will simply display the specified page.
- .PP
--The -raise option tells the server to raise its window; it can be
-+The \-raise option tells the server to raise its window; it can be
- specified with or without a file name and page number.
- .PP
--The -quit option tells the server to close its window and exit.
-+The \-quit option tells the server to close its window and exit.
- .SH EXIT CODES
- The Xpdf tools use the following exit codes:
- .TP
---- a/doc/pdftops.1
-+++ b/doc/pdftops.1
-@@ -25,7 +25,7 @@
- .I file.ps
- (or
- .I file.eps
--with the -eps option).  If 
-+with the \-eps option).  If
- .I PS-file
- is \'-', the PostScript is sent to stdout.
- .SH CONFIGURATION FILE
-@@ -49,8 +49,8 @@
- Generate Level 1 PostScript.  The resulting PostScript files will be
- significantly larger (if they contain images), but will print on Level
- 1 printers.  This also converts all images to black and white.  No
--more than one of the PostScript level options (-level1, -level1sep,
---level2, -level2sep, -level3, -level3Sep) may be given.
-+more than one of the PostScript level options (\-level1, \-level1sep,
-+\-level2, \-level2sep, \-level3, \-level3Sep) may be given.
- .RB "[config file: " psLevel ]
- .TP
- .B \-level1sep
-@@ -77,20 +77,20 @@
- .TP
- .B \-level3Sep
- Generate Level 3 separable PostScript.  The separation handling is the
--same as for -level2Sep.
-+same as for \-level2Sep.
- .RB "[config file: " psLevel ]
- .TP
- .B \-eps
- Generate an Encapsulated PostScript (EPS) file.  An EPS file contains
- a single image, so if you use this option with a multi-page PDF file,
--you must use -f and -l to specify a single page.  No more than one of
--the mode options (-eps, -form) may be given.
-+you must use \-f and \-l to specify a single page.  No more than one of
-+the mode options (\-eps, \-form) may be given.
- .TP
- .B \-form
- Generate a PostScript form which can be imported by software that
- understands forms.  A form contains a single page, so if you use this
--option with a multi-page PDF file, you must use -f and -l to specify a
--single page.  The -level1 option cannot be used with -form.
-+option with a multi-page PDF file, you must use \-f and \-l to specify a
-+single page.  The \-level1 option cannot be used with \-form.
- .TP
- .B \-opi
- Generate OPI comments for all images and forms which have OPI
---- a/doc/pdfinfo.1
-+++ b/doc/pdfinfo.1
-@@ -81,7 +81,7 @@
- .TP
- .BI \-f " number"
- Specifies the first page to examine.  If multiple pages are requested
--using the "-f" and "-l" options, the size of each requested page (and,
-+using the "\-f" and "\-l" options, the size of each requested page (and,
- optionally, the bounding boxes for each requested page) are printed.
- Otherwise, only page one is examined.
- .TP
---- a/doc/xpdfrc.5
-+++ b/doc/xpdfrc.5
-@@ -334,7 +334,7 @@
- .TP
- .BI textEncoding " encoding\-name"
- Sets the encoding to use for text output.  (This can be overridden
--with the "-enc" switch on the command line.)  The
-+with the "\-enc" switch on the command line.)  The
- .I encoding\-name
- must be defined with the unicodeMap command (see above).  This
- defaults to "Latin1".
-@@ -349,7 +349,7 @@
-     mac  = CR
- 
- .fi
--(This can be overridden with the "-eol" switch on the command line.)
-+(This can be overridden with the "\-eol" switch on the command line.)
- The default value is based on the OS where xpdf and pdftotext were
- built.
- .TP
-@@ -580,7 +580,7 @@
- psLevel              level2
- psEmbedType1Fonts    yes
- psEmbedTrueTypeFonts yes
--psFile               "| lpr -Pprinter5"
-+psFile               "| lpr \-Pprinter5"
- 
- # assume that the PostScript printer has the Univers and
- # Univers-Bold fonts
-@@ -594,7 +594,7 @@
- # misc options
- t1libControl    low
- freetypeControl low
--urlCommand      "netscape -remote 'openURL(%s)'"
-+urlCommand      "netscape \-remote 'openURL(%s)'"
- 
- .fi
- .SH FILES

@@ -1,9 +1,11 @@
 description: fix continuous mode crashiness
 author: Michael Gilbert <michael.s.gilbert@gmail.com>
 bug-debian: http://bugs.debian.org/521381
---- xpdf-3.02.orig/xpdf/XPDFCore.cc
-+++ xpdf-3.02/xpdf/XPDFCore.cc
-@@ -1348,7 +1348,7 @@ void XPDFCore::redrawRect(PDFCoreTile *t
+Index: xpdf/xpdf/XPDFCore.cc
+===================================================================
+--- xpdf.orig/xpdf/XPDFCore.cc	2011-08-28 20:13:13.000000000 -0400
++++ xpdf/xpdf/XPDFCore.cc	2011-08-28 20:13:51.000000000 -0400
+@@ -1358,7 +1358,7 @@
    }
  
    // draw the document

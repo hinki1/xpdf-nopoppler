@@ -1,9 +1,9 @@
 Description: debian bug #408502; support for additional print options
-Index: xpdf-3.02/xpdf/XPDFViewer.cc
+Index: xpdf/xpdf/XPDFViewer.cc
 ===================================================================
---- xpdf-3.02.orig/xpdf/XPDFViewer.cc	2010-05-31 23:03:32.000000000 -0400
-+++ xpdf-3.02/xpdf/XPDFViewer.cc	2010-05-31 23:03:36.000000000 -0400
-@@ -3163,7 +3163,7 @@
+--- xpdf.orig/xpdf/XPDFViewer.cc	2011-08-28 19:56:29.000000000 -0400
++++ xpdf/xpdf/XPDFViewer.cc	2011-08-28 20:02:34.000000000 -0400
+@@ -3249,7 +3249,7 @@
  //------------------------------------------------------------------------
  
  void XPDFViewer::initPrintDialog() {
@@ -12,7 +12,7 @@ Index: xpdf-3.02/xpdf/XPDFViewer.cc
    Arg args[20];
    int n;
    XmString s;
-@@ -3289,12 +3289,106 @@
+@@ -3375,12 +3375,106 @@
    sep2 = XmCreateSeparator(printDialog, "sep2", args, n);
    XtManageChild(sep2);
  
@@ -120,7 +120,7 @@ Index: xpdf-3.02/xpdf/XPDFViewer.cc
    XtSetArg(args[n], XmNleftOffset, 4); ++n;
    XtSetArg(args[n], XmNbottomAttachment, XmATTACH_FORM); ++n;
    XtSetArg(args[n], XmNbottomOffset, 4); ++n;
-@@ -3304,7 +3398,7 @@
+@@ -3390,7 +3484,7 @@
  		&printPrintCbk, (XtPointer)this);
    n = 0;
    XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); ++n;
@@ -129,7 +129,7 @@ Index: xpdf-3.02/xpdf/XPDFViewer.cc
    XtSetArg(args[n], XmNtopOffset, 8); ++n;
    XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); ++n;
    XtSetArg(args[n], XmNrightOffset, 4); ++n;
-@@ -3329,6 +3423,60 @@
+@@ -3415,6 +3509,60 @@
    }
  }
  
@@ -190,7 +190,7 @@ Index: xpdf-3.02/xpdf/XPDFViewer.cc
  void XPDFViewer::setupPrintDialog() {
    PDFDoc *doc;
    char buf[20];
-@@ -3396,12 +3544,17 @@
+@@ -3482,12 +3630,17 @@
    XmToggleButtonSetState(viewer->printWithCmdBtn, False, False);
    XtVaSetValues(viewer->printFileText, XmNsensitive, True, NULL);
    XtVaSetValues(viewer->printCmdText, XmNsensitive, False, NULL);
@@ -209,7 +209,7 @@ Index: xpdf-3.02/xpdf/XPDFViewer.cc
    GString *psFileName;
    int firstPage, lastPage;
    PDFDoc *doc;
-@@ -3418,6 +3571,11 @@
+@@ -3504,6 +3657,11 @@
    viewer->core->setBusyCursor(gTrue);
  
    XtVaGetValues(viewer->printWithCmdBtn, XmNset, &withCmd, NULL);
@@ -221,13 +221,12 @@ Index: xpdf-3.02/xpdf/XPDFViewer.cc
    if (withCmd) {
      psFileName = new GString(XmTextFieldGetString(viewer->printCmdText));
      psFileName->insert(0, '|');
-@@ -3438,14 +3596,71 @@
+@@ -3524,13 +3682,71 @@
      lastPage = doc->getNumPages();
    }
  
--  psOut = new PSOutputDev(psFileName->getCString(), doc->getXRef(),
--			  doc->getCatalog(), firstPage, lastPage,
--			  psModePS);
+-  psOut = new PSOutputDev(psFileName->getCString(), doc,
+-			  firstPage, lastPage, psModePS);
 -  if (psOut->isOk()) {
 -    doc->displayPages(psOut, firstPage, lastPage, 72, 72,
 -		      0, gTrue, globalParams->getPSCrop(), gTrue);
@@ -300,11 +299,11 @@ Index: xpdf-3.02/xpdf/XPDFViewer.cc
    delete psFileName;
  
    viewer->core->setBusyCursor(gFalse);
-Index: xpdf-3.02/xpdf/XPDFViewer.h
+Index: xpdf/xpdf/XPDFViewer.h
 ===================================================================
---- xpdf-3.02.orig/xpdf/XPDFViewer.h	2010-05-31 23:03:26.000000000 -0400
-+++ xpdf-3.02/xpdf/XPDFViewer.h	2010-05-31 23:03:36.000000000 -0400
-@@ -279,6 +279,16 @@
+--- xpdf.orig/xpdf/XPDFViewer.h	2011-08-28 19:12:29.000000000 -0400
++++ xpdf/xpdf/XPDFViewer.h	2011-08-28 20:00:57.000000000 -0400
+@@ -282,6 +282,16 @@
  				 XtPointer callData);
    static void printToFileBtnCbk(Widget widget, XtPointer ptr,
  				XtPointer callData);
@@ -321,7 +320,7 @@ Index: xpdf-3.02/xpdf/XPDFViewer.h
    static void printPrintCbk(Widget widget, XtPointer ptr,
  			    XtPointer callData);
  
-@@ -347,6 +357,8 @@
+@@ -351,6 +361,8 @@
    Widget printFileText;
    Widget printFirstPage;
    Widget printLastPage;

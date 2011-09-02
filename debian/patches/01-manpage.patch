@@ -1,8 +1,8 @@
 description: manpage updates
 Index: xpdf/doc/xpdf.1
 ===================================================================
---- xpdf.orig/doc/xpdf.1	2011-08-03 22:43:42.000000000 -0400
-+++ xpdf/doc/xpdf.1	2011-08-03 22:59:09.000000000 -0400
+--- xpdf.orig/doc/xpdf.1	2011-08-28 19:12:29.000000000 -0400
++++ xpdf/doc/xpdf.1	2011-08-28 19:16:54.000000000 -0400
 @@ -10,7 +10,7 @@
  .SH DESCRIPTION
  .B Xpdf
@@ -41,17 +41,6 @@ Index: xpdf/doc/xpdf.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-@@ -92,8 +98,8 @@
- .TP
- .BI \-z " zoom"
- Set the initial zoom factor.  A number specifies a zoom percentage,
--where 100 means 72 dpi.You may also specify \'page', to fit the page
--to the window size, or \'width', to fit the page width to the window
-+where 100 means 72 dpi.You may also specify 'page', to fit the page
-+to the window size, or 'width', to fit the page width to the window
- width.
- .RB "[config file: " initialZoom "; or X resource: " xpdf.initialZoom ]
- .TP
 @@ -123,7 +129,7 @@
  .BI \-ps " PS-file"
  Set the default file name for PostScript output (i.e., the name which
@@ -142,8 +131,8 @@ Index: xpdf/doc/xpdf.1
  the URL, add this line to your config file:
  .PP
  .RS
-@@ -809,8 +825,8 @@
- xpdf -remote myServer file.pdf
+@@ -823,8 +839,8 @@
+ xpdf \-remote myServer file.pdf
  .RE
  .PP
 -If there is currently no xpdf running in server mode with the name
@@ -152,11 +141,11 @@ Index: xpdf/doc/xpdf.1
 +a new xpdf window will be opened.  If another command:
  .PP
  .RS
- xpdf -remote myServer another.pdf 9
+ xpdf \-remote myServer another.pdf 9
 Index: xpdf/doc/xpdfrc.5
 ===================================================================
---- xpdf.orig/doc/xpdfrc.5	2011-08-03 22:43:42.000000000 -0400
-+++ xpdf/doc/xpdfrc.5	2011-08-03 22:43:44.000000000 -0400
+--- xpdf.orig/doc/xpdfrc.5	2011-08-28 19:12:29.000000000 -0400
++++ xpdf/doc/xpdfrc.5	2011-08-28 19:16:05.000000000 -0400
 @@ -7,7 +7,7 @@
  .I .xpdfrc
  file in your home directory, it will be read.  Otherwise, a
@@ -176,7 +165,7 @@ Index: xpdf/doc/xpdfrc.5
  .SH INCLUDE FILES
  .TP
  .BI include " config\-file"
-@@ -596,7 +599,7 @@
+@@ -641,7 +644,7 @@
  .fi
  .SH FILES
  .TP
