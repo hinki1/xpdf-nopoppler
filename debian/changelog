@@ -1,4 +1,4 @@
-xpdf (3.03-1) UNRELEASED; urgency=low
+xpdf (3.03-1) unstable; urgency=low
 
   * New upstream release:
     - Refresh patches.
