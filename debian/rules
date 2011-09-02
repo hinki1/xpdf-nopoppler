@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-libraries=-lXm $(shell pkg-config --libs poppler --libs xt --libs x11)
+libraries=$(shell pkg-config --libs poppler --libs xt --libs x11 --libs lesstif)
 includes=$(strip $(shell pkg-config --cflags poppler))
 CPPFLAGS=$(includes) $(includes)/goo $(includes)/splash -Wno-write-strings -DHAVE_DIRENT_H
 

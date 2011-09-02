@@ -1,7 +1,9 @@
-xpdf (3.02-22) UNRELEASED; urgency=low
+xpdf (3.03-1) UNRELEASED; urgency=low
 
+  * New upstream release.
   * Really pass all arguments when using -m.
   * Fix broken -z argument (closes: #636390).
+  * Use pkg-config for lesstif dependency.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Wed, 03 Aug 2011 23:58:42 -0400
 
