@@ -8,7 +8,7 @@ Build-Depends:
  debhelper (>= 7.0.50~),
  pkg-config,
  libx11-dev,
- lesstif2-dev (>= 1:0.95.2-2),
+ lesstif2-dev,
  libpoppler-dev (>= 0.16)
 DM-Upload-Allowed: yes
 Homepage: http://www.foolabs.com/xpdf/

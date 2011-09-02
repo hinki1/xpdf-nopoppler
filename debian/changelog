@@ -1,6 +1,7 @@
 xpdf (3.03-2) unstable; urgency=low
 
   * Remove old breaks/replaces.
+  * Remove unsatisfiable versioned dependency on lesstif.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Thu, 01 Sep 2011 23:33:38 -0400
 
