@@ -7,6 +7,7 @@ xpdf (3.03-1) UNRELEASED; urgency=low
   * Add various patches for poppler's alternative api:
     - use-poppler-fix-findtext.patch, use-poppler-fix-textoutputdev.patch, and
       use-poppler-openfile.patch.
+  * Remove libxt linker flag.
   * Use -fpermissive build flag.
   * Really pass all arguments when using -m.
   * Fix broken -z argument (closes: #636390).
