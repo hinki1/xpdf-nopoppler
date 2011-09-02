@@ -1,8 +1,11 @@
 #!/usr/bin/make -f
 
-libraries=$(shell pkg-config --libs poppler --libs xt --libs x11 --libs lesstif)
+libraries=-lXm $(shell pkg-config --libs poppler --libs xt --libs x11)
 includes=$(strip $(shell pkg-config --cflags poppler))
 CPPFLAGS=$(includes) $(includes)/goo $(includes)/splash -Wno-write-strings -DHAVE_DIRENT_H
+
+# TODO: is there a better solution?
+CPPFLAGS+=-fpermissive
 
 files=goo/parseargs xpdf/CoreOutputDev xpdf/GlobalParams xpdf/PDFCore
 files+=xpdf/XPDFApp xpdf/XPDFCore xpdf/XPDFTree xpdf/XPDFViewer xpdf/xpdf
@@ -19,10 +22,9 @@ override_dh_auto_configure:
 
 prepare::
 	mkdir -p build
-	cp $(sources) build
+	cp $(sources) $(headers) build
 	sed -e s/GString/GooString/g -e s/GMutex/GooMutex/g -e s/GHash/GooHash/g \
 	    -e s/GList/GooList/g -e s/\<aconf\.h\>/\<poppler-config\.h\>/g -i build/*
-	cp $(headers) build
 	mv build/parseargs.c build/parseargs.cc
 
 override_dh_auto_build: prepare $(objects)

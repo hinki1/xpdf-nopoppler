@@ -4,9 +4,9 @@ xpdf (3.03-1) UNRELEASED; urgency=low
     - Refresh patches.
     - Drop 12-fix-typo-in-help.patch, fix-437725.patch, fix-479467.patch, and
       fix-577031.patch (now applied upstream).
+  * Use -fpermissive build flag.
   * Really pass all arguments when using -m.
   * Fix broken -z argument (closes: #636390).
-  * Use pkg-config for lesstif dependency.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Wed, 03 Aug 2011 23:58:42 -0400
 
