@@ -1,0 +1,61 @@
+Description: Upstream changes introduced in version 3.03-1
+ This patch has been created by dpkg-source during the package build.
+ Here's the last changelog entry, hopefully it gives details on why
+ those changes were made:
+ .
+ xpdf (3.03-1) UNRELEASED; urgency=low
+ .
+   * New upstream release:
+     - Refresh patches.
+     - Drop 12-fix-typo-in-help.patch, fix-437725.patch, fix-479467.patch, and
+       fix-577031.patch (now applied upstream).
+   * Use -fpermissive build flag.
+   * Really pass all arguments when using -m.
+   * Fix broken -z argument (closes: #636390).
+ .
+ The person named in the Author field signed this changelog entry.
+Author: Michael Gilbert <michael.s.gilbert@gmail.com>
+Bug-Debian: http://bugs.debian.org/636390
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: http://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: <YYYY-MM-DD>
+
+--- xpdf-3.03.orig/xpdf/PDFCore.cc
++++ xpdf-3.03/xpdf/PDFCore.cc
+@@ -901,7 +901,7 @@ void PDFCore::needTile(PDFCorePage *page
+     page->links = doc->getLinks(page->page);
+   }
+   if (!page->text) {
+-    if ((textOut = new TextOutputDev(NULL, gTrue, 0, gFalse, gFalse))) {
++    if ((textOut = new TextOutputDev(NULL, gTrue, gFalse, gFalse))) {
+       doc->displayPage(textOut, page->page, dpi, dpi, rotate,
+ 		       gFalse, gTrue, gFalse);
+       page->text = textOut->takeText();
+@@ -1661,7 +1661,7 @@ GString *PDFCore::extractText(int pg, do
+     }
+     s = page->text->getText(x0, y0, x1, y1);
+   } else {
+-    textOut = new TextOutputDev(NULL, gTrue, 0, gFalse, gFalse);
++    textOut = new TextOutputDev(NULL, gTrue, gFalse, gFalse);
+     if (textOut->isOk()) {
+       doc->displayPage(textOut, pg, dpi, dpi, rotate, gFalse, gTrue, gFalse);
+       textOut->cvtUserToDev(xMin, yMin, &x0, &y0);
+@@ -1749,7 +1749,7 @@ GBool PDFCore::findU(Unicode *u, int len
+   if (!onePageOnly) {
+ 
+     // search following/previous pages
+-    textOut = new TextOutputDev(NULL, gTrue, 0, gFalse, gFalse);
++    textOut = new TextOutputDev(NULL, gTrue, gFalse, gFalse);
+     if (!textOut->isOk()) {
+       delete textOut;
+       goto notFound;

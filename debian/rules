@@ -24,7 +24,9 @@ prepare::
 	mkdir -p build
 	cp $(sources) $(headers) build
 	sed -e s/GString/GooString/g -e s/GMutex/GooMutex/g -e s/GHash/GooHash/g \
-	    -e s/GList/GooList/g -e s/\<aconf\.h\>/\<poppler-config\.h\>/g -i build/*
+	    -e s/GList/GooList/g -e s/\<aconf\.h\>/\<poppler-config\.h\>/g \
+	    -e s/errConfig,//g -e s/errSyntaxError,//g -e s/errIO,//g \
+	    -i build/*
 	mv build/parseargs.c build/parseargs.cc
 
 override_dh_auto_build: prepare $(objects)
