@@ -1,3 +1,9 @@
+xpdf (3.03-2) unstable; urgency=low
+
+  * Remove old breaks/replaces.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Thu, 01 Sep 2011 23:33:38 -0400
+
 xpdf (3.03-1) unstable; urgency=low
 
   * New upstream release:

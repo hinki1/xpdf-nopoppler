@@ -20,19 +20,6 @@ Architecture: any
 Depends:
  ${misc:Depends},
  ${shlibs:Depends}
-Breaks:
- xpdf-japanese (<= 1:20040727-1),
- xpdf-korean (<= 1:20040727-1),
- xpdf-chinese-simplified (<= 20040727-1),
- xpdf-chinese-traditional (<= 1:20040727-1),
- xpdf-reader (<< 3.02-10)
-Replaces:
- xpdf-common,
- xpdf-reader,
- xpdf-japanese,
- xpdf-korean,
- xpdf-chinese-simplified,
- xpdf-chinese-traditional 
 Recommends:
  poppler-utils,
  poppler-data,
