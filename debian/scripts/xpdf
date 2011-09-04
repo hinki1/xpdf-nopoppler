@@ -57,7 +57,7 @@ elif [ "$file" = "" ]; then
     $cmd -title "$title"
 else
     tmp=$(tempfile -s .pdf)
-    trap "rm -f \"$tmp\"" EXIT HUP INT QUIT TERM 
+    trap "rm -f -- \"\$tmp\"" EXIT HUP INT QUIT TERM 
     case "$file" in
         *.gz|*.Z)  zcat "$file" > "$tmp" ;;
         *.xz)     xzcat "$file" > "$tmp" ;;

@@ -1,3 +1,10 @@
+xpdf (3.03-3) unstable; urgency=low
+
+  * Further harden tempfile usage against an attacker in control of the
+    TMPFILE environment variable.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sun, 04 Sep 2011 14:50:57 -0400
+
 xpdf (3.03-2) unstable; urgency=low
 
   * Remove old breaks/replaces.
