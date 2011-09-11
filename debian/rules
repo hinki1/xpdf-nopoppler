@@ -20,16 +20,16 @@ override_dh_clean:
 
 override_dh_auto_configure:
 
-prepare::
+build/stamp:
 	mkdir -p build
 	cp $(sources) $(headers) build
 	sed -e s/GString/GooString/g -e s/GMutex/GooMutex/g -e s/GHash/GooHash/g \
 	    -e s/GList/GooList/g -e s/\<aconf\.h\>/\<poppler-config\.h\>/g \
-	    -e s/errConfig,//g -e s/errSyntaxError,//g -e s/errIO,//g \
-	    -i build/*
+	    -e s/errConfig,//g -e s/errSyntaxError,//g -e s/errIO,//g -i build/*
 	mv build/parseargs.c build/parseargs.cc
+	touch $@
 
-override_dh_auto_build: prepare $(objects)
+override_dh_auto_build: build/stamp $(objects)
 	$(CXX) $(LDFLAGS) -o build/xpdf.real build/*.o $(libraries)
 
 %:
