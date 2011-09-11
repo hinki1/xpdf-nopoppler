@@ -3,7 +3,10 @@ xpdf (3.03-3) unstable; urgency=low
   * Use better quoting in the xpdf wrapper script.
   * Replace deprecated "displayFontT1" option in the default xpdfrc file with
     its new replacement: "fontFile" (closes: #640967, #640486).
-  * Add binutils-gold build-conflict.
+  * Disable additional zoom features patch for now (closes: #427632):
+    - if anyone wants this to be re-enabled, the patch needs to be corrected so
+      that fullscreen continuous mode no longer crashes (see closed bug).
+  * Add binutils-gold build conflict.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sun, 04 Sep 2011 14:50:57 -0400
 
