@@ -10,6 +10,8 @@ Build-Depends:
  libx11-dev,
  lesstif2-dev,
  libpoppler-dev (>= 0.16)
+Build-Conflicts:
+ binutils-gold
 DM-Upload-Allowed: yes
 Homepage: http://www.foolabs.com/xpdf/
 Vcs-Browser: http://git.debian.org/?p=collab-maint/xpdf.git
