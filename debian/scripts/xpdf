@@ -54,7 +54,7 @@ if [ "$many" != "" ]; then
         test ! -f "$file" || $cmd "$file" &
     done
 elif [ "$file" = "" ]; then
-    $cmd -title "$title"
+    exec $cmd -title "$title"
 else
     tmp=$(tempfile -s .pdf)
     trap "rm -f -- \"$tmp\"" EXIT HUP INT QUIT TERM 
@@ -64,5 +64,5 @@ else
         *.bz2)    bzcat "$file" > "$tmp" ;;
         *) tmp="$file" ;;
     esac
-    $cmd -title "$title" "$tmp" $pages || true
+    exec $cmd -title "$title" "$tmp" $pages || true
 fi

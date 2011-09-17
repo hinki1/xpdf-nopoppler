@@ -1,3 +1,9 @@
+xpdf (3.03-5) UNRELEASED; urgency=low
+
+  * Use exec to launch xpdf.real (closes: #640177). 
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 17 Sep 2011 04:18:00 -0400
+
 xpdf (3.03-4) unstable; urgency=low
 
   * Fix helvetica font entry in xpdfrc.
