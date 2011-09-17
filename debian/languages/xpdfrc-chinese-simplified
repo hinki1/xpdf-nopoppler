@@ -5,5 +5,5 @@ unicodeMap      EUC-CN          /usr/share/poppler/unicodeMap/EUC-CN
 unicodeMap      GBK             /usr/share/poppler/unicodeMap/GBK
 cMapDir         Adobe-GB1       /usr/share/poppler/cMap/Adobe-GB1
 toUnicodeDir                    /usr/share/poppler/cMap/Adobe-GB1
-displayCIDFontTT        Adobe-GB1      /usr/share/fonts/truetype/wqy/wqy-zenhei.ttc
+fontFileCC      Adobe-GB1       /usr/share/fonts/truetype/wqy/wqy-zenhei.ttc
 #----- end Chinese Simplified support package

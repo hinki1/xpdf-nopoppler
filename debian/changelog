@@ -2,6 +2,8 @@ xpdf (3.03-4) UNRELEASED; urgency=low
 
   * Fix helvetica font entry in xpdfrc.
   * Remove t1lib options from xpdfrc.
+  * Replace newly deprecated commands in various language support files
+    (closes: #640486,640162).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 17 Sep 2011 00:35:39 -0400
 
