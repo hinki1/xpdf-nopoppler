@@ -1,7 +1,8 @@
-xpdf (3.03-4) UNRELEASED; urgency=low
+xpdf (3.03-4) unstable; urgency=low
 
   * Fix helvetica font entry in xpdfrc.
   * Remove t1lib options from xpdfrc.
+  * Assign system xpdfrc file location in debian/rules (drop patch).
   * Replace newly deprecated commands in various language support files
     (closes: #640486,640162).
 

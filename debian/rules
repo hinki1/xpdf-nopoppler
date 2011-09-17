@@ -30,7 +30,7 @@ build/stamp:
 	touch $@
 
 override_dh_auto_build: build/stamp $(objects)
-	$(CXX) $(LDFLAGS) -o build/xpdf.real build/*.o $(libraries)
+	SYSTEM_XPDFRC=/etc/xpdf/xpdfrc $(CXX) $(LDFLAGS) -o build/xpdf.real build/*.o $(libraries)
 
 %:
 	dh ${@}
