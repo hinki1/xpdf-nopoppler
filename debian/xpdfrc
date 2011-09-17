@@ -2,7 +2,7 @@
 #
 # System-wide xpdfrc file
 #
-# The Xpdf tools look for a config file in two places:
+# Xpdf looks for a config file in the following two places:
 # 1. ~/.xpdfrc
 # 2. /etc/xpdf/xpdfrc
 #
@@ -28,7 +28,7 @@ fontFile Times-Roman		/usr/share/fonts/type1/gsfonts/n021003l.pfb
 fontFile Times-Italic		/usr/share/fonts/type1/gsfonts/n021023l.pfb
 fontFile Times-Bold		/usr/share/fonts/type1/gsfonts/n021004l.pfb
 fontFile Times-BoldItalic	/usr/share/fonts/type1/gsfonts/n021024l.pfb
-fontFile Helvetic		/usr/share/fonts/type1/gsfonts/n019003l.pfb
+fontFile Helvetica		/usr/share/fonts/type1/gsfonts/n019003l.pfb
 fontFile Helvetica-Oblique	/usr/share/fonts/type1/gsfonts/n019023l.pfb
 fontFile Helvetica-Bold		/usr/share/fonts/type1/gsfonts/n019004l.pfb
 fontFile Helvetica-BoldOblique	/usr/share/fonts/type1/gsfonts/n019024l.pfb
@@ -72,10 +72,6 @@ psFile			"|lpr"
 #textEOL		unix
 
 #----- misc settings
-
-# Enable Type 1 font rasterizing with t1lib. Default "yes".
-
-#enableT1lib		no
 
 # Enable TrueType and Type 1 font rasterizing with FreeType. Default "yes".
 

@@ -1,3 +1,10 @@
+xpdf (3.03-4) UNRELEASED; urgency=low
+
+  * Fix helvetica font entry in xpdfrc.
+  * Remove t1lib options from xpdfrc.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 17 Sep 2011 00:35:39 -0400
+
 xpdf (3.03-3) unstable; urgency=low
 
   * Use better quoting in the xpdf wrapper script.
