@@ -51,7 +51,7 @@ fontFile ZapfDingbats		/usr/share/fonts/type1/gsfonts/d050000l.pfb
 
 # Set the default PostScript file or command.
 
-psFile			"|lpr"
+psFile			"|lp"
 
 # Set the default PostScript paper size -- this can be letter, legal,
 # A4, or A3.  You can also specify a paper size as width and height
