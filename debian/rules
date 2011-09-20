@@ -1,11 +1,10 @@
 #!/usr/bin/make -f
 
-libraries=-lXm $(shell pkg-config --libs poppler --libs x11)
 includes=$(strip $(shell pkg-config --cflags poppler))
+LDFLAGS=-lXm $(shell pkg-config --libs poppler --libs x11)
 CPPFLAGS=$(includes) $(includes)/goo $(includes)/splash -Wno-write-strings -DHAVE_DIRENT_H
-
-# TODO: is there a better solution?
-CPPFLAGS+=-fpermissive
+CPPFLAGS+=-DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
+CPPFLAGS+=-fpermissive # TODO: is there a better solution?
 
 files=goo/parseargs xpdf/CoreOutputDev xpdf/GlobalParams xpdf/PDFCore
 files+=xpdf/XPDFApp xpdf/XPDFCore xpdf/XPDFTree xpdf/XPDFViewer xpdf/xpdf
@@ -19,18 +18,15 @@ override_dh_clean:
 	rm -rf build
 
 override_dh_auto_configure:
-
-build/stamp:
 	mkdir -p build
 	cp $(sources) $(headers) build
 	sed -e s/GString/GooString/g -e s/GMutex/GooMutex/g -e s/GHash/GooHash/g \
 	    -e s/GList/GooList/g -e s/\<aconf\.h\>/\<poppler-config\.h\>/g \
 	    -e s/errConfig,//g -e s/errSyntaxError,//g -e s/errIO,//g -i build/*
 	mv build/parseargs.c build/parseargs.cc
-	touch $@
 
-override_dh_auto_build: build/stamp $(objects)
-	SYSTEM_XPDFRC=/etc/xpdf/xpdfrc $(CXX) $(LDFLAGS) -o build/xpdf.real build/*.o $(libraries)
+override_dh_auto_build: $(objects)
+	$(CXX) $(LDFLAGS) -o build/xpdf.real build/*.o
 
 %:
 	dh ${@}

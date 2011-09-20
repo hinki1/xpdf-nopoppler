@@ -1,7 +1,8 @@
-xpdf (3.03-5) UNRELEASED; urgency=low
+xpdf (3.03-5) unstable; urgency=low
 
   * Use exec to launch xpdf.real (closes: #640177). 
   * Use lp as default print command (closes: #614045).
+  * Really fix xpdfrc config file location (closes: #641941).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 17 Sep 2011 04:18:00 -0400
 
