@@ -57,12 +57,12 @@ elif [ "$file" = "" ]; then
     exec $cmd -title "$title"
 else
     tmp=$(tempfile -s .pdf)
-    trap "rm -f -- \"$tmp\"" EXIT HUP INT QUIT TERM 
     case "$file" in
         *.gz|*.Z)  zcat "$file" > "$tmp" ;;
         *.xz)     xzcat "$file" > "$tmp" ;;
         *.bz2)    bzcat "$file" > "$tmp" ;;
         *) tmp="$file" ;;
     esac
-    exec $cmd -title "$title" "$tmp" $pages || true
+    exec 3< "$tmp" && rm -f "$tmp"
+    exec $cmd -title "$title" /dev/fd/3 $pages || true
 fi

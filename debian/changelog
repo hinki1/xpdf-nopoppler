@@ -1,3 +1,9 @@
+xpdf (3.03-6) unstable; urgency=low
+
+  * Fix temp file handling with exec (closes: #642203).
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 15 Oct 2011 01:01:54 -0400
+
 xpdf (3.03-5) unstable; urgency=low
 
   * Use exec to launch xpdf.real (closes: #640177). 
