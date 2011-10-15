@@ -4,7 +4,6 @@ includes=$(strip $(shell pkg-config --cflags poppler))
 LDFLAGS=-lXm $(shell pkg-config --libs poppler --libs xt --libs x11)
 CPPFLAGS=$(includes) $(includes)/goo $(includes)/splash -Wno-write-strings -DHAVE_DIRENT_H
 CPPFLAGS+=-DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
-CPPFLAGS+=-fpermissive # TODO: is there a better solution?
 
 files=goo/parseargs xpdf/CoreOutputDev xpdf/GlobalParams xpdf/PDFCore
 files+=xpdf/XPDFApp xpdf/XPDFCore xpdf/XPDFTree xpdf/XPDFViewer xpdf/xpdf

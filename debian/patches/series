@@ -18,3 +18,5 @@ use-poppler-fix-textoutputdev.patch
 use-poppler-fix-findtext.patch
 use-poppler-openfile.patch
 use-poppler-fix-findfontfile.patch
+
+fix-invalid-conversions.patch

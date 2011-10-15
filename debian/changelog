@@ -1,6 +1,7 @@
 xpdf (3.03-6) unstable; urgency=low
 
   * Build with binutils-gold.
+  * Fix some invalid conversions.
   * Fix temp file handling with exec (closes: #642203).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 15 Oct 2011 01:01:54 -0400

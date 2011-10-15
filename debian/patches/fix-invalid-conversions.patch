@@ -1,0 +1,48 @@
+description: fix some invalid type conversions
+author: Michael Gilbert <michael.s.gilbert@gmail.com> 
+--- xpdf-3.03.orig/xpdf/GlobalParams.cc
++++ xpdf-3.03/xpdf/GlobalParams.cc
+@@ -86,9 +86,9 @@ extern FILE *openFile(const char *path,
+ //------------------------------------------------------------------------
+ 
+ static struct {
+-  const char *name;
+-  const char *t1FileName;
+-  const char *ttFileName;
++  char *name;
++  char *t1FileName;
++  char *ttFileName;
+ } displayFontTab[] = {
+   {"Courier",               "n022003l.pfb", "cour.ttf"},
+   {"Courier-Bold",          "n022004l.pfb", "courbd.ttf"},
+@@ -2008,7 +2008,7 @@ GString *GlobalParams::getBaseDir() {
+   return s;
+ }
+ 
+-Unicode GlobalParams::mapNameToUnicode(const char *charName) {
++Unicode GlobalParams::mapNameToUnicode(char *charName) {
+   // no need to lock - nameToUnicode is constant
+   return nameToUnicode->lookup(charName);
+ }
+--- xpdf-3.03.orig/xpdf/GlobalParams.h
++++ xpdf-3.03/xpdf/GlobalParams.h
+@@ -191,7 +191,7 @@ public:
+   CharCode getMacRomanCharCode(char *charName);
+ 
+   GString *getBaseDir();
+-  Unicode mapNameToUnicode(const char *charName);
++  Unicode mapNameToUnicode(char *charName);
+   UnicodeMap *getResidentUnicodeMap(GString *encodingName);
+   FILE *getUnicodeMapFile(GString *encodingName);
+   FILE *findCMapFile(GString *collection, GString *cMapName);
+--- xpdf-3.03.orig/xpdf/XPDFViewer.cc
++++ xpdf-3.03/xpdf/XPDFViewer.cc
+@@ -136,7 +136,7 @@
+ //------------------------------------------------------------------------
+ 
+ struct ZoomMenuInfo {
+-  const char *label;
++  char *label;
+   double zoom;
+ };
+ 
