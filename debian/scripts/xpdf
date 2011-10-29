@@ -18,7 +18,6 @@
 
 set -e
 
-echo $@
 file=""
 many=""
 pages=""
@@ -52,8 +51,6 @@ test "$title" != "" || title="Xpdf: $file"
 if [ "$many" != "" ]; then
     cmd=$(echo "$cmd" | sed s/xpdf\.real/xpdf/g)
     printf "%s\n" "$many" | while read -r file; do
-        echo $file
-        echo $cmd
         test ! -f "$file" || $cmd "$file" &
     done
 elif [ "$file" = "" ]; then
@@ -64,7 +61,7 @@ else
         *.gz|*.Z)  zcat "$file" > "$tmp" && exec 3< "$tmp" ;;
         *.xz)     xzcat "$file" > "$tmp" && exec 3< "$tmp" ;;
         *.bz2)    bzcat "$file" > "$tmp" && exec 3< "$tmp" ;;
-        *)        exec 3< "$file" ;;
+        *)                                  exec 3< "$file" ;;
     esac
     rm -f "$tmp"
     exec $cmd -title "$title" /dev/fd/3 $pages || true

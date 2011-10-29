@@ -1,10 +1,10 @@
 xpdf (3.03-6) unstable; urgency=low
 
-  * Update copyright file for latest dep5 standard.
   * Build with binutils-gold.
   * Fix hyphen in xpdfrc manpage.
   * Enable all build-hardening flags.
   * Fix some invalid type conversions.
+  * Update copyright file to latest dep5 standard.
   * Fix temp file handling with exec (closes: #642203).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Sat, 15 Oct 2011 01:01:54 -0400
