@@ -1,6 +1,8 @@
 xpdf (3.03-6) unstable; urgency=low
 
+  * Update dep5 URL.
   * Build with binutils-gold.
+  * Fix hyphen in xpdfrc manpage.
   * Enable all build-hardening flags.
   * Fix some invalid type conversions.
   * Fix temp file handling with exec (closes: #642203).

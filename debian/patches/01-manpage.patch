@@ -1,8 +1,8 @@
 description: manpage updates
 Index: xpdf/doc/xpdf.1
 ===================================================================
---- xpdf.orig/doc/xpdf.1	2011-08-28 19:12:29.000000000 -0400
-+++ xpdf/doc/xpdf.1	2011-08-28 19:16:54.000000000 -0400
+--- xpdf.orig/doc/xpdf.1	2011-10-29 16:08:41.000000000 -0400
++++ xpdf/doc/xpdf.1	2011-10-29 16:09:03.000000000 -0400
 @@ -10,7 +10,7 @@
  .SH DESCRIPTION
  .B Xpdf
@@ -144,8 +144,8 @@ Index: xpdf/doc/xpdf.1
  xpdf \-remote myServer another.pdf 9
 Index: xpdf/doc/xpdfrc.5
 ===================================================================
---- xpdf.orig/doc/xpdfrc.5	2011-08-28 19:12:29.000000000 -0400
-+++ xpdf/doc/xpdfrc.5	2011-08-28 19:16:05.000000000 -0400
+--- xpdf.orig/doc/xpdfrc.5	2011-10-29 16:08:41.000000000 -0400
++++ xpdf/doc/xpdfrc.5	2011-10-29 16:10:45.000000000 -0400
 @@ -7,7 +7,7 @@
  .I .xpdfrc
  file in your home directory, it will be read.  Otherwise, a
@@ -165,6 +165,15 @@ Index: xpdf/doc/xpdfrc.5
  .SH INCLUDE FILES
  .TP
  .BI include " config\-file"
+@@ -467,7 +470,7 @@
+ default value is "no".
+ .TP
+ .BI launchCommand " command"
+-Sets the command executed when you click on a "launch"-type link.  The
++Sets the command executed when you click on a "launch"\-type link.  The
+ intent is for the command to be a program/script which determines the
+ file type and runs the appropriate viewer.  The command line will
+ consist of the file to be launched, followed by any parameters
 @@ -641,7 +644,7 @@
  .fi
  .SH FILES
