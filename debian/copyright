@@ -1,7 +1,8 @@
-Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=202
-Name: Xpdf
+Format: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=202
+Upstream-Name: Xpdf
 Source: http://www.foolabs.com/xpdf
 
+Files: *
 Copyright: 1996-2007, Derek B. Noonburg <derekn@foolabs.com>
 License: GPL-2+
  Xpdf is licensed under the GNU General Public License (GPL), version

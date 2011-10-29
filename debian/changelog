@@ -1,6 +1,6 @@
 xpdf (3.03-6) unstable; urgency=low
 
-  * Update dep5 URL.
+  * Update copyright file for latest dep5 standard.
   * Build with binutils-gold.
   * Fix hyphen in xpdfrc manpage.
   * Enable all build-hardening flags.
