@@ -1,3 +1,9 @@
+xpdf (3.03-8) unstable; urgency=low
+
+  * Fix regular file handling.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 06 Dec 2011 15:11:46 -0500
+
 xpdf (3.03-7) unstable; urgency=low
 
   * Fix build-hardening to include +pie,+bindnow.

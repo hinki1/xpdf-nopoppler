@@ -58,11 +58,10 @@ elif [ "$file" = "" ]; then
 else
     tmp=$(tempfile -s .pdf)
     case "$file" in
-        *.gz|*.Z)  zcat "$file" > "$tmp" && exec 3< "$tmp" ;;
-        *.xz)     xzcat "$file" > "$tmp" && exec 3< "$tmp" ;;
-        *.bz2)    bzcat "$file" > "$tmp" && exec 3< "$tmp" ;;
-        *)                                  exec 3< "$file" ;;
+        *.gz|*.Z)  zcat "$file" > "$tmp" && exec 3< "$tmp" && file=/dev/fd/3 ;;
+        *.xz)     xzcat "$file" > "$tmp" && exec 3< "$tmp" && file=/dev/fd/3 ;;
+        *.bz2)    bzcat "$file" > "$tmp" && exec 3< "$tmp" && file=/dev/fd/3 ;;
     esac
     rm -f "$tmp"
-    exec $cmd -title "$title" /dev/fd/3 $pages || true
+    exec $cmd -title "$title" "$file" $pages || true
 fi
