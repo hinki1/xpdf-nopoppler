@@ -1,6 +1,8 @@
 xpdf (3.03-8) unstable; urgency=low
 
   * Fix regular file handling.
+  * Build-conflict with binutils-gold, which is only available on certain
+    architectures (closes: #648556).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 06 Dec 2011 15:11:46 -0500
 
