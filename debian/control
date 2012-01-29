@@ -25,7 +25,8 @@ Depends:
 Recommends:
  poppler-utils,
  poppler-data,
- gsfonts-x11
+ gsfonts-x11,
+ yudit
 Provides:
  pdf-viewer
 Description: Portable Document Format (PDF) reader

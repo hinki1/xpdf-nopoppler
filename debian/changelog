@@ -1,9 +1,10 @@
 xpdf (3.03-8) unstable; urgency=low
 
-  * Fix regular file handling.
+  * Fix uncompressed file handling (closes: #647223).
   * Build-conflict with binutils-gold (closes: #648556).
   * Bump to debhelper 9.
     - simplify hardening build flag logic in debian/rules (closes: #652689).
+  * Convert UTF8 titles to ISO8859 when yudit is available (closes: #645903).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 06 Dec 2011 15:11:46 -0500
 
