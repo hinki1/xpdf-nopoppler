@@ -1,11 +1,7 @@
 #!/usr/bin/make -f
 
 # build-hardening flags
-hardening="+pie,+bindnow"
-CFLAGS=$(shell DEB_BUILD_MAINT_OPTIONS="hardening=${hardening}" dpkg-buildflags --get CFLAGS)
-LDFLAGS=$(shell DEB_BUILD_MAINT_OPTIONS="hardening=${hardening}" dpkg-buildflags --get LDFLAGS)
-CPPFLAGS=$(shell DEB_BUILD_MAINT_OPTIONS="hardening=${hardening}" dpkg-buildflags --get CPPFLAGS)
-CXXFLAGS=$(shell DEB_BUILD_MAINT_OPTIONS="hardening=${hardening}" dpkg-buildflags --get CXXFLAGS)
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
 includes=$(strip $(shell pkg-config --cflags poppler))
 LDFLAGS+=-lXm $(shell pkg-config --libs poppler --libs xt --libs x11)

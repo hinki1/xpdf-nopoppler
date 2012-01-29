@@ -1,9 +1,9 @@
 xpdf (3.03-8) unstable; urgency=low
 
   * Fix regular file handling.
-  * Build-conflict with binutils-gold, which is only available on certain
-    architectures (closes: #648556).
+  * Build-conflict with binutils-gold (closes: #648556).
   * Bump to debhelper 9.
+    - simplify hardening build flag logic in debian/rules (closes: #652689).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Tue, 06 Dec 2011 15:11:46 -0500
 
