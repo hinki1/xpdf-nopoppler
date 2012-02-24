@@ -1,3 +1,11 @@
+xpdf (3.03-9) unstable; urgency=low
+
+  * Let poppler find and select non-embedded font file locations.  Thanks to
+    Vincent Lefevre for finding a solution to this issue (closes: #641873).
+  * Remove now ineffective font file configuration options from xpdfrc.
+
+ -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 24 Feb 2012 17:33:29 -0500
+
 xpdf (3.03-8) unstable; urgency=low
 
   * Fix uncompressed file handling (closes: #647223).
