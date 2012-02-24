@@ -4,6 +4,8 @@ xpdf (3.03-9) unstable; urgency=low
     Vincent Lefevre for finding a solution to this problem (closes: #641873).
   * Remove now ineffective font file configuration options from xpdfrc.
   * Revert UTF8 title conversion change (closes: #659272).
+  * Revert lp as default print command.  Use lpr instead and recommend cups-bsd
+    package (closes: #652606).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 24 Feb 2012 17:33:29 -0500
 
