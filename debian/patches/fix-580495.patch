@@ -3,13 +3,13 @@ description: add additional zoom features
  http://bugs.debian.org/424178 hight patch
  http://bugs.debian.org/578892 bug fix to hight patch
  http://bugs.debian.org/580495 high mag zoom
-author: Rogério Brito, Josh Triplett, Emmanuel Thomé
+author: Rogério Brito, Josh Triplett, Emmanuel Thomé, Jörg-Volker Peetz
 debian-bug: http://bugs.debian.org/580495
 Index: xpdf/xpdf/XPDFViewer.cc
 ===================================================================
---- xpdf.orig/xpdf/XPDFViewer.cc	2011-08-28 20:13:42.000000000 -0400
-+++ xpdf/xpdf/XPDFViewer.cc	2011-08-28 20:18:49.000000000 -0400
-@@ -140,7 +140,11 @@
+--- xpdf.orig/xpdf/XPDFViewer.cc	2011-08-15 23:08:53.000000000 +0200
++++ xpdf/xpdf/XPDFViewer.cc	2012-01-30 11:55:29.979167781 +0100
+@@ -138,7 +139,11 @@
    double zoom;
  };
  
@@ -22,7 +22,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
    { "400%",      400 },
    { "200%",      200 },
    { "150%",      150 },
-@@ -150,14 +154,18 @@
+@@ -148,14 +153,22 @@
    { "25%",        25 },
    { "12.5%",      12.5 },
    { "fit page",  zoomPage },
@@ -32,6 +32,10 @@ Index: xpdf/xpdf/XPDFViewer.cc
  };
  
 +#define nZoomMenuItems (sizeof(zoomMenuInfo)/sizeof(struct ZoomMenuInfo))
++
++#ifndef USE_COMBO_BOX
++  Widget zoomMenuBtns[nZoomMenuItems];
++#endif
 +
  #define maxZoomIdx   0
 -#define defZoomIdx   3
@@ -46,7 +50,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
  
  //------------------------------------------------------------------------
  
-@@ -232,6 +240,7 @@
+@@ -230,6 +237,7 @@
    { "toggleFullScreenMode",    0, gFalse, gFalse, &XPDFViewer::cmdToggleFullScreenMode },
    { "toggleOutline",           0, gFalse, gFalse, &XPDFViewer::cmdToggleOutline },
    { "windowMode",              0, gFalse, gFalse, &XPDFViewer::cmdWindowMode },
@@ -54,15 +58,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
    { "zoomFitPage",             0, gFalse, gFalse, &XPDFViewer::cmdZoomFitPage },
    { "zoomFitWidth",            0, gFalse, gFalse, &XPDFViewer::cmdZoomFitWidth },
    { "zoomIn",                  0, gFalse, gFalse, &XPDFViewer::cmdZoomIn },
-@@ -364,6 +373,7 @@
- 
- XPDFViewer::~XPDFViewer() {
-   delete core;
-+  delete zoomMenuBtns;
-   if (aboutBigFont) {
-     XmFontListFree(aboutBigFont);
-   }
-@@ -1423,6 +1433,15 @@
+@@ -1421,6 +1431,15 @@
    }
  }
  
@@ -78,18 +74,19 @@ Index: xpdf/xpdf/XPDFViewer.cc
  void XPDFViewer::cmdZoomIn(GString *args[], int nArgs,
  			   XEvent *event) {
    int z;
-@@ -1801,6 +1820,7 @@
- #else
-   Widget menuPane;
-   char buf[16];
-+  zoomMenuBtns = new Widget[nZoomMenuItems];
-   n = 0;
+@@ -1803,7 +1822,7 @@
    menuPane = XmCreatePulldownMenu(toolBar, "zoomMenuPane", args, n);
    for (i = 0; i < nZoomMenuItems; ++i) {
+     n = 0;
+-    s = XmStringCreateLocalized(zoomMenuInfo[i].label);
++    s = XmStringCreateLocalized((char*)zoomMenuInfo[i].label);
+     XtSetArg(args[n], XmNlabelString, s); ++n;
+     XtSetArg(args[n], XmNuserData, (XtPointer)i); ++n;
+     sprintf(buf, "zoom%d", i);
 Index: xpdf/xpdf/XPDFViewer.h
 ===================================================================
---- xpdf.orig/xpdf/XPDFViewer.h	2011-08-28 20:00:57.000000000 -0400
-+++ xpdf/xpdf/XPDFViewer.h	2011-08-28 20:18:25.000000000 -0400
+--- xpdf.orig/xpdf/XPDFViewer.h.orig	2011-08-15 23:08:53.000000000 +0200
++++ xpdf/xpdf/XPDFViewer.h	2012-01-30 11:52:01.425839100 +0100
 @@ -40,11 +40,6 @@
  
  //------------------------------------------------------------------------
@@ -102,7 +99,7 @@ Index: xpdf/xpdf/XPDFViewer.h
  struct XPDFViewerCmd {
    const char *name;
    int nArgs;
-@@ -54,6 +49,8 @@
+@@ -54,6 +54,8 @@
  };
  
  //------------------------------------------------------------------------
@@ -111,7 +108,7 @@ Index: xpdf/xpdf/XPDFViewer.h
  // XPDFViewer
  //------------------------------------------------------------------------
  
-@@ -170,6 +167,7 @@
+@@ -170,6 +172,7 @@
    void cmdWindowMode(GString *args[], int nArgs, XEvent *event);
    void cmdZoomFitPage(GString *args[], int nArgs, XEvent *event);
    void cmdZoomFitWidth(GString *args[], int nArgs, XEvent *event);
@@ -119,12 +116,11 @@ Index: xpdf/xpdf/XPDFViewer.h
    void cmdZoomIn(GString *args[], int nArgs, XEvent *event);
    void cmdZoomOut(GString *args[], int nArgs, XEvent *event);
    void cmdZoomPercent(GString *args[], int nArgs, XEvent *event);
-@@ -330,7 +328,7 @@
+@@ -320,7 +318,6 @@
    Widget zoomComboBox;
  #else
    Widget zoomMenu;
 -  Widget zoomMenuBtns[nZoomMenuItems];
-+  Widget *zoomMenuBtns;
  #endif
    Widget zoomWidget;
    Widget findBtn;
