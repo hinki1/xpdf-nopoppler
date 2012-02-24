@@ -1,8 +1,9 @@
 xpdf (3.03-9) unstable; urgency=low
 
   * Let poppler find and select non-embedded font file locations.  Thanks to
-    Vincent Lefevre for finding a solution to this issue (closes: #641873).
+    Vincent Lefevre for finding a solution to this problem (closes: #641873).
   * Remove now ineffective font file configuration options from xpdfrc.
+  * Revert UTF8 title conversion change (closes: #659272).
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 24 Feb 2012 17:33:29 -0500
 

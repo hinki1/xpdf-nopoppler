@@ -48,8 +48,6 @@ while [ "$#" -gt "0" ]; do
 done
 
 test "$title" != "" || title="Xpdf: $file"
-test -f /usr/bin/uniconv && \
-    title=$(echo $title | /usr/bin/uniconv -encode iso-8859-1) || true
 if [ "$many" != "" ]; then
     cmd=$(echo "$cmd" | sed s/xpdf\.real/xpdf/g)
     printf "%s\n" "$many" | while read -r file; do
