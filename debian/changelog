@@ -8,6 +8,8 @@ xpdf (3.03-9) unstable; urgency=low
     recommend cups-bsd package (closes: #652606).
   * Fix segfault issue in additional zoom options patch and enable it again.
     Thanks to Jörg-Volker Peetz (closes: #654308).
+  * Support title refresh when starting from a non-compressed file
+    (lp: #932062).
   * Bump standards to 3.9.3.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 24 Feb 2012 17:33:29 -0500

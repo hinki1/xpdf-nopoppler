@@ -47,21 +47,28 @@ while [ "$#" -gt "0" ]; do
     shift
 done
 
-test "$title" != "" || title="Xpdf: $file"
 if [ "$many" != "" ]; then
     cmd=$(echo "$cmd" | sed s/xpdf\.real/xpdf/g)
     printf "%s\n" "$many" | while read -r file; do
         test ! -f "$file" || $cmd "$file" &
     done
-elif [ "$file" = "" ]; then
-    exec $cmd -title "$title"
 else
     tmp=$(tempfile -s .pdf)
     case "$file" in
-        *.gz|*.Z)  zcat "$file" > "$tmp" && exec 3< "$tmp" && file=/dev/fd/3 ;;
-        *.xz)     xzcat "$file" > "$tmp" && exec 3< "$tmp" && file=/dev/fd/3 ;;
-        *.bz2)    bzcat "$file" > "$tmp" && exec 3< "$tmp" && file=/dev/fd/3 ;;
+        *.gz|*.Z|*.xz|*.bz2) test "$title" != "" || title="Xpdf: $file";;
+    esac
+    case "$file" in
+        *.gz|*.Z)  zcat "$file" > "$tmp" && exec 3< "$tmp" && file="/dev/fd/3";;
+        *.xz)     xzcat "$file" > "$tmp" && exec 3< "$tmp" && file="/dev/fd/3";;
+        *.bz2)    bzcat "$file" > "$tmp" && exec 3< "$tmp" && file="/dev/fd/3";;
     esac
     rm -f "$tmp"
-    exec $cmd -title "$title" "$file" $pages || true
+
+    if [ "$file" = "" ]; then
+        exec $cmd || true
+    elif [ "$title" = "" ]; then
+        exec $cmd "$file" $pages || true
+    else
+        exec $cmd -title "$title" "$file" $pages || true
+    fi
 fi
