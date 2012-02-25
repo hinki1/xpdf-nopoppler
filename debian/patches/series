@@ -20,3 +20,4 @@ use-poppler-openfile.patch
 use-poppler-fix-findfontfile.patch
 
 fix-invalid-conversions.patch
+check-system-calls.patch
