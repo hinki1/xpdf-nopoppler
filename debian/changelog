@@ -12,6 +12,7 @@ xpdf (3.03-9) unstable; urgency=low
     (lp: #932062).
   * Use "Xpdf" instead of "xpdf" in documentation on Xresources
     (closes: #631450).
+  * Add -Wno-format-extra-args to build flags.
   * Bump standards to 3.9.3.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 24 Feb 2012 17:33:29 -0500
