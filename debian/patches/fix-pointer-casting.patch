@@ -1,0 +1,13 @@
+description: fix casting to pointer of different size 
+author: Michael Gilbert <michael.s.gilbert@gmail.com>
+--- xpdf-3.03.orig/xpdf/XPDFViewer.cc
++++ xpdf-3.03/xpdf/XPDFViewer.cc
+@@ -1833,7 +1833,7 @@ void XPDFViewer::initToolbar(Widget pare
+     n = 0;
+     s = XmStringCreateLocalized((char*)zoomMenuInfo[i].label);
+     XtSetArg(args[n], XmNlabelString, s); ++n;
+-    XtSetArg(args[n], XmNuserData, (XtPointer)i); ++n;
++    XtSetArg(args[n], XmNuserData, i); ++n;
+     sprintf(buf, "zoom%d", i);
+     btn = XmCreatePushButton(menuPane, buf, args, n);
+     XmStringFree(s);

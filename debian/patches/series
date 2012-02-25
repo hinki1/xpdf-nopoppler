@@ -19,5 +19,7 @@ use-poppler-fix-findtext.patch
 use-poppler-openfile.patch
 use-poppler-fix-findfontfile.patch
 
+# fixes for build-hardening compiler warnings
 fix-invalid-conversions.patch
 check-system-calls.patch
+fix-pointer-casting.patch
