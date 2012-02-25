@@ -3,9 +3,9 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
 bug-debian: http://bugs.debian.org/521381
 Index: xpdf/xpdf/XPDFCore.cc
 ===================================================================
---- xpdf.orig/xpdf/XPDFCore.cc	2011-08-28 20:13:13.000000000 -0400
-+++ xpdf/xpdf/XPDFCore.cc	2011-08-28 20:13:51.000000000 -0400
-@@ -1358,7 +1358,7 @@
+--- xpdf.orig/xpdf/XPDFCore.cc	2012-02-24 19:41:55.000000000 -0500
++++ xpdf/xpdf/XPDFCore.cc	2012-02-24 19:41:59.000000000 -0500
+@@ -1355,7 +1355,7 @@
    }
  
    // draw the document

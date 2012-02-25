@@ -7,9 +7,9 @@ author: Rogério Brito, Josh Triplett, Emmanuel Thomé, Jörg-Volker Peetz
 debian-bug: http://bugs.debian.org/580495
 Index: xpdf/xpdf/XPDFViewer.cc
 ===================================================================
---- xpdf.orig/xpdf/XPDFViewer.cc	2011-08-15 23:08:53.000000000 +0200
-+++ xpdf/xpdf/XPDFViewer.cc	2012-01-30 11:55:29.979167781 +0100
-@@ -138,7 +139,11 @@
+--- xpdf.orig/xpdf/XPDFViewer.cc	2012-02-24 19:41:57.000000000 -0500
++++ xpdf/xpdf/XPDFViewer.cc	2012-02-24 19:42:05.000000000 -0500
+@@ -140,7 +140,11 @@
    double zoom;
  };
  
@@ -22,7 +22,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
    { "400%",      400 },
    { "200%",      200 },
    { "150%",      150 },
-@@ -148,14 +153,22 @@
+@@ -150,14 +154,22 @@
    { "25%",        25 },
    { "12.5%",      12.5 },
    { "fit page",  zoomPage },
@@ -50,7 +50,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
  
  //------------------------------------------------------------------------
  
-@@ -230,6 +237,7 @@
+@@ -232,6 +244,7 @@
    { "toggleFullScreenMode",    0, gFalse, gFalse, &XPDFViewer::cmdToggleFullScreenMode },
    { "toggleOutline",           0, gFalse, gFalse, &XPDFViewer::cmdToggleOutline },
    { "windowMode",              0, gFalse, gFalse, &XPDFViewer::cmdWindowMode },
@@ -58,7 +58,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
    { "zoomFitPage",             0, gFalse, gFalse, &XPDFViewer::cmdZoomFitPage },
    { "zoomFitWidth",            0, gFalse, gFalse, &XPDFViewer::cmdZoomFitWidth },
    { "zoomIn",                  0, gFalse, gFalse, &XPDFViewer::cmdZoomIn },
-@@ -1421,6 +1431,15 @@
+@@ -1423,6 +1436,15 @@
    }
  }
  
@@ -74,7 +74,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
  void XPDFViewer::cmdZoomIn(GString *args[], int nArgs,
  			   XEvent *event) {
    int z;
-@@ -1803,7 +1822,7 @@
+@@ -1805,7 +1827,7 @@
    menuPane = XmCreatePulldownMenu(toolBar, "zoomMenuPane", args, n);
    for (i = 0; i < nZoomMenuItems; ++i) {
      n = 0;
@@ -85,8 +85,8 @@ Index: xpdf/xpdf/XPDFViewer.cc
      sprintf(buf, "zoom%d", i);
 Index: xpdf/xpdf/XPDFViewer.h
 ===================================================================
---- xpdf.orig/xpdf/XPDFViewer.h.orig	2011-08-15 23:08:53.000000000 +0200
-+++ xpdf/xpdf/XPDFViewer.h	2012-01-30 11:52:01.425839100 +0100
+--- xpdf.orig/xpdf/XPDFViewer.h	2012-02-24 19:41:57.000000000 -0500
++++ xpdf/xpdf/XPDFViewer.h	2012-02-24 19:42:05.000000000 -0500
 @@ -40,11 +40,6 @@
  
  //------------------------------------------------------------------------
@@ -99,7 +99,7 @@ Index: xpdf/xpdf/XPDFViewer.h
  struct XPDFViewerCmd {
    const char *name;
    int nArgs;
-@@ -54,6 +54,8 @@
+@@ -54,6 +49,8 @@
  };
  
  //------------------------------------------------------------------------
@@ -108,7 +108,7 @@ Index: xpdf/xpdf/XPDFViewer.h
  // XPDFViewer
  //------------------------------------------------------------------------
  
-@@ -170,6 +172,7 @@
+@@ -170,6 +167,7 @@
    void cmdWindowMode(GString *args[], int nArgs, XEvent *event);
    void cmdZoomFitPage(GString *args[], int nArgs, XEvent *event);
    void cmdZoomFitWidth(GString *args[], int nArgs, XEvent *event);
@@ -116,7 +116,7 @@ Index: xpdf/xpdf/XPDFViewer.h
    void cmdZoomIn(GString *args[], int nArgs, XEvent *event);
    void cmdZoomOut(GString *args[], int nArgs, XEvent *event);
    void cmdZoomPercent(GString *args[], int nArgs, XEvent *event);
-@@ -320,7 +318,6 @@
+@@ -330,7 +328,6 @@
    Widget zoomComboBox;
  #else
    Widget zoomMenu;
@@ -126,8 +126,8 @@ Index: xpdf/xpdf/XPDFViewer.h
    Widget findBtn;
 Index: xpdf/doc/xpdf.1
 ===================================================================
---- xpdf.orig/doc/xpdf.1	2011-08-28 19:56:32.000000000 -0400
-+++ xpdf/doc/xpdf.1	2011-08-28 20:20:24.000000000 -0400
+--- xpdf.orig/doc/xpdf.1	2012-02-24 19:41:56.000000000 -0500
++++ xpdf/doc/xpdf.1	2012-02-24 19:42:05.000000000 -0500
 @@ -100,7 +100,7 @@
  Set the initial zoom factor.  A number specifies a zoom percentage,
  where 100 means 72 dpi.  You may also specify \'page', to fit the page
@@ -167,8 +167,8 @@ Index: xpdf/doc/xpdf.1
      bind ctrl-w         any         closeWindow
 Index: xpdf/doc/xpdfrc.5
 ===================================================================
---- xpdf.orig/doc/xpdfrc.5	2011-08-28 19:54:15.000000000 -0400
-+++ xpdf/doc/xpdfrc.5	2011-08-28 20:18:25.000000000 -0400
+--- xpdf.orig/doc/xpdfrc.5	2012-02-24 19:41:55.000000000 -0500
++++ xpdf/doc/xpdfrc.5	2012-02-24 19:42:05.000000000 -0500
 @@ -365,11 +365,11 @@
  cross-hatching.  This defaults to "no".
  .SH MISCELLANEOUS SETTINGS
@@ -186,8 +186,8 @@ Index: xpdf/doc/xpdfrc.5
  If set to "yes", xpdf will start in continuous view mode, i.e., with
 Index: xpdf/xpdf/GlobalParams.cc
 ===================================================================
---- xpdf.orig/xpdf/GlobalParams.cc	2011-08-28 20:11:40.000000000 -0400
-+++ xpdf/xpdf/GlobalParams.cc	2011-08-28 20:18:25.000000000 -0400
+--- xpdf.orig/xpdf/GlobalParams.cc	2012-02-24 19:41:52.000000000 -0500
++++ xpdf/xpdf/GlobalParams.cc	2012-02-24 19:42:05.000000000 -0500
 @@ -922,6 +922,8 @@
  				     xpdfKeyContextAny, "zoomFitPage"));
    keyBindings->append(new KeyBinding('w', xpdfKeyModNone,
@@ -199,8 +199,8 @@ Index: xpdf/xpdf/GlobalParams.cc
  				     "toggleFullScreenMode"));
 Index: xpdf/xpdf/PDFCore.cc
 ===================================================================
---- xpdf.orig/xpdf/PDFCore.cc	2011-08-28 20:11:43.000000000 -0400
-+++ xpdf/xpdf/PDFCore.cc	2011-08-28 20:18:25.000000000 -0400
+--- xpdf.orig/xpdf/PDFCore.cc	2012-02-24 19:41:55.000000000 -0500
++++ xpdf/xpdf/PDFCore.cc	2012-02-24 19:42:05.000000000 -0500
 @@ -462,6 +462,12 @@
      dpiA = (hDPI < vDPI) ? hDPI : vDPI;
    } else if (zoomA == zoomWidth) {
@@ -241,8 +241,8 @@ Index: xpdf/xpdf/PDFCore.cc
  
 Index: xpdf/xpdf/PDFCore.h
 ===================================================================
---- xpdf.orig/xpdf/PDFCore.h	2011-08-28 19:12:29.000000000 -0400
-+++ xpdf/xpdf/PDFCore.h	2011-08-28 20:18:25.000000000 -0400
+--- xpdf.orig/xpdf/PDFCore.h	2012-02-24 19:41:52.000000000 -0500
++++ xpdf/xpdf/PDFCore.h	2012-02-24 19:42:05.000000000 -0500
 @@ -39,6 +39,7 @@
  
  #define zoomPage  -1
@@ -253,9 +253,9 @@ Index: xpdf/xpdf/PDFCore.h
  //------------------------------------------------------------------------
 Index: xpdf/xpdf/XPDFCore.cc
 ===================================================================
---- xpdf.orig/xpdf/XPDFCore.cc	2011-08-28 20:13:51.000000000 -0400
-+++ xpdf/xpdf/XPDFCore.cc	2011-08-28 20:18:25.000000000 -0400
-@@ -121,6 +121,8 @@
+--- xpdf.orig/xpdf/XPDFCore.cc	2012-02-24 19:41:59.000000000 -0500
++++ xpdf/xpdf/XPDFCore.cc	2012-02-24 19:42:05.000000000 -0500
+@@ -120,6 +120,8 @@
        zoom = zoomPage;
      } else if (!initialZoom->cmp("width")) {
        zoom = zoomWidth;
@@ -264,7 +264,7 @@ Index: xpdf/xpdf/XPDFCore.cc
      } else {
        zoom = atoi(initialZoom->getCString());
        if (zoom <= 0) {
-@@ -249,7 +251,7 @@
+@@ -248,7 +250,7 @@
        width1 = doc->getPageCropWidth(pg);
        height1 = doc->getPageCropHeight(pg);
      }
@@ -273,7 +273,7 @@ Index: xpdf/xpdf/XPDFCore.cc
        width = (Dimension)(width1 * 0.01 * defZoom + 0.5);
        height = (Dimension)(height1 * 0.01 * defZoom + 0.5);
      } else {
-@@ -1050,7 +1052,7 @@
+@@ -1047,7 +1049,7 @@
    XtGetValues(core->drawArea, args, n);
    core->drawAreaWidth = (int)w;
    core->drawAreaHeight = (int)h;

@@ -1,8 +1,10 @@
 description: fix some invalid type conversions
 author: Michael Gilbert <michael.s.gilbert@gmail.com> 
---- xpdf-3.03.orig/xpdf/GlobalParams.cc
-+++ xpdf-3.03/xpdf/GlobalParams.cc
-@@ -86,9 +86,9 @@ extern FILE *openFile(const char *path,
+Index: xpdf/xpdf/GlobalParams.cc
+===================================================================
+--- xpdf.orig/xpdf/GlobalParams.cc	2012-02-24 19:42:47.000000000 -0500
++++ xpdf/xpdf/GlobalParams.cc	2012-02-24 19:42:50.000000000 -0500
+@@ -86,9 +86,9 @@
  //------------------------------------------------------------------------
  
  static struct {
@@ -15,7 +17,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  } displayFontTab[] = {
    {"Courier",               "n022003l.pfb", "cour.ttf"},
    {"Courier-Bold",          "n022004l.pfb", "courbd.ttf"},
-@@ -2008,7 +2008,7 @@ GString *GlobalParams::getBaseDir() {
+@@ -2010,7 +2010,7 @@
    return s;
  }
  
@@ -24,9 +26,11 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
    // no need to lock - nameToUnicode is constant
    return nameToUnicode->lookup(charName);
  }
---- xpdf-3.03.orig/xpdf/GlobalParams.h
-+++ xpdf-3.03/xpdf/GlobalParams.h
-@@ -191,7 +191,7 @@ public:
+Index: xpdf/xpdf/GlobalParams.h
+===================================================================
+--- xpdf.orig/xpdf/GlobalParams.h	2012-02-24 19:42:47.000000000 -0500
++++ xpdf/xpdf/GlobalParams.h	2012-02-24 19:42:50.000000000 -0500
+@@ -191,7 +191,7 @@
    CharCode getMacRomanCharCode(char *charName);
  
    GString *getBaseDir();
@@ -35,8 +39,10 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
    UnicodeMap *getResidentUnicodeMap(GString *encodingName);
    FILE *getUnicodeMapFile(GString *encodingName);
    FILE *findCMapFile(GString *collection, GString *cMapName);
---- xpdf-3.03.orig/xpdf/XPDFViewer.cc
-+++ xpdf-3.03/xpdf/XPDFViewer.cc
+Index: xpdf/xpdf/XPDFViewer.cc
+===================================================================
+--- xpdf.orig/xpdf/XPDFViewer.cc	2012-02-24 19:42:39.000000000 -0500
++++ xpdf/xpdf/XPDFViewer.cc	2012-02-24 19:42:50.000000000 -0500
 @@ -136,7 +136,7 @@
  //------------------------------------------------------------------------
  

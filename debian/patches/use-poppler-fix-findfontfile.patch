@@ -2,9 +2,9 @@ description: use poppler's findfontfile api
 author: Michael Gilbert <michael.s.gilbert@gmail.com>
 Index: xpdf/xpdf/GlobalParams.cc
 ===================================================================
---- xpdf.orig/xpdf/GlobalParams.cc	2012-02-24 17:22:40.000000000 -0500
-+++ xpdf/xpdf/GlobalParams.cc	2012-02-24 17:24:06.000000000 -0500
-@@ -2085,7 +2085,7 @@
+--- xpdf.orig/xpdf/GlobalParams.cc	2012-02-24 19:42:46.000000000 -0500
++++ xpdf/xpdf/GlobalParams.cc	2012-02-24 19:42:47.000000000 -0500
+@@ -2087,7 +2087,7 @@
    return NULL;
  }
  
@@ -13,7 +13,7 @@ Index: xpdf/xpdf/GlobalParams.cc
    static const char *exts[] = { ".pfa", ".pfb", ".ttf", ".ttc" };
    GString *path, *dir;
  #ifdef WIN32
-@@ -2095,6 +2095,7 @@
+@@ -2097,6 +2097,7 @@
    FILE *f;
    int i, j;
  
@@ -23,8 +23,8 @@ Index: xpdf/xpdf/GlobalParams.cc
      path = path->copy();
 Index: xpdf/xpdf/GlobalParams.h
 ===================================================================
---- xpdf.orig/xpdf/GlobalParams.h	2012-02-24 17:22:40.000000000 -0500
-+++ xpdf/xpdf/GlobalParams.h	2012-02-24 17:22:44.000000000 -0500
+--- xpdf.orig/xpdf/GlobalParams.h	2012-02-24 19:42:46.000000000 -0500
++++ xpdf/xpdf/GlobalParams.h	2012-02-24 19:42:47.000000000 -0500
 @@ -196,7 +196,7 @@
    FILE *getUnicodeMapFile(GString *encodingName);
    FILE *findCMapFile(GString *collection, GString *cMapName);
