@@ -134,7 +134,7 @@ Index: xpdf/doc/xpdf.1
  to the window size, or \'width', to fit the page width to the window
 -width.
 +width, or \'height', to fit the page height to the window height
- .RB "[config file: " initialZoom "; or X resource: " xpdf.initialZoom ]
+ .RB "[config file: " initialZoom "; or X resource: " Xpdf.initialZoom ]
  .TP
  .B \-cont
 @@ -439,6 +439,9 @@

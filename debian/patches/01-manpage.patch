@@ -1,8 +1,8 @@
 description: manpage updates
 Index: xpdf/doc/xpdf.1
 ===================================================================
---- xpdf.orig/doc/xpdf.1	2011-10-29 16:08:41.000000000 -0400
-+++ xpdf/doc/xpdf.1	2011-10-29 16:09:03.000000000 -0400
+--- xpdf.orig/doc/xpdf.1	2012-02-24 19:44:18.000000000 -0500
++++ xpdf/doc/xpdf.1	2012-02-24 19:44:54.000000000 -0500
 @@ -10,7 +10,7 @@
  .SH DESCRIPTION
  .B Xpdf
@@ -41,6 +41,64 @@ Index: xpdf/doc/xpdf.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
+@@ -54,48 +60,48 @@
+ Set the initial window geometry.
+ .RB ( \-geometry
+ is equivalent.)
+-.RB "[X resource: " xpdf.geometry ]
++.RB "[X resource: " Xpdf.geometry ]
+ .TP
+ .BI \-title " title"
+ Set the window title.  By default, the title will be "xpdf: foo.pdf".
+-.RB "[X resource: " xpdf.title ]
++.RB "[X resource: " Xpdf.title ]
+ .TP
+ .B \-cmap
+ Install a private colormap.  This is ignored on TrueColor visuals.
+-.RB "[X resource: " xpdf.installCmap ]
++.RB "[X resource: " Xpdf.installCmap ]
+ .TP
+ .BI \-rgb " number"
+ Set the size of largest RGB cube xpdf will try to allocate.  The
+ default is 5 (for a 5x5x5 cube); set to a smaller number to conserve
+ color table entries.  This is ignored with private colormaps and on
+ TrueColor visuals.
+-.RB "[X resource: " xpdf.rgbCubeSize ]
++.RB "[X resource: " Xpdf.rgbCubeSize ]
+ .TP
+ .B \-rv
+ Set reverse video mode.  This reverses the colors of everything except
+ images.  It may not always produce great results for PDF files which
+ do weird things with color.  This also causes the paper color to
+ default to black.
+-.RB "[X resource: " xpdf.reverseVideo ]
++.RB "[X resource: " Xpdf.reverseVideo ]
+ .TP
+ .BI \-papercolor " color"
+ Set the "paper color", i.e., the background of the page display.  This
+ will not work too well with PDF files that do things like filling in
+ white behind the text.
+-.RB "[X resource: " xpdf.paperColor ]
++.RB "[X resource: " Xpdf.paperColor ]
+ .TP
+ .BI \-mattecolor " color"
+ Set the matte color, i.e., the color used for background outside the
+ actual page area.  (There is a separate setting,
+-xpdf.fullScreenMatteColor, for full-screen mode.)
+-.RB "[X resource: " xpdf.matteColor ]
++Xpdf.fullScreenMatteColor, for full-screen mode.)
++.RB "[X resource: " Xpdf.matteColor ]
+ .TP
+ .BI \-z " zoom"
+ Set the initial zoom factor.  A number specifies a zoom percentage,
+ where 100 means 72 dpi.  You may also specify \'page', to fit the page
+ to the window size, or \'width', to fit the page width to the window
+ width.
+-.RB "[config file: " initialZoom "; or X resource: " xpdf.initialZoom ]
++.RB "[config file: " initialZoom "; or X resource: " Xpdf.initialZoom ]
+ .TP
+ .B \-cont
+ Start in continuous view mode, i.e., with one vertical scroll bar for
 @@ -123,7 +129,7 @@
  .BI \-ps " PS-file"
  Set the default file name for PostScript output (i.e., the name which
@@ -50,7 +108,7 @@ Index: xpdf/doc/xpdf.1
  .RB "[config file: " psFile ]
  .TP
  .BI \-paper " size"
-@@ -210,6 +216,16 @@
+@@ -210,10 +216,20 @@
  .B \-\-help
  are equivalent.)
  .PP
@@ -67,7 +125,12 @@ Index: xpdf/doc/xpdf.1
  Several other standard X options and resources will work as expected:
  .TP
  .BI \-display " display"
-@@ -231,7 +247,7 @@
+-.RB "[X resource: " xpdf.display ]
++.RB "[X resource: " Xpdf.display ]
+ .TP
+ .BI \-fg " color"
+ .RB ( \-foreground
+@@ -231,15 +247,15 @@
  .RB "[X resource: " xpdf*fontList ]
  .PP
  The color and font options only affect the user interface elements,
@@ -76,6 +139,16 @@ Index: xpdf/doc/xpdf.1
  .PP
  The following X resources do not have command line option equivalents:
  .TP
+-.B xpdf.toolTipEnable
++.B Xpdf.toolTipEnable
+ Enables (if set to true) or disables (if set to false) the tool-tips
+ on the toolbar buttons.
+ .TP
+-.B xpdf.fullScreenMatteColor
++.B Xpdf.fullScreenMatteColor
+ Sets the matte color to be used in full-screen mode.  The default
+ setting is "black".
+ .SH CONTROLS
 @@ -254,7 +270,7 @@
  .B "dashed left/right arrow buttons"
  Move backward or forward along the history path.
@@ -144,8 +217,8 @@ Index: xpdf/doc/xpdf.1
  xpdf \-remote myServer another.pdf 9
 Index: xpdf/doc/xpdfrc.5
 ===================================================================
---- xpdf.orig/doc/xpdfrc.5	2011-10-29 16:08:41.000000000 -0400
-+++ xpdf/doc/xpdfrc.5	2011-10-29 16:10:45.000000000 -0400
+--- xpdf.orig/doc/xpdfrc.5	2012-02-24 19:44:18.000000000 -0500
++++ xpdf/doc/xpdfrc.5	2012-02-24 19:44:22.000000000 -0500
 @@ -7,7 +7,7 @@
  .I .xpdfrc
  file in your home directory, it will be read.  Otherwise, a

@@ -10,6 +10,8 @@ xpdf (3.03-9) unstable; urgency=low
     Thanks to Jörg-Volker Peetz (closes: #654308).
   * Support title refresh when starting from a non-compressed file
     (lp: #932062).
+  * Use "Xpdf" instead of "xpdf" in documentation on Xresources
+    (closes: #631450).
   * Bump standards to 3.9.3.
 
  -- Michael Gilbert <michael.s.gilbert@gmail.com>  Fri, 24 Feb 2012 17:33:29 -0500
