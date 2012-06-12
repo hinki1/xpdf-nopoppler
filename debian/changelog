@@ -1,3 +1,10 @@
+xpdf (3.03-10) unstable; urgency=low
+
+  * Build-depend on libpoppler-private-dev (closes: #660992).
+  * Update my email address.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Mon, 11 Jun 2012 21:40:47 -0400
+
 xpdf (3.03-9) unstable; urgency=low
 
   * Let poppler find and select non-embedded font file locations.  Thanks to

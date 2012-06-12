@@ -1,7 +1,7 @@
 Source: xpdf
 Section: text
 Priority: optional
-Maintainer: Michael Gilbert <michael.s.gilbert@gmail.com>
+Maintainer: Michael Gilbert <mgilbert@debian.org>
 Uploaders: Osamu Aoki <osamu@debian.org>
 Standards-Version: 3.9.3
 Build-Depends: 
@@ -9,7 +9,7 @@ Build-Depends:
  pkg-config,
  libx11-dev,
  lesstif2-dev,
- libpoppler-dev (>= 0.16),
+ libpoppler-private-dev (>= 0.16),
 Build-Conflicts:
  binutils-gold,
 DM-Upload-Allowed: yes
