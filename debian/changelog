@@ -1,3 +1,14 @@
+xpdf (3.03-11) unstable; urgency=low
+
+  * Bump standards to 3.9.4.
+  * Fix printing issue (closes: #622877).
+  * Add libxt-dev build dependency (closes: #707927).
+  * Support linking with --as-needed (closes: #671765).
+  * Switch to libmotif instead of lesstif (closes: #697098).
+  * Replace and conflict with xpdf-reader (closes: #707818).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Fri, 31 May 2013 19:33:24 +0000
+
 xpdf (3.03-10) unstable; urgency=low
 
   * Build-depend on libpoppler-private-dev (closes: #660992).

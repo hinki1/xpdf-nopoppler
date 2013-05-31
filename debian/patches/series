@@ -22,4 +22,4 @@ use-poppler-fix-findfontfile.patch
 # fixes for build-hardening compiler warnings
 fix-invalid-conversions.patch
 check-system-calls.patch
-fix-pointer-casting.patch
+fix-622877.patch

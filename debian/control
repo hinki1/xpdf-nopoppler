@@ -3,19 +3,19 @@ Section: text
 Priority: optional
 Maintainer: Michael Gilbert <mgilbert@debian.org>
 Uploaders: Osamu Aoki <osamu@debian.org>
-Standards-Version: 3.9.3
+Standards-Version: 3.9.4
 Build-Depends: 
  debhelper (>= 9),
  pkg-config,
+ libxt-dev,
  libx11-dev,
- lesstif2-dev,
+ libmotif-dev,
  libpoppler-private-dev (>= 0.16),
 Build-Conflicts:
  binutils-gold,
-DM-Upload-Allowed: yes
 Homepage: http://www.foolabs.com/xpdf/
-Vcs-Browser: http://git.debian.org/?p=collab-maint/xpdf.git
-Vcs-Git: git://git.debian.org/git/collab-maint/xpdf.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/xpdf.git
+Vcs-Git: git://anonscm.debian.org/gitweb/?p=collab-maint/xpdf.git
 
 Package: xpdf
 Architecture: any
@@ -28,7 +28,13 @@ Recommends:
  gsfonts-x11,
  cups-bsd,
 Provides:
- pdf-viewer
+ pdf-viewer,
+Conflicts:
+ xpdf-reader,
+ xpdf-common,
+Replaces:
+ xpdf-reader,
+ xpdf-common,
 Description: Portable Document Format (PDF) reader
  xpdf is a light-weight open source viewer for Portable Document Format (PDF)
  files (also called 'Adobe Acrobat' or 'Acrobat' files).  This is just the
