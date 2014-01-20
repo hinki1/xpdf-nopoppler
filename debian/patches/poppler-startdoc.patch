@@ -1,15 +1,6 @@
 description: startDoc now takes a PDFDoc instead of an XRef
 author : Andy Whitcroft <apw@ubuntu.com>
 
---- a/xpdf/CoreOutputDev.cc	2014-01-19 22:07:33.000000000 -0500
-+++ b/xpdf/CoreOutputDev.cc	2014-01-19 22:14:30.348068784 -0500
-@@ -57,5 +57,5 @@
- 
- void CoreOutputDev::clear() {
-   startDoc(NULL);
--  startPage(0, NULL);
-+  startPage(0, NULL, NULL);
- }
 --- a/xpdf/PDFCore.cc	2014-01-19 22:11:52.616069172 -0500
 +++ b/xpdf/PDFCore.cc	2014-01-19 22:14:10.164068834 -0500
 @@ -196,7 +196,7 @@

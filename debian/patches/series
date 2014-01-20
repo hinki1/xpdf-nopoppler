@@ -18,5 +18,5 @@ hardening-pointer-casting.patch
 poppler-textpage-destructor.patch
 poppler-filespecname.patch
 poppler-findtext.patch
-poppler-start.patch
+poppler-startdoc.patch
 poppler-xpdfparams.patch
