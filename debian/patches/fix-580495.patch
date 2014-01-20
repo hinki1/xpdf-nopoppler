@@ -5,10 +5,9 @@ description: add additional zoom features
  http://bugs.debian.org/580495 high mag zoom
 author: Rogério Brito, Josh Triplett, Emmanuel Thomé, Jörg-Volker Peetz
 debian-bug: http://bugs.debian.org/580495
-Index: xpdf/xpdf/XPDFViewer.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFViewer.cc	2012-02-24 19:41:57.000000000 -0500
-+++ xpdf/xpdf/XPDFViewer.cc	2012-02-24 19:42:05.000000000 -0500
+
+--- a/xpdf/XPDFViewer.cc	2012-02-24 19:41:57.000000000 -0500
++++ b/xpdf/XPDFViewer.cc	2012-02-24 19:42:05.000000000 -0500
 @@ -140,7 +140,11 @@
    double zoom;
  };
@@ -83,10 +82,8 @@ Index: xpdf/xpdf/XPDFViewer.cc
      XtSetArg(args[n], XmNlabelString, s); ++n;
      XtSetArg(args[n], XmNuserData, (XtPointer)i); ++n;
      sprintf(buf, "zoom%d", i);
-Index: xpdf/xpdf/XPDFViewer.h
-===================================================================
---- xpdf.orig/xpdf/XPDFViewer.h	2012-02-24 19:41:57.000000000 -0500
-+++ xpdf/xpdf/XPDFViewer.h	2012-02-24 19:42:05.000000000 -0500
+--- a/xpdf/XPDFViewer.h	2012-02-24 19:41:57.000000000 -0500
++++ b/xpdf/XPDFViewer.h	2012-02-24 19:42:05.000000000 -0500
 @@ -40,11 +40,6 @@
  
  //------------------------------------------------------------------------
@@ -124,10 +121,8 @@ Index: xpdf/xpdf/XPDFViewer.h
  #endif
    Widget zoomWidget;
    Widget findBtn;
-Index: xpdf/doc/xpdf.1
-===================================================================
---- xpdf.orig/doc/xpdf.1	2012-02-24 19:41:56.000000000 -0500
-+++ xpdf/doc/xpdf.1	2012-02-24 19:42:05.000000000 -0500
+--- a/doc/xpdf.1	2012-02-24 19:41:56.000000000 -0500
++++ b/doc/xpdf.1	2012-02-24 19:42:05.000000000 -0500
 @@ -100,7 +100,7 @@
  Set the initial zoom factor.  A number specifies a zoom percentage,
  where 100 means 72 dpi.  You may also specify \'page', to fit the page
@@ -165,10 +160,8 @@ Index: xpdf/doc/xpdf.1
      bind alt-f          any         toggleFullScreenMode
      bind ctrl-l         any         redraw
      bind ctrl-w         any         closeWindow
-Index: xpdf/doc/xpdfrc.5
-===================================================================
---- xpdf.orig/doc/xpdfrc.5	2012-02-24 19:41:55.000000000 -0500
-+++ xpdf/doc/xpdfrc.5	2012-02-24 19:42:05.000000000 -0500
+--- a/doc/xpdfrc.5	2012-02-24 19:41:55.000000000 -0500
++++ b/doc/xpdfrc.5	2012-02-24 19:42:05.000000000 -0500
 @@ -365,11 +365,11 @@
  cross-hatching.  This defaults to "no".
  .SH MISCELLANEOUS SETTINGS
@@ -184,23 +177,8 @@ Index: xpdf/doc/xpdfrc.5
  .TP
  .BR continuousView " yes | no"
  If set to "yes", xpdf will start in continuous view mode, i.e., with
-Index: xpdf/xpdf/GlobalParams.cc
-===================================================================
---- xpdf.orig/xpdf/GlobalParams.cc	2012-02-24 19:41:52.000000000 -0500
-+++ xpdf/xpdf/GlobalParams.cc	2012-02-24 19:42:05.000000000 -0500
-@@ -922,6 +922,8 @@
- 				     xpdfKeyContextAny, "zoomFitPage"));
-   keyBindings->append(new KeyBinding('w', xpdfKeyModNone,
- 				     xpdfKeyContextAny, "zoomFitWidth"));
-+  keyBindings->append(new KeyBinding('h', xpdfKeyModNone,
-+				     xpdfKeyContextAny, "zoomFitHeight"));
-   keyBindings->append(new KeyBinding('f', xpdfKeyModAlt,
- 				     xpdfKeyContextAny,
- 				     "toggleFullScreenMode"));
-Index: xpdf/xpdf/PDFCore.cc
-===================================================================
---- xpdf.orig/xpdf/PDFCore.cc	2012-02-24 19:41:55.000000000 -0500
-+++ xpdf/xpdf/PDFCore.cc	2012-02-24 19:42:05.000000000 -0500
+--- a/xpdf/PDFCore.cc	2012-02-24 19:41:55.000000000 -0500
++++ b/xpdf/PDFCore.cc	2012-02-24 19:42:05.000000000 -0500
 @@ -462,6 +462,12 @@
      dpiA = (hDPI < vDPI) ? hDPI : vDPI;
    } else if (zoomA == zoomWidth) {
@@ -239,10 +217,8 @@ Index: xpdf/xpdf/PDFCore.cc
    } else if (zoomA <= 0) {
      return;
  
-Index: xpdf/xpdf/PDFCore.h
-===================================================================
---- xpdf.orig/xpdf/PDFCore.h	2012-02-24 19:41:52.000000000 -0500
-+++ xpdf/xpdf/PDFCore.h	2012-02-24 19:42:05.000000000 -0500
+--- a/xpdf/PDFCore.h	2012-02-24 19:41:52.000000000 -0500
++++ b/xpdf/PDFCore.h	2012-02-24 19:42:05.000000000 -0500
 @@ -39,6 +39,7 @@
  
  #define zoomPage  -1
@@ -251,10 +227,8 @@ Index: xpdf/xpdf/PDFCore.h
  #define defZoom   125
  
  //------------------------------------------------------------------------
-Index: xpdf/xpdf/XPDFCore.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFCore.cc	2012-02-24 19:41:59.000000000 -0500
-+++ xpdf/xpdf/XPDFCore.cc	2012-02-24 19:42:05.000000000 -0500
+--- a/xpdf/XPDFCore.cc	2012-02-24 19:41:59.000000000 -0500
++++ b/xpdf/XPDFCore.cc	2012-02-24 19:42:05.000000000 -0500
 @@ -120,6 +120,8 @@
        zoom = zoomPage;
      } else if (!initialZoom->cmp("width")) {

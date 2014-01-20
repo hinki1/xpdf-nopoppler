@@ -1,0 +1,14 @@
+description: fix some invalid type conversions
+author: Michael Gilbert <michael.s.gilbert@gmail.com> 
+
+--- a/xpdf/XPDFViewer.cc
++++ b/xpdf/XPDFViewer.cc
+@@ -136,7 +136,7 @@
+ //------------------------------------------------------------------------
+ 
+ struct ZoomMenuInfo {
+-  const char *label;
++  char *label;
+   double zoom;
+ };
+ 

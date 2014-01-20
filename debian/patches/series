@@ -9,17 +9,14 @@ fix-512381.patch
 fix-580495.patch
 fix-627426.patch
 
-# patches to use poppler
-use-poppler-get-cmap-arguments.patch
-use-poppler-private-textpage-destructor.patch
-use-poppler-fix-filespecname.patch
-use-poppler-fix-psoutputdev.patch
-use-poppler-fix-textoutputdev.patch
-use-poppler-fix-findtext.patch
-use-poppler-openfile.patch
-use-poppler-fix-findfontfile.patch
-
 # fixes for build-hardening compiler warnings
-fix-invalid-conversions.patch
-check-system-calls.patch
-fix-622877.patch
+hardening-invalid-conversions.patch
+hardening-system-calls.patch
+hardening-pointer-casting.patch
+
+# patches to use poppler
+poppler-textpage-destructor.patch
+poppler-filespecname.patch
+poppler-findtext.patch
+poppler-start.patch
+poppler-xpdfparams.patch

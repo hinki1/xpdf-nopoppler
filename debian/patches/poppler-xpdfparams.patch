@@ -1,0 +1,856 @@
+Description: delete settings that are not available in Poppler
+Author: Dmitry Shachnev <mitya57@ubuntu.com>
+Bug-Debian: http://bugs.debian.org/640515
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/943195
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/1205732
+Last-Update: 2013-09-11
+
+Index: xpdf/xpdf/PDFCore.cc
+===================================================================
+--- xpdf.orig/xpdf/PDFCore.cc	2014-01-20 04:01:40.684061826 +0000
++++ xpdf/xpdf/PDFCore.cc	2014-01-20 04:01:40.684061826 +0000
+@@ -18,6 +18,7 @@
+ #include "GString.h"
+ #include "GList.h"
+ #include "GlobalParams.h"
++#include "XPDFParams.h"
+ #include "Splash.h"
+ #include "SplashBitmap.h"
+ #include "SplashPattern.h"
+@@ -86,7 +87,7 @@
+   int i;
+ 
+   doc = NULL;
+-  continuousMode = globalParams->getContinuousView();
++  continuousMode = xpdfParams->getContinuousView();
+   drawAreaWidth = drawAreaHeight = 0;
+   maxPageW = totalDocH = 0;
+   pageY = NULL;
+Index: xpdf/xpdf/XPDFCore.cc
+===================================================================
+--- xpdf.orig/xpdf/XPDFCore.cc	2014-01-20 04:01:40.684061826 +0000
++++ xpdf/xpdf/XPDFCore.cc	2014-01-20 04:01:40.684061826 +0000
+@@ -22,6 +22,7 @@
+ #include "GList.h"
+ #include "Error.h"
+ #include "GlobalParams.h"
++#include "XPDFParams.h"
+ #include "PDFDoc.h"
+ #include "Link.h"
+ #include "FileSpec.h"
+@@ -116,7 +117,7 @@
+   if (fullScreen) {
+     zoom = zoomPage;
+   } else {
+-    initialZoom = globalParams->getInitialZoom();
++    initialZoom = xpdfParams->getInitialZoom();;
+     if (!initialZoom->cmp("page")) {
+       zoom = zoomPage;
+     } else if (!initialZoom->cmp("width")) {
+@@ -567,9 +568,9 @@
+ #else
+       fileName->append(" &");
+ #endif
+-      if (globalParams->getLaunchCommand()) {
++      if (xpdfParams->getLaunchCommand()) {
+ 	fileName->insert(0, ' ');
+-	fileName->insert(0, globalParams->getLaunchCommand());
++	fileName->insert(0, xpdfParams->getLaunchCommand());
+ 	errcode = system(fileName->getCString());
+         if (errcode != 0) {
+           error(errInternal, -1 , "non-zero error code returned by system call");
+@@ -591,7 +592,7 @@
+ 
+   // URI action
+   case actionURI:
+-    if (!(cmd = globalParams->getURLCommand())) {
++    if (!(cmd = xpdfParams->getURLCommand())) {
+       error(errConfig, -1, "No urlCommand defined in config file");
+       break;
+     }
+@@ -629,7 +630,7 @@
+ 
+   // Movie action
+   case actionMovie:
+-    if (!(cmd = globalParams->getMovieCommand())) {
++    if (!(cmd = xpdfParams->getMovieCommand())) {
+       error(errConfig, -1, "No movieCommand defined in config file");
+       break;
+     }
+Index: xpdf/xpdf/XPDFViewer.cc
+===================================================================
+--- xpdf.orig/xpdf/XPDFViewer.cc	2014-01-20 04:01:40.684061826 +0000
++++ xpdf/xpdf/XPDFViewer.cc	2014-01-20 04:01:40.684061826 +0000
+@@ -33,6 +33,7 @@
+ #include "GList.h"
+ #include "Error.h"
+ #include "GlobalParams.h"
++#include "XPDFParams.h"
+ #include "PDFDoc.h"
+ #include "Link.h"
+ #include "ErrorCodes.h"
+@@ -602,7 +603,7 @@
+     return;
+   }
+ 
+-  if ((cmds = globalParams->getKeyBinding(keyCode,
++  if ((cmds = xpdfParams->getKeyBinding(keyCode,
+ 					  viewer->getModifiers(modifiers),
+ 					  viewer->getContext(modifiers)))) {
+     for (i = 0; i < cmds->getLength(); ++i) {
+@@ -634,7 +635,7 @@
+     return;
+   }
+ 
+-  if ((cmds = globalParams->getKeyBinding(keyCode,
++  if ((cmds = xpdfParams->getKeyBinding(keyCode,
+ 					  viewer->getModifiers(
+ 						      event->xkey.state),
+ 					  viewer->getContext(
+@@ -3524,7 +3525,7 @@
+   XtSetValues(printDialog, args, n);
+ 
+   //----- initial values
+-  if ((psFileName = globalParams->getPSFile())) {
++  if ((psFileName = xpdfParams->getPSFile())) {
+     if (psFileName->getChar(0) == '|') {
+       XmTextFieldSetString(printCmdText,
+ 			   psFileName->getCString() + 1);
+@@ -3596,7 +3597,7 @@
+   char *p;
+ 
+   doc = core->getDoc();
+-  psFileName = globalParams->getPSFile();
++  psFileName = xpdfParams->getPSFile();
+   if (!psFileName || psFileName->getChar(0) == '|') {
+     pdfFileName = doc->getFileName();
+     p = pdfFileName->getCString() + pdfFileName->getLength() - 4;
+@@ -3711,12 +3712,13 @@
+   // Normal print mode
+   if (printAll && !printBack)
+   {
+-    psOut = new PSOutputDev(psFileName->getCString(), doc->getXRef(),
+-          doc->getCatalog(), firstPage, lastPage,
+-          psModePS);
++    psOut = new PSOutputDev(psFileName->getCString(), doc,
++          NULL, firstPage, lastPage,
++          psModePS, xpdfParams->getPSPaperWidth(),
++          xpdfParams->getPSPaperHeight(), xpdfParams->getPSDuplex());
+     if (psOut->isOk()) {
+       doc->displayPages(psOut, firstPage, lastPage, 72, 72,
+-            0, gTrue, globalParams->getPSCrop(), gFalse);
++            0, gTrue, xpdfParams->getPSCrop(), gFalse);
+     }
+     delete psOut;
+   }
+@@ -3757,11 +3759,13 @@
+     {
+       for (i=beginPage;; i+=step)
+       {
+-        psOut = new PSOutputDev(psFileName->getCString(), doc->getXRef(),
+-              doc->getCatalog(), i, i, psModePS);
++        psOut = new PSOutputDev(psFileName->getCString(), doc,
++              NULL, i, i, psModePS,
++              xpdfParams->getPSPaperWidth(),
++              xpdfParams->getPSPaperHeight(), xpdfParams->getPSDuplex());
+         if (psOut->isOk()) {
+           doc->displayPages(psOut, i, i, 72, 72,
+-                0, gTrue, globalParams->getPSCrop(), gFalse);
++                0, gTrue, xpdfParams->getPSCrop(), gFalse);
+         }
+         else
+         {
+Index: xpdf/xpdf/xpdf.cc
+===================================================================
+--- xpdf.orig/xpdf/xpdf.cc	2014-01-20 04:01:40.684061826 +0000
++++ xpdf/xpdf/xpdf.cc	2014-01-20 04:01:40.684061826 +0000
+@@ -13,6 +13,7 @@
+ #include "gfile.h"
+ #include "gmem.h"
+ #include "GlobalParams.h"
++#include "XPDFParams.h"
+ #include "Object.h"
+ #include "XPDFApp.h"
+ #include "config.h"
+@@ -157,25 +158,11 @@
+ 
+   // read config file
+   globalParams = new GlobalParams(cfgFileName);
++  xpdfParams = new XpdfParams(cfgFileName);
+   globalParams->setupBaseFonts(NULL);
+-  if (contView) {
+-    globalParams->setContinuousView(contView);
+-  }
+   if (psFileArg[0]) {
+     globalParams->setPSFile(psFileArg);
+   }
+-  if (paperSize[0]) {
+-    if (!globalParams->setPSPaperSize(paperSize)) {
+-      fprintf(stderr, "Invalid paper size\n");
+-    }
+-  } else {
+-    if (paperWidth) {
+-      globalParams->setPSPaperWidth(paperWidth);
+-    }
+-    if (paperHeight) {
+-      globalParams->setPSPaperHeight(paperHeight);
+-    }
+-  }
+   if (level1) {
+     globalParams->setPSLevel(psLevel1);
+   }
+@@ -187,11 +174,6 @@
+       fprintf(stderr, "Bad '-eol' value on command line\n");
+     }
+   }
+-  if (enableT1libStr[0]) {
+-    if (!globalParams->setEnableT1lib(enableT1libStr)) {
+-      fprintf(stderr, "Bad '-t1lib' value on command line\n");
+-    }
+-  }
+   if (enableFreeTypeStr[0]) {
+     if (!globalParams->setEnableFreeType(enableFreeTypeStr)) {
+       fprintf(stderr, "Bad '-freetype' value on command line\n");
+@@ -217,12 +199,6 @@
+   // create the XPDFApp object
+   app = new XPDFApp(&argc, argv);
+ 
+-  // the initialZoom parameter can be set in either the config file or
+-  // as an X resource (or command line arg)
+-  if (app->getInitialZoom()) {
+-    globalParams->setInitialZoom(app->getInitialZoom()->getCString());
+-  }
+-
+   // check command line
+   ok = ok && argc >= 1 && argc <= 3;
+   if (remoteCmd[0]) {
+@@ -336,6 +312,7 @@
+  done1:
+   delete app;
+   delete globalParams;
++  delete xpdfParams;
+ 
+   // check for memory leaks
+  done0:
+Index: xpdf/xpdf/XPDFParams.cc
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ xpdf/xpdf/XPDFParams.cc	2014-01-20 04:01:57.876061784 +0000
+@@ -0,0 +1,492 @@
++#include <ctype.h>
++#include <stdio.h>
++#include <string.h>
++#include "gfile.h"
++#include "config.h"
++#include "Error.h"
++#include "XPDFParams.h"
++
++#if MULTITHREADED
++#  define lockXpdfParams            gLockMutex(&xpdfMutex)
++#  define unlockXpdfParams          gUnlockMutex(&xpdfMutex)
++#else
++#  define lockXpdfParams
++#  define unlockXpdfParams
++#endif
++
++XpdfParams *xpdfParams = NULL;
++
++//------------------------------------------------------------------------
++// KeyBinding
++//------------------------------------------------------------------------
++
++KeyBinding::KeyBinding(int codeA, int modsA, int contextA, const char *cmd0) {
++  code = codeA;
++  mods = modsA;
++  context = contextA;
++  cmds = new GList();
++  cmds->append(new GString(cmd0));
++}
++
++KeyBinding::KeyBinding(int codeA, int modsA, int contextA,
++                       const char *cmd0, const char *cmd1) {
++  code = codeA;
++  mods = modsA;
++  context = contextA;
++  cmds = new GList();
++  cmds->append(new GString(cmd0));
++  cmds->append(new GString(cmd1));
++}
++
++KeyBinding::KeyBinding(int codeA, int modsA, int contextA, GList *cmdsA) {
++  code = codeA;
++  mods = modsA;
++  context = contextA;
++  cmds = cmdsA;
++}
++
++KeyBinding::~KeyBinding() {
++  deleteGList(cmds, GString);
++}
++
++//------------------------------------------------------------------------
++// XpdfParams
++//------------------------------------------------------------------------
++
++XpdfParams::XpdfParams(char *cfgFileName) {
++  GString *fileName;
++  FILE *f;
++  int i;
++
++#if MULTITHREADED
++  gInitMutex(&xpdfMutex);
++#endif
++
++  baseDir = appendToPath(getHomeDir(), ".xpdf");
++#if HAVE_PAPER_H
++  char *paperName;
++  const struct paper *paperType;
++  paperinit();
++  if ((paperName = systempapername())) {
++    paperType = paperinfo(paperName);
++    psPaperWidth = (int)paperpswidth(paperType);
++    psPaperHeight = (int)paperpsheight(paperType);
++  } else {
++    error(errConfig, -1, "No paper information available - using defaults");
++    psPaperWidth = defPaperWidth;
++    psPaperHeight = defPaperHeight;
++  }
++  paperdone();
++#else
++  psPaperWidth = defPaperWidth;
++  psPaperHeight = defPaperHeight;
++#endif
++  psCrop = gTrue;
++  psFile = NULL;
++  initialZoom = new GString("125");
++  continuousView = gFalse;
++  launchCommand = NULL;
++  urlCommand = NULL;
++  movieCommand = NULL;
++  createDefaultKeyBindings();
++
++  // look for a user config file, then a system-wide config file
++  f = NULL;
++  fileName = NULL;
++  if (cfgFileName && cfgFileName[0]) {
++    fileName = new GString(cfgFileName);
++    if (!(f = fopen(fileName->getCString(), "r"))) {
++      delete fileName;
++    }
++  }
++  if (!f) {
++    fileName = appendToPath(getHomeDir(), xpdfUserConfigFile);
++    if (!(f = fopen(fileName->getCString(), "r"))) {
++      delete fileName;
++    }
++  }
++  if (!f) {
++    fileName = new GString(xpdfSysConfigFile);
++    if (!(f = fopen(fileName->getCString(), "r"))) {
++      delete fileName;
++    }
++  }
++  if (f) {
++    parseFile(fileName, f);
++    delete fileName;
++    fclose(f);
++  }
++}
++
++XpdfParams::~XpdfParams() {
++  if (psFile) {
++    delete psFile;
++  }
++
++  delete initialZoom;
++  if (launchCommand) {
++    delete launchCommand;
++  }
++  if (urlCommand) {
++    delete urlCommand;
++  }
++  if (movieCommand) {
++    delete movieCommand;
++  }
++  deleteGList(keyBindings, KeyBinding);
++
++#if MULTITHREADED
++  gDestroyMutex(&xpdfMutex);
++#endif
++}
++
++GList *XpdfParams::getKeyBinding(int code, int mods, int context) {
++  KeyBinding *binding;
++  GList *cmds;
++  int modMask;
++  int i, j;
++
++  lockXpdfParams;
++  cmds = NULL;
++  // for ASCII chars, ignore the shift modifier
++  modMask = code <= 0xff ? ~xpdfKeyModShift : ~0;
++  for (i = 0; i < keyBindings->getLength(); ++i) {
++    binding = (KeyBinding *)keyBindings->get(i);
++    if (binding->code == code &&
++        (binding->mods & modMask) == (mods & modMask) &&
++        (~binding->context | context) == ~0) {
++      cmds = new GList();
++      for (j = 0; j < binding->cmds->getLength(); ++j) {
++        cmds->append(((GString *)binding->cmds->get(j))->copy());
++      }
++      break;
++    }
++  }
++  unlockXpdfParams;
++  return cmds;
++}
++
++void XpdfParams::parseCommand(const char *cmdName, GString **val,
++                              GList *tokens, GString *fileName, int line) {
++  if (tokens->getLength() != 2) {
++    error(errConfig, -1, "Bad '{0:s}' config file command ({1:t}:{2:d})",
++          cmdName, fileName, line);
++    return;
++  }
++  if (*val) {
++    delete *val;
++  }
++  *val = ((GString *)tokens->get(1))->copy();
++}
++
++void XpdfParams::parseYesNo(const char *cmdName, GBool *flag,
++                            GList *tokens, GString *fileName, int line) {
++  GString *tok;
++
++  if (tokens->getLength() != 2) {
++    error(errConfig, -1, "Bad '{0:s}' config file command ({1:t}:{2:d})",
++          cmdName, fileName, line);
++    return;
++  }
++  tok = (GString *)tokens->get(1);
++  if (!parseYesNo2(tok->getCString(), flag)) {
++    error(errConfig, -1, "Bad '{0:s}' config file command ({1:t}:{2:d})",
++          cmdName, fileName, line);
++  }
++}
++
++GBool XpdfParams::parseYesNo2(char *token, GBool *flag) {
++  if (!strcmp(token, "yes")) {
++    *flag = gTrue;
++  } else if (!strcmp(token, "no")) {
++    *flag = gFalse;
++  } else {
++    return gFalse;
++  }
++  return gTrue;
++}
++
++void XpdfParams::parsePSFile(GList *tokens, GString *fileName, int line) {
++  if (tokens->getLength() != 2) {
++    error(errConfig, -1, "Bad 'psFile' config file command ({0:t}:{1:d})",
++          fileName, line);
++    return;
++  }
++  if (psFile) {
++    delete psFile;
++  }
++  psFile = ((GString *)tokens->get(1))->copy();
++}
++
++void XpdfParams::parseInitialZoom(GList *tokens,
++                                  GString *fileName, int line) {
++  if (tokens->getLength() != 2) {
++    error(errConfig, -1, "Bad 'initialZoom' config file command ({0:t}:{1:d})",
++          fileName, line);
++    return;
++  }
++  delete initialZoom;
++  initialZoom = ((GString *)tokens->get(1))->copy();
++}
++
++void XpdfParams::parseFile(GString *fileName, FILE *f) {
++  int line;
++  char buf[512];
++
++  line = 1;
++  while (getLine(buf, sizeof(buf) - 1, f)) {
++    parseLine(buf, fileName, line);
++    ++line;
++  }
++}
++
++void XpdfParams::parseLine(char *buf, GString *fileName, int line) {
++  GList *tokens;
++  GString *cmd, *incFile;
++  char *p1, *p2;
++  FILE *f2;
++
++  // break the line into tokens
++  tokens = new GList();
++  p1 = buf;
++  while (*p1) {
++    for (; *p1 && isspace(*p1); ++p1) ;
++    if (!*p1) {
++      break;
++    }
++    if (*p1 == '"' || *p1 == '\'') {
++      for (p2 = p1 + 1; *p2 && *p2 != *p1; ++p2) ;
++      ++p1;
++    } else {
++      for (p2 = p1 + 1; *p2 && !isspace(*p2); ++p2) ;
++    }
++    tokens->append(new GString(p1, (int)(p2 - p1)));
++    p1 = *p2 ? p2 + 1 : p2;
++  }
++
++  // parse the line
++  if (tokens->getLength() > 0 &&
++      ((GString *)tokens->get(0))->getChar(0) != '#') {
++    cmd = (GString *)tokens->get(0);
++    if (!cmd->cmp("include")) {
++      if (tokens->getLength() == 2) {
++        incFile = (GString *)tokens->get(1);
++        if ((f2 = openFile(incFile->getCString(), "r"))) {
++          parseFile(incFile, f2);
++          fclose(f2);
++        } else {
++          error(errConfig, -1,
++                "Couldn't find included config file: '{0:t}' ({1:t}:{2:d})",
++                incFile, fileName, line);
++        }
++      } else {
++        error(errConfig, -1, "Bad 'include' config file command ({0:t}:{1:d})",
++              fileName, line);
++      }
++    } else if (!cmd->cmp("psFile")) {
++      parsePSFile(tokens, fileName, line);
++    } else if (!cmd->cmp("psCrop")) {
++      parseYesNo("psCrop", &psCrop, tokens, fileName, line);
++    } else if (!cmd->cmp("psDuplex")) {
++      parseYesNo("psDuplex", &psDuplex, tokens, fileName, line);
++    } else if (!cmd->cmp("initialZoom")) {
++      parseInitialZoom(tokens, fileName, line);
++    } else if (!cmd->cmp("continuousView")) {
++      parseYesNo("continuousView", &continuousView, tokens, fileName, line);
++    } else if (!cmd->cmp("launchCommand")) {
++      parseCommand("launchCommand", &launchCommand, tokens, fileName, line);
++    } else if (!cmd->cmp("urlCommand")) {
++      parseCommand("urlCommand", &urlCommand, tokens, fileName, line);
++    } else if (!cmd->cmp("movieCommand")) {
++      parseCommand("movieCommand", &movieCommand, tokens, fileName, line);
++    }
++  }
++
++  deleteGList(tokens, GString);
++}
++
++void XpdfParams::createDefaultKeyBindings() {
++  keyBindings = new GList();
++
++  //----- mouse buttons
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress1, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "startSelection"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMouseRelease1, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "endSelection",
++                                     "followLinkNoSel"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress2, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "startPan"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMouseRelease2, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "endPan"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress3, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "postPopupMenu"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress4, xpdfKeyModNone,
++                                     xpdfKeyContextAny,
++                                     "scrollUpPrevPage(16)"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress5, xpdfKeyModNone,
++                                     xpdfKeyContextAny,
++                                     "scrollDownNextPage(16)"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress6, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "scrollLeft(16)"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress7, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "scrollRight(16)"));
++
++  //----- keys
++  keyBindings->append(new KeyBinding(xpdfKeyCodeHome, xpdfKeyModCtrl,
++                                     xpdfKeyContextAny, "gotoPage(1)"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeHome, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "scrollToTopLeft"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeEnd, xpdfKeyModCtrl,
++                                     xpdfKeyContextAny, "gotoLastPage"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeEnd, xpdfKeyModNone,
++                                     xpdfKeyContextAny,
++                                     "scrollToBottomRight"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodePgUp, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "pageUp"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeBackspace, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "pageUp"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeDelete, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "pageUp"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodePgDn, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "pageDown"));
++  keyBindings->append(new KeyBinding(' ', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "pageDown"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeLeft, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "scrollLeft(16)"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeRight, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "scrollRight(16)"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeUp, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "scrollUp(16)"));
++  keyBindings->append(new KeyBinding(xpdfKeyCodeDown, xpdfKeyModNone,
++                                     xpdfKeyContextAny, "scrollDown(16)"));
++  keyBindings->append(new KeyBinding('o', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "open"));
++  keyBindings->append(new KeyBinding('O', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "open"));
++  keyBindings->append(new KeyBinding('r', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "reload"));
++  keyBindings->append(new KeyBinding('R', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "reload"));
++  keyBindings->append(new KeyBinding('f', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "find"));
++  keyBindings->append(new KeyBinding('F', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "find"));
++  keyBindings->append(new KeyBinding('f', xpdfKeyModCtrl,
++                                     xpdfKeyContextAny, "find"));
++  keyBindings->append(new KeyBinding('g', xpdfKeyModCtrl,
++                                     xpdfKeyContextAny, "findNext"));
++  keyBindings->append(new KeyBinding('p', xpdfKeyModCtrl,
++                                     xpdfKeyContextAny, "print"));
++  keyBindings->append(new KeyBinding('n', xpdfKeyModNone,
++                                     xpdfKeyContextScrLockOff, "nextPage"));
++  keyBindings->append(new KeyBinding('N', xpdfKeyModNone,
++                                     xpdfKeyContextScrLockOff, "nextPage"));
++  keyBindings->append(new KeyBinding('n', xpdfKeyModNone,
++                                     xpdfKeyContextScrLockOn,
++                                     "nextPageNoScroll"));
++  keyBindings->append(new KeyBinding('N', xpdfKeyModNone,
++                                     xpdfKeyContextScrLockOn,
++                                     "nextPageNoScroll"));
++  keyBindings->append(new KeyBinding('p', xpdfKeyModNone,
++                                     xpdfKeyContextScrLockOff, "prevPage"));
++  keyBindings->append(new KeyBinding('P', xpdfKeyModNone,
++                                     xpdfKeyContextScrLockOff, "prevPage"));
++  keyBindings->append(new KeyBinding('p', xpdfKeyModNone,
++                                     xpdfKeyContextScrLockOn,
++                                     "prevPageNoScroll"));
++  keyBindings->append(new KeyBinding('P', xpdfKeyModNone,
++                                     xpdfKeyContextScrLockOn,
++                                     "prevPageNoScroll"));
++  keyBindings->append(new KeyBinding('v', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "goForward"));
++  keyBindings->append(new KeyBinding('b', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "goBackward"));
++  keyBindings->append(new KeyBinding('g', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "focusToPageNum"));
++  keyBindings->append(new KeyBinding('0', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "zoomPercent(125)"));
++  keyBindings->append(new KeyBinding('+', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "zoomIn"));
++  keyBindings->append(new KeyBinding('-', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "zoomOut"));
++  keyBindings->append(new KeyBinding('z', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "zoomFitPage"));
++  keyBindings->append(new KeyBinding('w', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "zoomFitWidth"));
++  keyBindings->append(new KeyBinding('f', xpdfKeyModAlt,
++                                     xpdfKeyContextAny,
++                                     "toggleFullScreenMode"));
++  keyBindings->append(new KeyBinding('l', xpdfKeyModCtrl,
++                                     xpdfKeyContextAny, "redraw"));
++  keyBindings->append(new KeyBinding('w', xpdfKeyModCtrl,
++                                     xpdfKeyContextAny, "closeWindow"));
++  keyBindings->append(new KeyBinding('?', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "about"));
++  keyBindings->append(new KeyBinding('q', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "quit"));
++  keyBindings->append(new KeyBinding('Q', xpdfKeyModNone,
++                                     xpdfKeyContextAny, "quit"));
++}
++
++GString *XpdfParams::getPSFile() {
++  GString *s;
++
++  lockXpdfParams;
++  s = psFile ? psFile->copy() : (GString *)NULL;
++  unlockXpdfParams;
++  return s;
++}
++
++GBool XpdfParams::getPSCrop() {
++  GBool f;
++
++  lockXpdfParams;
++  f = psCrop;
++  unlockXpdfParams;
++  return f;
++}
++
++GBool XpdfParams::getPSDuplex() {
++  GBool f;
++
++  lockXpdfParams;
++  f = psDuplex;
++  unlockXpdfParams;
++  return f;
++}
++
++GString *XpdfParams::getInitialZoom() {
++  GString *s;
++
++  lockXpdfParams;
++  s = initialZoom->copy();
++  unlockXpdfParams;
++  return s;
++}
++
++GBool XpdfParams::getContinuousView() {
++  GBool f;
++
++  lockXpdfParams;
++  f = continuousView;
++  unlockXpdfParams;
++  return f;
++}
++
++int XpdfParams::getPSPaperWidth() {
++  int w;
++
++  lockXpdfParams;
++  w = psPaperWidth;
++  unlockXpdfParams;
++  return w;
++}
++
++int XpdfParams::getPSPaperHeight() {
++  int h;
++
++  lockXpdfParams;
++  h = psPaperHeight;
++  unlockXpdfParams;
++  return h;
++}
+Index: xpdf/xpdf/XPDFParams.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ xpdf/xpdf/XPDFParams.h	2014-01-20 04:01:57.876061784 +0000
+@@ -0,0 +1,120 @@
++#include "GList.h"
++#include "GMutex.h"
++#include "GString.h"
++
++#define xpdfKeyCodeTab            0x1000
++#define xpdfKeyCodeReturn         0x1001
++#define xpdfKeyCodeEnter          0x1002
++#define xpdfKeyCodeBackspace      0x1003
++#define xpdfKeyCodeInsert         0x1004
++#define xpdfKeyCodeDelete         0x1005
++#define xpdfKeyCodeHome           0x1006
++#define xpdfKeyCodeEnd            0x1007
++#define xpdfKeyCodePgUp           0x1008
++#define xpdfKeyCodePgDn           0x1009
++#define xpdfKeyCodeLeft           0x100a
++#define xpdfKeyCodeRight          0x100b
++#define xpdfKeyCodeUp             0x100c
++#define xpdfKeyCodeDown           0x100d
++#define xpdfKeyCodeF1             0x1100
++#define xpdfKeyCodeF35            0x1122
++#define xpdfKeyCodeMousePress1    0x2001
++#define xpdfKeyCodeMousePress2    0x2002
++#define xpdfKeyCodeMousePress3    0x2003
++#define xpdfKeyCodeMousePress4    0x2004
++#define xpdfKeyCodeMousePress5    0x2005
++#define xpdfKeyCodeMousePress6    0x2006
++#define xpdfKeyCodeMousePress7    0x2007
++// ...
++#define xpdfKeyCodeMousePress32   0x2020
++#define xpdfKeyCodeMouseRelease1  0x2101
++#define xpdfKeyCodeMouseRelease2  0x2102
++#define xpdfKeyCodeMouseRelease3  0x2103
++#define xpdfKeyCodeMouseRelease4  0x2104
++#define xpdfKeyCodeMouseRelease5  0x2105
++#define xpdfKeyCodeMouseRelease6  0x2106
++#define xpdfKeyCodeMouseRelease7  0x2107
++// ...
++#define xpdfKeyCodeMouseRelease32 0x2120
++#define xpdfKeyModNone            0
++#define xpdfKeyModShift           (1 << 0)
++#define xpdfKeyModCtrl            (1 << 1)
++#define xpdfKeyModAlt             (1 << 2)
++#define xpdfKeyContextAny         0
++#define xpdfKeyContextFullScreen  (1 << 0)
++#define xpdfKeyContextWindow      (2 << 0)
++#define xpdfKeyContextContinuous  (1 << 2)
++#define xpdfKeyContextSinglePage  (2 << 2)
++#define xpdfKeyContextOverLink    (1 << 4)
++#define xpdfKeyContextOffLink     (2 << 4)
++#define xpdfKeyContextOutline     (1 << 6)
++#define xpdfKeyContextMainWin     (2 << 6)
++#define xpdfKeyContextScrLockOn   (1 << 8)
++#define xpdfKeyContextScrLockOff  (2 << 8)
++
++class KeyBinding {
++public:
++
++  int code;     // 0x20 .. 0xfe = ASCII,
++                //   >=0x10000 = special keys, mouse buttons,
++                //   etc. (xpdfKeyCode* symbols)
++  int mods;     // modifiers (xpdfKeyMod* symbols, or-ed
++                //   together)
++  int context;  // context (xpdfKeyContext* symbols, or-ed
++                //   together)
++  GList *cmds;  // list of commands [GString]
++
++  KeyBinding(int codeA, int modsA, int contextA, const char *cmd0);
++  KeyBinding(int codeA, int modsA, int contextA,
++       const char *cmd0, const char *cmd1);
++  KeyBinding(int codeA, int modsA, int contextA, GList *cmdsA);
++  ~KeyBinding();
++};
++
++class XpdfParams {
++public:
++
++  XpdfParams(char *cfgFileName);
++  ~XpdfParams();
++  void createDefaultKeyBindings();
++  GList *getKeyBinding(int code, int mods, int context);
++  GString *getLaunchCommand() { return launchCommand; }
++  GString *getURLCommand() { return urlCommand; }
++  GString *getMovieCommand() { return movieCommand; }
++  GString *getPSFile();
++  GBool getPSCrop();
++  GBool getPSDuplex();
++  GString *getInitialZoom();
++  GBool getContinuousView();
++  int getPSPaperWidth();
++  int getPSPaperHeight();
++
++private:
++  void parseCommand(const char *cmdName, GString **val,
++                    GList *tokens, GString *fileName, int line);
++  void parseYesNo(const char *cmdName, GBool *flag,
++                  GList *tokens, GString *fileName, int line);
++  GBool parseYesNo2(char *token, GBool *flag);
++  void parsePSFile(GList *tokens, GString *fileName, int line);
++  void parseInitialZoom(GList *tokens, GString *fileName, int line);
++  void parseFile(GString *fileName, FILE *f);
++  void parseLine(char *buf, GString *fileName, int line);
++
++#if MULTITHREADED
++  GMutex xpdfMutex;
++#endif
++  GString *baseDir;
++  GString *psFile;
++  int psPaperWidth;
++  int psPaperHeight;
++  GBool psCrop;
++  GBool psDuplex;
++  GString *initialZoom;
++  GBool continuousView;
++  GString *launchCommand;
++  GString *urlCommand;
++  GString *movieCommand;
++  GList *keyBindings;
++};
++
++extern XpdfParams *xpdfParams;

@@ -1,7 +1,8 @@
 description: make compatible with poppler's text destructor
 origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
---- xpdf-3.02.orig/xpdf/PDFCore.cc
-+++ xpdf-3.02/xpdf/PDFCore.cc
+
+--- a/xpdf/PDFCore.cc
++++ b/xpdf/PDFCore.cc
 @@ -51,7 +51,7 @@ PDFCorePage::~PDFCorePage() {
      delete links;
    }

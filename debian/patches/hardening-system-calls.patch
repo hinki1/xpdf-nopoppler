@@ -1,25 +1,24 @@
 description: check exit codes of system calls 
 author: Michael Gilbert <michael.s.gilbert@gmail.com>
-Index: xpdf/xpdf/XPDFCore.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFCore.cc	2012-02-24 20:21:34.000000000 -0500
-+++ xpdf/xpdf/XPDFCore.cc	2012-02-24 20:21:34.000000000 -0500
-@@ -480,6 +480,7 @@
-   Object movieAnnot, obj1, obj2, obj3;
+
+--- a/xpdf/XPDFCore.cc	2014-01-20 03:45:51.192064160 +0000
++++ b/xpdf/XPDFCore.cc	2014-01-20 03:45:51.192064160 +0000
+@@ -479,6 +479,7 @@
+   Object movieAnnot, obj1, obj2;
    GString *msg;
    int i;
 +  int errcode;
  
    switch (kind = action->getKind()) {
  
-@@ -569,12 +570,18 @@
+@@ -568,12 +569,18 @@
        if (globalParams->getLaunchCommand()) {
  	fileName->insert(0, ' ');
  	fileName->insert(0, globalParams->getLaunchCommand());
 -	system(fileName->getCString());
 +	errcode = system(fileName->getCString());
 +        if (errcode != 0) {
-+          error( -1 , "non-zero error code returned by system call");
++          error(errInternal, -1 , "non-zero error code returned by system call");
 +        }
        } else {
  	msg = new GString("About to execute the command:\n");
@@ -28,12 +27,12 @@ Index: xpdf/xpdf/XPDFCore.cc
 -	  system(fileName->getCString());
 +	  errcode = system(fileName->getCString());
 +          if (errcode != 0) {
-+            error( -1 , "non-zero error code returned by system call");
++            error(errInternal, -1 , "non-zero error code returned by system call");
 +          }
  	}
  	delete msg;
        }
-@@ -684,6 +691,7 @@
+@@ -681,6 +688,7 @@
  void XPDFCore::runCommand(GString *cmdFmt, GString *arg) {
    GString *cmd;
    char *s;
@@ -41,22 +40,20 @@ Index: xpdf/xpdf/XPDFCore.cc
  
    if ((s = strstr(cmdFmt->getCString(), "%s"))) {
      cmd = mungeURL(arg);
-@@ -700,7 +708,10 @@
+@@ -697,7 +705,10 @@
  #else
    cmd->append(" &");
  #endif
 -  system(cmd->getCString());
 +  errcode = system(cmd->getCString());
 +  if (errcode != 0) {
-+      error( -1 , "non-zero error code returned by system call");
++      error(errInternal, -1 , "non-zero error code returned by system call");
 +  }
    delete cmd;
  }
  
-Index: xpdf/xpdf/XPDFViewer.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFViewer.cc	2012-02-24 20:21:34.000000000 -0500
-+++ xpdf/xpdf/XPDFViewer.cc	2012-02-24 20:22:49.000000000 -0500
+--- a/xpdf/XPDFViewer.cc	2014-01-20 03:45:51.192064160 +0000
++++ b/xpdf/XPDFViewer.cc	2014-01-20 03:45:51.192064160 +0000
 @@ -1126,6 +1126,7 @@
    char *p;
    char c0, c1;
@@ -72,7 +69,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
 -  system(cmd->getCString());
 +  errcode = system(cmd->getCString());
 +  if (errcode != 0) {
-+      error( -1, "non-zero error code return by system call");
++      error(errInternal, -1, "non-zero error code return by system call");
 +  }
    delete cmd;
  }

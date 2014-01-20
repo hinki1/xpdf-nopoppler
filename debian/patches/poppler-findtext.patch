@@ -1,49 +1,50 @@
 description: use poppler's findtext api
 author: Michael Gilbert <michael.s.gilbert@gmail.com>
---- xpdf-3.03.orig/xpdf/PDFCore.cc
-+++ xpdf-3.03/xpdf/PDFCore.cc
-@@ -1741,7 +1741,7 @@ GBool PDFCore::findU(Unicode *u, int len
+
+--- a/xpdf/PDFCore.cc	2014-01-19 22:05:48.876070066 -0500
++++ b/xpdf/PDFCore.cc	2014-01-19 22:16:27.000000000 -0500
+@@ -1741,7 +1741,7 @@
      page = findPage(pg);
    }
    if (page->text->findText(u, len, startAtTop, gTrue, startAtLast, gFalse,
 -			   caseSensitive, backward, wholeWord,
-+			   caseSensitive, backward,
++			   caseSensitive, backward, gFalse,
  			   &xMin, &yMin, &xMax, &yMax)) {
      goto found;
    }
-@@ -1759,7 +1759,7 @@ GBool PDFCore::findU(Unicode *u, int len
+@@ -1759,7 +1759,7 @@
  	 pg += backward ? -1 : 1) {
        doc->displayPage(textOut, pg, 72, 72, 0, gFalse, gTrue, gFalse);
        if (textOut->findText(u, len, gTrue, gTrue, gFalse, gFalse,
 -			    caseSensitive, backward, wholeWord,
-+			    caseSensitive, backward,
++			    caseSensitive, backward, gFalse,
  			    &xMin, &yMin, &xMax, &yMax)) {
  	delete textOut;
  	goto foundPage;
-@@ -1772,7 +1772,7 @@ GBool PDFCore::findU(Unicode *u, int len
+@@ -1772,7 +1772,7 @@
  	 pg += backward ? -1 : 1) {
        doc->displayPage(textOut, pg, 72, 72, 0, gFalse, gTrue, gFalse);
        if (textOut->findText(u, len, gTrue, gTrue, gFalse, gFalse,
 -			    caseSensitive, backward, wholeWord,
-+			    caseSensitive, backward,
++			    caseSensitive, backward, gFalse,
  			    &xMin, &yMin, &xMax, &yMax)) {
  	delete textOut;
  	goto foundPage;
-@@ -1794,7 +1794,7 @@ GBool PDFCore::findU(Unicode *u, int len
+@@ -1794,7 +1794,7 @@
        yMax = selectLRY;
      }
      if (page->text->findText(u, len, gTrue, gFalse, gFalse, stopAtLast,
 -			     caseSensitive, backward, wholeWord,
-+			     caseSensitive, backward,
++			     caseSensitive, backward, gFalse,
  			     &xMin, &yMin, &xMax, &yMax)) {
        goto found;
      }
-@@ -1811,7 +1811,7 @@ GBool PDFCore::findU(Unicode *u, int len
+@@ -1811,7 +1811,7 @@
  	 gTrue);
    page = findPage(pg);
    if (!page->text->findText(u, len, gTrue, gTrue, gFalse, gFalse,
 -			    caseSensitive, backward, wholeWord,
-+			    caseSensitive, backward,
++			    caseSensitive, backward, gFalse,
  			    &xMin, &yMin, &xMax, &yMax)) {
      // this can happen if coalescing is bad
      goto notFound;

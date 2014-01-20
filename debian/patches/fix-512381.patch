@@ -1,10 +1,9 @@
 description: fix continuous mode crashiness
 author: Michael Gilbert <michael.s.gilbert@gmail.com>
 bug-debian: http://bugs.debian.org/521381
-Index: xpdf/xpdf/XPDFCore.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFCore.cc	2012-02-24 19:41:55.000000000 -0500
-+++ xpdf/xpdf/XPDFCore.cc	2012-02-24 19:41:59.000000000 -0500
+
+--- a/xpdf/XPDFCore.cc	2012-02-24 19:41:55.000000000 -0500
++++ b/xpdf/XPDFCore.cc	2012-02-24 19:41:59.000000000 -0500
 @@ -1355,7 +1355,7 @@
    }
  

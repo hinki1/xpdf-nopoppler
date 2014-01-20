@@ -1,3 +1,14 @@
+xpdf (3.03-12) experimental; urgency=low
+
+  * Fix vcs-git url (closes: #728283).
+  * Support poppler 0.20 (closes: #679896).
+  * Support poppler 0.22 (closes: #719224). 
+  * Drop binutils-gold conflict (closes: #725514).
+  * Separate xpdf-specific global parameters (closes: #658264, #727070).
+    - Thanks to Dmitry Shachnev!
+
+ -- Michael Gilbert <mgilbert@debian.org>  Mon, 20 Jan 2014 02:54:13 +0000
+
 xpdf (3.03-11) unstable; urgency=low
 
   * Bump standards to 3.9.4.
