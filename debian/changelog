@@ -1,3 +1,9 @@
+xpdf (3.03-15) experimental; urgency=low
+
+  * Build-depend poppler >= 0.22.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Mon, 20 Jan 2014 06:02:20 +0000
+
 xpdf (3.03-14) experimental; urgency=low
 
   * Move Error.h into the build directory.
