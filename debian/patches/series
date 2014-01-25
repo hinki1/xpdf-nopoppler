@@ -21,3 +21,4 @@ poppler-filespecname.patch
 poppler-findtext.patch
 poppler-startdoc.patch
 poppler-xpdfparams.patch
+poppler-startpage.patch

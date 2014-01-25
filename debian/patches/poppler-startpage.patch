@@ -1,0 +1,12 @@
+description: support poppler 0.24 api
+author: Andy Whitcroft <apw@ubuntu.com> 
+
+--- a/xpdf/CoreOutputDev.cc
++++ b/xpdf/CoreOutputDev.cc
+@@ -57,5 +57,5 @@ void CoreOutputDev::dump() {
+ 
+ void CoreOutputDev::clear() {
+   startDoc(NULL);
+-  startPage(0, NULL);
++  startPage(0, NULL, NULL);
+ }
