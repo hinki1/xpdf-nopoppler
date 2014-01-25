@@ -10,6 +10,7 @@ fix-580495.patch
 fix-627426.patch
 
 # fixes for build-hardening compiler warnings
+fix-692931.patch
 hardening-invalid-conversions.patch
 hardening-system-calls.patch
 hardening-pointer-casting.patch

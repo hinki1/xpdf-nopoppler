@@ -1,3 +1,9 @@
+xpdf (3.03-16) unstable; urgency=medium
+
+  * Make selections visible in reverse mode (closes: #692931).
+
+ -- Michael Gilbert <mgilbert@debian.org>  Thu, 23 Jan 2014 23:38:48 +0000
+
 xpdf (3.03-15) experimental; urgency=low
 
   * Build-depend poppler >= 0.22.

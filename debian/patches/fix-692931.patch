@@ -1,0 +1,15 @@
+description: make selections visible in reverse video mode
+author: Derek Noonburg <derekn@foolabs.com>
+
+--- a/xpdf/PDFCore.cc	2014-01-23 18:36:08.000000000 -0500
++++ b/xpdf/PDFCore.cc	2014-01-23 18:36:58.540137187 -0500
+@@ -102,7 +102,8 @@
+   selectULY = selectLRY = 0;
+   dragging = gFalse;
+   lastDragLeft = lastDragTop = gTrue;
+-  selectXorColor[0] = selectXorColor[1] = selectXorColor[2] = 0;
++  selectXorColor[0] = selectXorColor[1] = selectXorColor[2] =
++      reverseVideoA ? 0xff : 0x00;
+   splashColorXor(selectXorColor, paperColorA);
+ 
+   historyCur = pdfHistorySize - 1;
