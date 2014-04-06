@@ -1,3 +1,9 @@
+xpdf (3.03-16+experimental2) experimental; urgency=medium
+
+  * Build-depend poppler >= 0.24.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 26 Jan 2014 19:43:27 +0000
+
 xpdf (3.03-16+experimental1) experimental; urgency=medium
 
   * Support poppler 0.24 (closes: #736443).
