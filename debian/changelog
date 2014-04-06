@@ -1,3 +1,9 @@
+xpdf (3.03-17) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 06 Apr 2014 03:10:29 +0000
+
 xpdf (3.03-16+experimental2) experimental; urgency=medium
 
   * Build-depend poppler >= 0.24.
