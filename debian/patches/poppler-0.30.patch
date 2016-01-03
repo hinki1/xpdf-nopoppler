@@ -1,0 +1,46 @@
+Description: Supply correct arguments to PSOutputDev's constructor
+Author: Iain Lane <iain.lane@canonical.com>
+Forwarded: no
+
+Index: b/xpdf/XPDFViewer.cc
+===================================================================
+--- a/xpdf/XPDFViewer.cc
++++ b/xpdf/XPDFViewer.cc
+@@ -3712,8 +3712,14 @@
+   // Normal print mode
+   if (printAll && !printBack)
+   {
++    std::vector<int> pages;
++    pages.reserve((lastPage - firstPage) + 1);
++
++    for (int i = firstPage; i <= lastPage; ++i)
++        pages.push_back(i);
++
+     psOut = new PSOutputDev(psFileName->getCString(), doc,
+-          NULL, firstPage, lastPage,
++          NULL, pages,
+           psModePS, xpdfParams->getPSPaperWidth(),
+           xpdfParams->getPSPaperHeight(), xpdfParams->getPSDuplex());
+     if (psOut->isOk()) {
+@@ -3727,6 +3733,8 @@
+   {
+     int step=1, i;
+     int beginPage, endPage;
++    std::vector<int> page;
++    page.reserve(1);
+ 
+     if (!printAll)
+     {
+@@ -3757,10 +3765,10 @@
+ 
+     if (firstPage<=lastPage)
+     {
+-      for (i=beginPage;; i+=step)
++      for (i=beginPage; page[0] = i; i+=step)
+       {
+         psOut = new PSOutputDev(psFileName->getCString(), doc,
+-              NULL, i, i, psModePS,
++              NULL, page, psModePS,
+               xpdfParams->getPSPaperWidth(),
+               xpdfParams->getPSPaperHeight(), xpdfParams->getPSDuplex());
+         if (psOut->isOk()) {

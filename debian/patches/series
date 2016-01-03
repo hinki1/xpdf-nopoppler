@@ -22,3 +22,5 @@ poppler-findtext.patch
 poppler-startdoc.patch
 poppler-xpdfparams.patch
 poppler-startpage.patch
+poppler-0.30.patch
+poppler-0.33.patch
