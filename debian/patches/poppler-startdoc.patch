@@ -1,9 +1,9 @@
 description: startDoc now takes a PDFDoc instead of an XRef
 author : Andy Whitcroft <apw@ubuntu.com>
 
---- a/xpdf/PDFCore.cc	2014-01-19 22:11:52.616069172 -0500
-+++ b/xpdf/PDFCore.cc	2014-01-19 22:14:10.164068834 -0500
-@@ -196,7 +196,7 @@
+--- a/xpdf/PDFCore.cc
++++ b/xpdf/PDFCore.cc
+@@ -201,7 +201,7 @@ int PDFCore::loadFile2(PDFDoc *newDoc) {
    }
    doc = newDoc;
    if (out) {

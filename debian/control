@@ -2,23 +2,23 @@ Source: xpdf
 Section: text
 Priority: optional
 Maintainer: Michael Gilbert <mgilbert@debian.org>
-Standards-Version: 3.9.6
+Standards-Version: 3.9.7
 Build-Depends: 
  debhelper (>= 9),
  pkg-config,
  libxt-dev,
  libx11-dev,
  libmotif-dev,
- libpoppler-private-dev (>= 0.33),
-Homepage: http://www.foolabs.com/xpdf/
+ libpoppler-private-dev (>= 0.26),
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/xpdf.git
 Vcs-Git: git://anonscm.debian.org/collab-maint/xpdf.git
+Homepage: http://www.foolabs.com/xpdf
 
 Package: xpdf
 Architecture: any
 Depends:
  ${misc:Depends},
- ${shlibs:Depends}
+ ${shlibs:Depends},
 Recommends:
  poppler-utils,
  poppler-data,

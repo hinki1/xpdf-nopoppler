@@ -1,9 +1,7 @@
 description: manpage updates
-Index: xpdf/doc/xpdf.1
-===================================================================
---- xpdf.orig/doc/xpdf.1	2012-02-24 19:44:18.000000000 -0500
-+++ xpdf/doc/xpdf.1	2012-02-24 19:44:54.000000000 -0500
-@@ -10,7 +10,7 @@
+--- a/doc/xpdf.1
++++ b/doc/xpdf.1
+@@ -10,7 +10,7 @@ xpdf \- Portable Document Format (PDF) f
  .SH DESCRIPTION
  .B Xpdf
  is a viewer for Portable Document Format (PDF) files.  (These are also
@@ -12,7 +10,7 @@ Index: xpdf/doc/xpdf.1
  software.)  Xpdf runs under the X Window System on UNIX, VMS, and
  OS/2.
  .PP
-@@ -29,7 +29,7 @@
+@@ -29,7 +29,7 @@ specifying the page which should be disp
  xpdf file.pdf 18
  .RE
  .PP
@@ -21,7 +19,7 @@ Index: xpdf/doc/xpdf.1
  the page number.  (This is only useful with PDF files that provide
  named destination targets.)
  .PP
-@@ -38,11 +38,17 @@
+@@ -38,11 +38,17 @@ You can also start xpdf without opening
  .RS
  xpdf
  .RE
@@ -41,7 +39,7 @@ Index: xpdf/doc/xpdf.1
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-@@ -54,48 +60,48 @@
+@@ -54,48 +60,48 @@ description of the corresponding command
  Set the initial window geometry.
  .RB ( \-geometry
  is equivalent.)
@@ -99,7 +97,7 @@ Index: xpdf/doc/xpdf.1
  .TP
  .B \-cont
  Start in continuous view mode, i.e., with one vertical scroll bar for
-@@ -123,7 +129,7 @@
+@@ -118,7 +124,7 @@ Enable or disable vector anti-aliasing.
  .BI \-ps " PS-file"
  Set the default file name for PostScript output (i.e., the name which
  will appear in the print dialog).  This can also be of the form
@@ -108,7 +106,7 @@ Index: xpdf/doc/xpdf.1
  .RB "[config file: " psFile ]
  .TP
  .BI \-paper " size"
-@@ -210,10 +216,20 @@
+@@ -205,10 +211,20 @@ and
  .B \-\-help
  are equivalent.)
  .PP
@@ -130,7 +128,7 @@ Index: xpdf/doc/xpdf.1
  .TP
  .BI \-fg " color"
  .RB ( \-foreground
-@@ -231,15 +247,15 @@
+@@ -226,15 +242,15 @@ is equivalent.)
  .RB "[X resource: " xpdf*fontList ]
  .PP
  The color and font options only affect the user interface elements,
@@ -149,7 +147,7 @@ Index: xpdf/doc/xpdf.1
  Sets the matte color to be used in full-screen mode.  The default
  setting is "black".
  .SH CONTROLS
-@@ -254,7 +270,7 @@
+@@ -249,7 +265,7 @@ Move backward or forward by ten pages.
  .B "dashed left/right arrow buttons"
  Move backward or forward along the history path.
  .TP
@@ -158,7 +156,7 @@ Index: xpdf/doc/xpdf.1
  Move to a specific page number.  Click in the box to activate it, type
  the page number, then hit return.
  .TP
-@@ -267,17 +283,17 @@
+@@ -262,17 +278,17 @@ Find a text string.
  .B "print button"
  Bring up a dialog for generating a PostScript file.  The dialog has
  options to set the pages to be printed and the PostScript file name.
@@ -182,7 +180,7 @@ Index: xpdf/doc/xpdf.1
  Quit xpdf.
  .PP
  .SS Menu
-@@ -333,9 +349,9 @@
+@@ -328,9 +344,9 @@ the X selection buffer.
  .PP
  .SS Links
  Clicking on a hyperlink will jump to the link's destination.  A link
@@ -195,7 +193,7 @@ Index: xpdf/doc/xpdf.1
  command (see the
  .B WEB BROWSERS
  section below).
-@@ -458,7 +474,7 @@
+@@ -453,7 +469,7 @@ Make sure that xpdf is on your executabl
  .PP
  When you click on a URL link in a PDF file, xpdf will execute the
  command specified by the urlCommand config file option, replacing an
@@ -204,7 +202,7 @@ Index: xpdf/doc/xpdf.1
  the URL, add this line to your config file:
  .PP
  .RS
-@@ -823,8 +839,8 @@
+@@ -829,8 +845,8 @@ Xpdf can be started in remote server mod
  xpdf \-remote myServer file.pdf
  .RE
  .PP
@@ -215,11 +213,9 @@ Index: xpdf/doc/xpdf.1
  .PP
  .RS
  xpdf \-remote myServer another.pdf 9
-Index: xpdf/doc/xpdfrc.5
-===================================================================
---- xpdf.orig/doc/xpdfrc.5	2012-02-24 19:44:18.000000000 -0500
-+++ xpdf/doc/xpdfrc.5	2012-02-24 19:44:22.000000000 -0500
-@@ -7,7 +7,7 @@
+--- a/doc/xpdfrc.5
++++ b/doc/xpdfrc.5
+@@ -7,7 +7,7 @@ All of the Xpdf tools read a single conf
  .I .xpdfrc
  file in your home directory, it will be read.  Otherwise, a
  system-wide configuration file will be read from
@@ -228,7 +224,7 @@ Index: xpdf/doc/xpdfrc.5
  if it exists.  (This is its default location; depending on build
  options, it may be placed elsewhere.)  On Win32 systems, the
  .I xpdfrc
-@@ -19,6 +19,9 @@
+@@ -22,6 +22,9 @@ file names that contain spaces.
  .PP
  The following sections list all of the configuration options, sorted
  into functional groups.  There is an examples section at the end.
@@ -238,7 +234,7 @@ Index: xpdf/doc/xpdfrc.5
  .SH INCLUDE FILES
  .TP
  .BI include " config\-file"
-@@ -467,7 +470,7 @@
+@@ -484,7 +487,7 @@ OP/op/OPM settings in the PDF file.  Ign
  default value is "no".
  .TP
  .BI launchCommand " command"
@@ -247,7 +243,7 @@ Index: xpdf/doc/xpdfrc.5
  intent is for the command to be a program/script which determines the
  file type and runs the appropriate viewer.  The command line will
  consist of the file to be launched, followed by any parameters
-@@ -641,7 +644,7 @@
+@@ -672,7 +675,7 @@ urlCommand      "netscape \-remote 'open
  .fi
  .SH FILES
  .TP

@@ -1,18 +1,8 @@
 description: make filespec call compatible with poppler
 origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
 
---- a/xpdf/config.h	2014-01-20 03:48:16.552063803 +0000
-+++ b/xpdf/config.h	2014-01-20 03:48:16.552063803 +0000
-@@ -28,6 +28,7 @@
- #define supportedPDFVersionNum 1.7
- 
- // copyright notice
-+#undef xpdfCopyright
- #define xpdfCopyright "Copyright 1996-2011 Glyph & Cog, LLC"
- 
- // Windows resource file stuff
---- a/xpdf/XPDFCore.cc	2014-01-20 03:48:16.552063803 +0000
-+++ b/xpdf/XPDFCore.cc	2014-01-20 03:48:16.552063803 +0000
+--- a/xpdf/XPDFCore.cc
++++ b/xpdf/XPDFCore.cc
 @@ -24,6 +24,7 @@
  #include "GlobalParams.h"
  #include "PDFDoc.h"
@@ -21,7 +11,7 @@ origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
  #include "ErrorCodes.h"
  #include "GfxState.h"
  #include "CoreOutputDev.h"
-@@ -476,7 +477,7 @@
+@@ -476,7 +477,7 @@ void XPDFCore::doAction(LinkAction *acti
    GString *fileName, *fileName2;
    GString *cmd;
    GString *actionName;
@@ -30,14 +20,14 @@ origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
    GString *msg;
    int i;
    int errcode;
-@@ -656,7 +657,9 @@
+@@ -656,7 +657,9 @@ void XPDFCore::doAction(LinkAction *acti
      if (movieAnnot.isDict()) {
        if (movieAnnot.dictLookup("Movie", &obj1)->isDict()) {
  	if (obj1.dictLookup("F", &obj2)) {
 -	  if ((fileName = LinkAction::getFileSpecName(&obj2))) {
 +	  if (getFileSpecNameForPlatform(&obj2, &obj3)) {
-+	    fileName = obj3.getString()->copy();
-+	    obj3.free();
- 	    if (!isAbsolutePath(fileName->getCString())) {
++            fileName = obj3.getString()->copy();
++            obj3.free();
+ 	    if (!isAbsolutePath(fileName->getCString()) &&
+ 		doc->getFileName()) {
  	      fileName2 = appendToPath(
- 			      grabPath(doc->getFileName()->getCString()),

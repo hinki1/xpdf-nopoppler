@@ -1,9 +1,17 @@
-Format: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=202
-Upstream-Name: Xpdf
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0
 Source: http://www.foolabs.com/xpdf
+Upstream-Name: Xpdf
+Files-Excluded:
+ *dj*
+ misc
+ fofi
+ *win32.h
+ configure
+ install-sh
+ ms_make.bat
 
 Files: *
-Copyright: 1996-2007, Derek B. Noonburg <derekn@foolabs.com>
+Copyright: 1996-2015 Derek B. Noonburg <derekn@foolabs.com>
 License: GPL-2+
  Xpdf is licensed under the GNU General Public License (GPL), version
  2.  In my opinion, the GPL is a convoluted, confusing, ambiguous mess.
@@ -34,11 +42,11 @@ License: GPL-2+
  version 2 can be found in the file `/usr/share/common-licenses/GPL-2'.
 
 Files: debian/*
-Copyright: 1996-1998, Dirk Eddelbuettel <edd@debian.org>
-           1998-2007, Hamish Moffatt <hamish@debian.org>
-           2010, Michael S. Gilbert <michael.s.gilbert@gmail.com>
-           2010, Osamu Aoki <osamu@debian.org>
-           2010, Rogério Theodoro de Brito <rbrito@ime.usp.br>
+Copyright: 1996-1998 Dirk Eddelbuettel <edd@debian.org>
+           1998-2007 Hamish Moffatt <hamish@debian.org>
+           2010 Osamu Aoki <osamu@debian.org>
+           2010 Rogério Theodoro de Brito <rbrito@ime.usp.br>
+           2010-2015 Michael Gilbert <mgilbert@debian.org>
 License: GPL-2
  On Debian systems, the full text of the GNU General Public License
  version 2 can be found in the file `/usr/share/common-licenses/GPL-2'.

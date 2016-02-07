@@ -1,6 +1,5 @@
 01-manpage.patch
 02-permissions.patch
-11-fix-hyphens-in-manpages.patch
 
 # various bug fies
 fix-408502.patch
@@ -10,12 +9,12 @@ fix-580495.patch
 fix-627426.patch
 
 # fixes for build-hardening compiler warnings
-fix-692931.patch
 hardening-invalid-conversions.patch
 hardening-system-calls.patch
 hardening-pointer-casting.patch
 
 # patches to use poppler
+poppler-copyright.patch
 poppler-textpage-destructor.patch
 poppler-filespecname.patch
 poppler-findtext.patch
@@ -24,3 +23,7 @@ poppler-xpdfparams.patch
 poppler-startpage.patch
 poppler-0.30.patch
 poppler-0.33.patch
+
+# poppler patches added for xpdf 3.04
+poppler-textoutputdev.patch
+poppler-linkactionkind.patch

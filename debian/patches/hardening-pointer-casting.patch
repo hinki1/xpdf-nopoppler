@@ -3,9 +3,9 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
 
 --- a/xpdf/XPDFViewer.cc
 +++ b/xpdf/XPDFViewer.cc
-@@ -1833,7 +1833,7 @@
+@@ -1841,7 +1841,7 @@ void XPDFViewer::initToolbar(Widget pare
      n = 0;
-     s = XmStringCreateLocalized((char*)zoomMenuInfo[i].label);
+     s = XmStringCreateLocalized((char *)zoomMenuInfo[i].label);
      XtSetArg(args[n], XmNlabelString, s); ++n;
 -    XtSetArg(args[n], XmNuserData, (XtPointer)i); ++n;
 +    XtSetArg(args[n], XmNuserData, i); ++n;

@@ -1,0 +1,59 @@
+description: use poppler's TextOutputDev api
+author: Michael Gilbert <mgilbert@debian.org>
+
+--- a/xpdf/PDFCore.cc
++++ b/xpdf/PDFCore.cc
+@@ -839,7 +839,6 @@ void PDFCore::addPage(int pg, int rot) {
+ 
+ void PDFCore::needTile(PDFCorePage *page, int x, int y) {
+   PDFCoreTile *tile;
+-  TextOutputControl textOutCtrl;
+   TextOutputDev *textOut;
+   int xDest, yDest, sliceW, sliceH;
+   int i;
+@@ -926,8 +925,7 @@ void PDFCore::needTile(PDFCorePage *page
+     page->links = doc->getLinks(page->page);
+   }
+   if (!page->text) {
+-    textOutCtrl.mode = textOutPhysLayout;
+-    if ((textOut = new TextOutputDev(NULL, &textOutCtrl, gFalse))) {
++    if ((textOut = new TextOutputDev(NULL, gTrue, 0, gFalse, gFalse))) {
+       doc->displayPage(textOut, page->page, dpi, dpi, rotate,
+ 		       gFalse, gTrue, gFalse);
+       page->text = textOut->takeText();
+@@ -1699,7 +1697,6 @@ GBool PDFCore::getSelection(int *pg, dou
+ GString *PDFCore::extractText(int pg, double xMin, double yMin,
+ 			      double xMax, double yMax) {
+   PDFCorePage *page;
+-  TextOutputControl textOutCtrl;
+   TextOutputDev *textOut;
+   int x0, y0, x1, y1, t;
+   GString *s;
+@@ -1720,8 +1717,7 @@ GString *PDFCore::extractText(int pg, do
+     }
+     s = page->text->getText(x0, y0, x1, y1);
+   } else {
+-    textOutCtrl.mode = textOutPhysLayout;
+-    textOut = new TextOutputDev(NULL, &textOutCtrl, gFalse);
++    textOut = new TextOutputDev(NULL, gTrue, 0, gFalse, gFalse);
+     if (textOut->isOk()) {
+       doc->displayPage(textOut, pg, dpi, dpi, rotate, gFalse, gTrue, gFalse);
+       textOut->cvtUserToDev(xMin, yMin, &x0, &y0);
+@@ -1763,7 +1759,6 @@ GBool PDFCore::find(char *s, GBool caseS
+ GBool PDFCore::findU(Unicode *u, int len, GBool caseSensitive,
+ 		     GBool next, GBool backward, GBool wholeWord,
+ 		     GBool onePageOnly) {
+-  TextOutputControl textOutCtrl;
+   TextOutputDev *textOut;
+   double xMin, yMin, xMax, yMax;
+   PDFCorePage *page;
+@@ -1809,8 +1804,7 @@ GBool PDFCore::findU(Unicode *u, int len
+   if (!onePageOnly) {
+ 
+     // search following/previous pages
+-    textOutCtrl.mode = textOutPhysLayout;
+-    textOut = new TextOutputDev(NULL, &textOutCtrl, gFalse);
++    textOut = new TextOutputDev(NULL, gTrue, 0, gFalse, gFalse);
+     if (!textOut->isOk()) {
+       delete textOut;
+       goto notFound;

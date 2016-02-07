@@ -1,0 +1,23 @@
+description: skip types not yet defined in poppler's LinkActionKind enum
+author: Michael Gilbert <mgilbert@debian.org>
+
+--- a/xpdf/XPDFCore.cc
++++ b/xpdf/XPDFCore.cc
+@@ -686,8 +686,6 @@ void XPDFCore::doAction(LinkAction *acti
+ 
+   // unsupported action types
+   case actionJavaScript:
+-  case actionSubmitForm:
+-  case actionHide:
+     error(errSyntaxError, -1, "Unsupported link action type");
+     break;
+ 
+@@ -1162,8 +1160,6 @@ void XPDFCore::inputCbk(Widget widget, X
+ 		s = "[movie]";
+ 		break;
+ 	      case actionJavaScript:
+-	      case actionSubmitForm:
+-	      case actionHide:
+ 	      case actionUnknown:
+ 		s = "[unknown link]";
+ 		break;

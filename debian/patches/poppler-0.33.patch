@@ -1,11 +1,9 @@
 Description: poppler 0.33 (or something 0.30-0.33) dropped the antialias parameters from GlobalParams
 Author: Iain Lane <iain.lane@canonical.com>
 
-Index: b/xpdf/xpdf.cc
-===================================================================
 --- a/xpdf/xpdf.cc
 +++ b/xpdf/xpdf.cc
-@@ -180,12 +180,12 @@
+@@ -175,12 +175,12 @@ int main(int argc, char *argv[]) {
      }
    }
    if (antialiasStr[0]) {
@@ -20,11 +18,9 @@ Index: b/xpdf/xpdf.cc
        fprintf(stderr, "Bad '-aaVector' value on command line\n");
      }
    }
-Index: b/xpdf/XPDFCore.cc
-===================================================================
 --- a/xpdf/XPDFCore.cc
 +++ b/xpdf/XPDFCore.cc
-@@ -93,6 +93,10 @@
+@@ -93,6 +93,10 @@ XPDFCore::XPDFCore(Widget shellA, Widget
  		   GBool installCmap, int rgbCubeSizeA):
    PDFCore(splashModeRGB8, 4, reverseVideoA, paperColorA, !fullScreenA)
  {
@@ -35,11 +31,9 @@ Index: b/xpdf/XPDFCore.cc
    GString *initialZoom;
  
    shell = shellA;
-Index: b/xpdf/XPDFParams.cc
-===================================================================
 --- a/xpdf/XPDFParams.cc
 +++ b/xpdf/XPDFParams.cc
-@@ -53,7 +53,7 @@
+@@ -53,7 +53,7 @@ KeyBinding::~KeyBinding() {
  // XpdfParams
  //------------------------------------------------------------------------
  
@@ -48,11 +42,9 @@ Index: b/xpdf/XPDFParams.cc
    GString *fileName;
    FILE *f;
    int i;
-Index: b/xpdf/XPDFParams.h
-===================================================================
 --- a/xpdf/XPDFParams.h
 +++ b/xpdf/XPDFParams.h
-@@ -88,6 +88,8 @@
+@@ -88,6 +88,8 @@ public:
    GBool getContinuousView();
    int getPSPaperWidth();
    int getPSPaperHeight();

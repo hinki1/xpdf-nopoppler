@@ -1,9 +1,9 @@
 description: use poppler's findtext api
 author: Michael Gilbert <michael.s.gilbert@gmail.com>
 
---- a/xpdf/PDFCore.cc	2014-01-19 22:05:48.876070066 -0500
-+++ b/xpdf/PDFCore.cc	2014-01-19 22:16:27.000000000 -0500
-@@ -1741,7 +1741,7 @@
+--- a/xpdf/PDFCore.cc
++++ b/xpdf/PDFCore.cc
+@@ -1800,7 +1800,7 @@ GBool PDFCore::findU(Unicode *u, int len
      page = findPage(pg);
    }
    if (page->text->findText(u, len, startAtTop, gTrue, startAtLast, gFalse,
@@ -12,7 +12,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  			   &xMin, &yMin, &xMax, &yMax)) {
      goto found;
    }
-@@ -1759,7 +1759,7 @@
+@@ -1819,7 +1819,7 @@ GBool PDFCore::findU(Unicode *u, int len
  	 pg += backward ? -1 : 1) {
        doc->displayPage(textOut, pg, 72, 72, 0, gFalse, gTrue, gFalse);
        if (textOut->findText(u, len, gTrue, gTrue, gFalse, gFalse,
@@ -21,7 +21,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  			    &xMin, &yMin, &xMax, &yMax)) {
  	delete textOut;
  	goto foundPage;
-@@ -1772,7 +1772,7 @@
+@@ -1832,7 +1832,7 @@ GBool PDFCore::findU(Unicode *u, int len
  	 pg += backward ? -1 : 1) {
        doc->displayPage(textOut, pg, 72, 72, 0, gFalse, gTrue, gFalse);
        if (textOut->findText(u, len, gTrue, gTrue, gFalse, gFalse,
@@ -30,7 +30,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  			    &xMin, &yMin, &xMax, &yMax)) {
  	delete textOut;
  	goto foundPage;
-@@ -1794,7 +1794,7 @@
+@@ -1854,7 +1854,7 @@ GBool PDFCore::findU(Unicode *u, int len
        yMax = selectLRY;
      }
      if (page->text->findText(u, len, gTrue, gFalse, gFalse, stopAtLast,
@@ -39,7 +39,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  			     &xMin, &yMin, &xMax, &yMax)) {
        goto found;
      }
-@@ -1811,7 +1811,7 @@
+@@ -1871,7 +1871,7 @@ GBool PDFCore::findU(Unicode *u, int len
  	 gTrue);
    page = findPage(pg);
    if (!page->text->findText(u, len, gTrue, gTrue, gFalse, gFalse,

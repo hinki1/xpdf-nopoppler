@@ -4,7 +4,7 @@ bug-debian: http://bugs.debian.org/458468
 
 --- a/xpdf/xpdf.cc
 +++ b/xpdf/xpdf.cc
-@@ -62,6 +62,8 @@ static ArgDesc argDesc[] = {
+@@ -61,6 +61,8 @@ static ArgDesc argDesc[] = {
     "reverse video"},
    {"-papercolor", argStringDummy, NULL,           0,
     "color of paper background"},

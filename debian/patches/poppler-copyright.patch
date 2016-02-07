@@ -1,0 +1,14 @@
+description: poppler has already defined xpdfCopyright so we need to undefine it
+author: Michael Gilbert <mgilbert@debian.org>
+
+--- a/xpdf/config.h
++++ b/xpdf/config.h
+@@ -9,6 +9,8 @@
+ #ifndef CONFIG_H
+ #define CONFIG_H
+ 
++#undef xpdfCopyright
++
+ //------------------------------------------------------------------------
+ // version
+ //------------------------------------------------------------------------

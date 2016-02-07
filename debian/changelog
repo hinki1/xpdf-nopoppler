@@ -1,3 +1,10 @@
+xpdf (3.04-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Standards version 3.9.7.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 07 Feb 2016 17:37:07 +0000
+
 xpdf (3.03-18) unstable; urgency=medium
 
   * Support poppler 0.38 (closes: #807087).

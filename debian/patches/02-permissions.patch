@@ -1,18 +1,16 @@
 description: remove pdf file permission checks
-Index: xpdf/xpdf/PDFCore.cc
-===================================================================
---- xpdf.orig/xpdf/PDFCore.cc	2011-08-28 19:53:44.000000000 -0400
-+++ xpdf/xpdf/PDFCore.cc	2011-08-28 19:54:16.000000000 -0400
+--- a/xpdf/PDFCore.cc
++++ b/xpdf/PDFCore.cc
 @@ -4,6 +4,8 @@
  //
- // Copyright 2004 Glyph & Cog, LLC
+ // Copyright 2004-2013 Glyph & Cog, LLC
  //
 +// Modified for Debian by Hamish Moffatt, 18 August 2005.
 +//
  //========================================================================
  
  #include <aconf.h>
-@@ -1619,9 +1621,11 @@
+@@ -1677,9 +1679,11 @@ GString *PDFCore::extractText(int pg, do
    int x0, y0, x1, y1, t;
    GString *s;
  
@@ -24,10 +22,8 @@ Index: xpdf/xpdf/PDFCore.cc
    if ((page = findPage(pg))) {
      cvtUserToDev(pg, xMin, yMin, &x0, &y0);
      cvtUserToDev(pg, xMax, yMax, &x1, &y1);
-Index: xpdf/xpdf/XPDFCore.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFCore.cc	2011-08-28 19:53:44.000000000 -0400
-+++ xpdf/xpdf/XPDFCore.cc	2011-08-28 19:54:16.000000000 -0400
+--- a/xpdf/XPDFCore.cc
++++ b/xpdf/XPDFCore.cc
 @@ -4,6 +4,8 @@
  //
  // Copyright 2002-2003 Glyph & Cog, LLC
@@ -37,7 +33,7 @@ Index: xpdf/xpdf/XPDFCore.cc
  //========================================================================
  
  #include <aconf.h>
-@@ -384,12 +386,16 @@
+@@ -384,12 +386,16 @@ void XPDFCore::endSelection(int wx, int
  #ifndef NO_TEXT_SELECT
        if (selectULX != selectLRX &&
  	  selectULY != selectLRY) {
@@ -54,7 +50,7 @@ Index: xpdf/xpdf/XPDFCore.cc
        }
  #endif
      }
-@@ -408,9 +414,11 @@
+@@ -408,9 +414,11 @@ void XPDFCore::copySelection() {
    int pg;
    double ulx, uly, lrx, lry;
  
@@ -66,10 +62,8 @@ Index: xpdf/xpdf/XPDFCore.cc
    if (getSelection(&pg, &ulx, &uly, &lrx, &lry)) {
      //~ for multithreading: need a mutex here
      if (currentSelection) {
-Index: xpdf/xpdf/XPDFViewer.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFViewer.cc	2011-08-28 19:53:44.000000000 -0400
-+++ xpdf/xpdf/XPDFViewer.cc	2011-08-28 19:54:16.000000000 -0400
+--- a/xpdf/XPDFViewer.cc
++++ b/xpdf/XPDFViewer.cc
 @@ -4,6 +4,8 @@
  //
  // Copyright 2002-2003 Glyph & Cog, LLC
@@ -79,7 +73,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
  //========================================================================
  
  #include <aconf.h>
-@@ -3492,10 +3494,12 @@
+@@ -3501,10 +3503,12 @@ void XPDFViewer::printPrintCbk(Widget wi
    PSOutputDev *psOut;
  
    doc = viewer->core->getDoc();

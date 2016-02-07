@@ -1,9 +1,9 @@
 description: check exit codes of system calls 
 author: Michael Gilbert <michael.s.gilbert@gmail.com>
 
---- a/xpdf/XPDFCore.cc	2014-01-20 03:45:51.192064160 +0000
-+++ b/xpdf/XPDFCore.cc	2014-01-20 03:45:51.192064160 +0000
-@@ -479,6 +479,7 @@
+--- a/xpdf/XPDFCore.cc
++++ b/xpdf/XPDFCore.cc
+@@ -479,6 +479,7 @@ void XPDFCore::doAction(LinkAction *acti
    Object movieAnnot, obj1, obj2;
    GString *msg;
    int i;
@@ -11,7 +11,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  
    switch (kind = action->getKind()) {
  
-@@ -568,12 +569,18 @@
+@@ -568,12 +569,18 @@ void XPDFCore::doAction(LinkAction *acti
        if (globalParams->getLaunchCommand()) {
  	fileName->insert(0, ' ');
  	fileName->insert(0, globalParams->getLaunchCommand());
@@ -32,7 +32,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  	}
  	delete msg;
        }
-@@ -681,6 +688,7 @@
+@@ -689,6 +696,7 @@ void XPDFCore::doAction(LinkAction *acti
  void XPDFCore::runCommand(GString *cmdFmt, GString *arg) {
    GString *cmd;
    char *s;
@@ -40,7 +40,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  
    if ((s = strstr(cmdFmt->getCString(), "%s"))) {
      cmd = mungeURL(arg);
-@@ -697,7 +705,10 @@
+@@ -705,7 +713,10 @@ void XPDFCore::runCommand(GString *cmdFm
  #else
    cmd->append(" &");
  #endif
@@ -52,9 +52,9 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
    delete cmd;
  }
  
---- a/xpdf/XPDFViewer.cc	2014-01-20 03:45:51.192064160 +0000
-+++ b/xpdf/XPDFViewer.cc	2014-01-20 03:45:51.192064160 +0000
-@@ -1126,6 +1126,7 @@
+--- a/xpdf/XPDFViewer.cc
++++ b/xpdf/XPDFViewer.cc
+@@ -1134,6 +1134,7 @@ void XPDFViewer::cmdRun(GString *args[],
    char *p;
    char c0, c1;
    int i;
@@ -62,7 +62,7 @@ author: Michael Gilbert <michael.s.gilbert@gmail.com>
  
    cmd = new GString();
    fmt = args[0];
-@@ -1222,7 +1223,10 @@
+@@ -1230,7 +1231,10 @@ void XPDFViewer::cmdRun(GString *args[],
  #else
    cmd->append(" &");
  #endif

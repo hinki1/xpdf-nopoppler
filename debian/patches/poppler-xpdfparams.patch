@@ -5,10 +5,8 @@ Bug-Ubuntu: https://bugs.launchpad.net/bugs/943195
 Bug-Ubuntu: https://bugs.launchpad.net/bugs/1205732
 Last-Update: 2013-09-11
 
-Index: xpdf/xpdf/PDFCore.cc
-===================================================================
---- xpdf.orig/xpdf/PDFCore.cc	2014-01-20 04:01:40.684061826 +0000
-+++ xpdf/xpdf/PDFCore.cc	2014-01-20 04:01:40.684061826 +0000
+--- a/xpdf/PDFCore.cc
++++ b/xpdf/PDFCore.cc
 @@ -18,6 +18,7 @@
  #include "GString.h"
  #include "GList.h"
@@ -17,7 +15,7 @@ Index: xpdf/xpdf/PDFCore.cc
  #include "Splash.h"
  #include "SplashBitmap.h"
  #include "SplashPattern.h"
-@@ -86,7 +87,7 @@
+@@ -86,7 +87,7 @@ PDFCore::PDFCore(SplashColorMode colorMo
    int i;
  
    doc = NULL;
@@ -26,10 +24,8 @@ Index: xpdf/xpdf/PDFCore.cc
    drawAreaWidth = drawAreaHeight = 0;
    maxPageW = totalDocH = 0;
    pageY = NULL;
-Index: xpdf/xpdf/XPDFCore.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFCore.cc	2014-01-20 04:01:40.684061826 +0000
-+++ xpdf/xpdf/XPDFCore.cc	2014-01-20 04:01:40.684061826 +0000
+--- a/xpdf/XPDFCore.cc
++++ b/xpdf/XPDFCore.cc
 @@ -22,6 +22,7 @@
  #include "GList.h"
  #include "Error.h"
@@ -38,7 +34,7 @@ Index: xpdf/xpdf/XPDFCore.cc
  #include "PDFDoc.h"
  #include "Link.h"
  #include "FileSpec.h"
-@@ -116,7 +117,7 @@
+@@ -116,7 +117,7 @@ XPDFCore::XPDFCore(Widget shellA, Widget
    if (fullScreen) {
      zoom = zoomPage;
    } else {
@@ -47,7 +43,7 @@ Index: xpdf/xpdf/XPDFCore.cc
      if (!initialZoom->cmp("page")) {
        zoom = zoomPage;
      } else if (!initialZoom->cmp("width")) {
-@@ -567,9 +568,9 @@
+@@ -567,9 +568,9 @@ void XPDFCore::doAction(LinkAction *acti
  #else
        fileName->append(" &");
  #endif
@@ -59,7 +55,7 @@ Index: xpdf/xpdf/XPDFCore.cc
  	errcode = system(fileName->getCString());
          if (errcode != 0) {
            error(errInternal, -1 , "non-zero error code returned by system call");
-@@ -591,7 +592,7 @@
+@@ -591,7 +592,7 @@ void XPDFCore::doAction(LinkAction *acti
  
    // URI action
    case actionURI:
@@ -68,7 +64,7 @@ Index: xpdf/xpdf/XPDFCore.cc
        error(errConfig, -1, "No urlCommand defined in config file");
        break;
      }
-@@ -629,7 +630,7 @@
+@@ -629,7 +630,7 @@ void XPDFCore::doAction(LinkAction *acti
  
    // Movie action
    case actionMovie:
@@ -77,10 +73,8 @@ Index: xpdf/xpdf/XPDFCore.cc
        error(errConfig, -1, "No movieCommand defined in config file");
        break;
      }
-Index: xpdf/xpdf/XPDFViewer.cc
-===================================================================
---- xpdf.orig/xpdf/XPDFViewer.cc	2014-01-20 04:01:40.684061826 +0000
-+++ xpdf/xpdf/XPDFViewer.cc	2014-01-20 04:01:40.684061826 +0000
+--- a/xpdf/XPDFViewer.cc
++++ b/xpdf/XPDFViewer.cc
 @@ -33,6 +33,7 @@
  #include "GList.h"
  #include "Error.h"
@@ -89,7 +83,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
  #include "PDFDoc.h"
  #include "Link.h"
  #include "ErrorCodes.h"
-@@ -602,7 +603,7 @@
+@@ -605,7 +606,7 @@ void XPDFViewer::keyPressCbk(void *data,
      return;
    }
  
@@ -98,7 +92,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
  					  viewer->getModifiers(modifiers),
  					  viewer->getContext(modifiers)))) {
      for (i = 0; i < cmds->getLength(); ++i) {
-@@ -634,7 +635,7 @@
+@@ -637,7 +638,7 @@ void XPDFViewer::mouseCbk(void *data, XE
      return;
    }
  
@@ -107,7 +101,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
  					  viewer->getModifiers(
  						      event->xkey.state),
  					  viewer->getContext(
-@@ -3524,7 +3525,7 @@
+@@ -3532,7 +3533,7 @@ void XPDFViewer::initPrintDialog() {
    XtSetValues(printDialog, args, n);
  
    //----- initial values
@@ -116,16 +110,16 @@ Index: xpdf/xpdf/XPDFViewer.cc
      if (psFileName->getChar(0) == '|') {
        XmTextFieldSetString(printCmdText,
  			   psFileName->getCString() + 1);
-@@ -3596,7 +3597,7 @@
+@@ -3604,7 +3605,7 @@ void XPDFViewer::setupPrintDialog() {
    char *p;
  
    doc = core->getDoc();
 -  psFileName = globalParams->getPSFile();
 +  psFileName = xpdfParams->getPSFile();
    if (!psFileName || psFileName->getChar(0) == '|') {
-     pdfFileName = doc->getFileName();
-     p = pdfFileName->getCString() + pdfFileName->getLength() - 4;
-@@ -3711,12 +3712,13 @@
+     if ((pdfFileName = doc->getFileName())) {
+       p = pdfFileName->getCString() + pdfFileName->getLength() - 4;
+@@ -3720,12 +3721,13 @@ void XPDFViewer::printPrintCbk(Widget wi
    // Normal print mode
    if (printAll && !printBack)
    {
@@ -143,7 +137,7 @@ Index: xpdf/xpdf/XPDFViewer.cc
      }
      delete psOut;
    }
-@@ -3757,11 +3759,13 @@
+@@ -3766,11 +3768,13 @@ void XPDFViewer::printPrintCbk(Widget wi
      {
        for (i=beginPage;; i+=step)
        {
@@ -160,10 +154,8 @@ Index: xpdf/xpdf/XPDFViewer.cc
          }
          else
          {
-Index: xpdf/xpdf/xpdf.cc
-===================================================================
---- xpdf.orig/xpdf/xpdf.cc	2014-01-20 04:01:40.684061826 +0000
-+++ xpdf/xpdf/xpdf.cc	2014-01-20 04:01:40.684061826 +0000
+--- a/xpdf/xpdf.cc
++++ b/xpdf/xpdf.cc
 @@ -13,6 +13,7 @@
  #include "gfile.h"
  #include "gmem.h"
@@ -172,7 +164,7 @@ Index: xpdf/xpdf/xpdf.cc
  #include "Object.h"
  #include "XPDFApp.h"
  #include "config.h"
-@@ -157,25 +158,11 @@
+@@ -152,25 +153,11 @@ int main(int argc, char *argv[]) {
  
    // read config file
    globalParams = new GlobalParams(cfgFileName);
@@ -199,19 +191,7 @@ Index: xpdf/xpdf/xpdf.cc
    if (level1) {
      globalParams->setPSLevel(psLevel1);
    }
-@@ -187,11 +174,6 @@
-       fprintf(stderr, "Bad '-eol' value on command line\n");
-     }
-   }
--  if (enableT1libStr[0]) {
--    if (!globalParams->setEnableT1lib(enableT1libStr)) {
--      fprintf(stderr, "Bad '-t1lib' value on command line\n");
--    }
--  }
-   if (enableFreeTypeStr[0]) {
-     if (!globalParams->setEnableFreeType(enableFreeTypeStr)) {
-       fprintf(stderr, "Bad '-freetype' value on command line\n");
-@@ -217,12 +199,6 @@
+@@ -207,12 +194,6 @@ int main(int argc, char *argv[]) {
    // create the XPDFApp object
    app = new XPDFApp(&argc, argv);
  
@@ -224,7 +204,7 @@ Index: xpdf/xpdf/xpdf.cc
    // check command line
    ok = ok && argc >= 1 && argc <= 3;
    if (remoteCmd[0]) {
-@@ -336,6 +312,7 @@
+@@ -326,6 +307,7 @@ int main(int argc, char *argv[]) {
   done1:
    delete app;
    delete globalParams;
@@ -232,10 +212,8 @@ Index: xpdf/xpdf/xpdf.cc
  
    // check for memory leaks
   done0:
-Index: xpdf/xpdf/XPDFParams.cc
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ xpdf/xpdf/XPDFParams.cc	2014-01-20 04:01:57.876061784 +0000
+--- /dev/null
++++ b/xpdf/XPDFParams.cc
 @@ -0,0 +1,492 @@
 +#include <ctype.h>
 +#include <stdio.h>
@@ -729,10 +707,8 @@ Index: xpdf/xpdf/XPDFParams.cc
 +  unlockXpdfParams;
 +  return h;
 +}
-Index: xpdf/xpdf/XPDFParams.h
-===================================================================
---- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ xpdf/xpdf/XPDFParams.h	2014-01-20 04:01:57.876061784 +0000
+--- /dev/null
++++ b/xpdf/XPDFParams.h
 @@ -0,0 +1,120 @@
 +#include "GList.h"
 +#include "GMutex.h"

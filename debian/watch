@@ -1,2 +1,3 @@
 version=3
+opts="pgpsigurlmangle=s/$/.sig/" \
 ftp://ftp.foolabs.com/pub/xpdf/xpdf-([\d.]+)\.tar\.gz

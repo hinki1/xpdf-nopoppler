@@ -2,11 +2,9 @@ Description: Supply correct arguments to PSOutputDev's constructor
 Author: Iain Lane <iain.lane@canonical.com>
 Forwarded: no
 
-Index: b/xpdf/XPDFViewer.cc
-===================================================================
 --- a/xpdf/XPDFViewer.cc
 +++ b/xpdf/XPDFViewer.cc
-@@ -3712,8 +3712,14 @@
+@@ -3721,8 +3721,14 @@ void XPDFViewer::printPrintCbk(Widget wi
    // Normal print mode
    if (printAll && !printBack)
    {
@@ -22,7 +20,7 @@ Index: b/xpdf/XPDFViewer.cc
            psModePS, xpdfParams->getPSPaperWidth(),
            xpdfParams->getPSPaperHeight(), xpdfParams->getPSDuplex());
      if (psOut->isOk()) {
-@@ -3727,6 +3733,8 @@
+@@ -3736,6 +3742,8 @@ void XPDFViewer::printPrintCbk(Widget wi
    {
      int step=1, i;
      int beginPage, endPage;
@@ -31,7 +29,7 @@ Index: b/xpdf/XPDFViewer.cc
  
      if (!printAll)
      {
-@@ -3757,10 +3765,10 @@
+@@ -3766,10 +3774,10 @@ void XPDFViewer::printPrintCbk(Widget wi
  
      if (firstPage<=lastPage)
      {
