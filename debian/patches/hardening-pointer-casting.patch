@@ -1,5 +1,5 @@
 description: fix casting to pointer of different size 
-author: Michael Gilbert <michael.s.gilbert@gmail.com>
+author: Michael Gilbert <mgilbert@debian.org>
 
 --- a/xpdf/XPDFViewer.cc
 +++ b/xpdf/XPDFViewer.cc

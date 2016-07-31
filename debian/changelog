@@ -1,3 +1,21 @@
+xpdf (3.04-2) experimental; urgency=medium
+
+  * Remove menu file.
+  * Update standards version.
+  * Fix desktop file exec line.
+  * Restore key binding support (closes: #739271).
+    - Thanks to Adam Sampson.
+  * Restore support for initialZoom (closes: #737628).
+    - Thanks to Vincent Lefevre.
+  * Fix PSOutputDev argument order (closes: #617546).
+    - Thanks to Simon Tatham.
+  * Handle renaming of Japanese font files (closes: #796492).
+    - Thanks to Hideki Yamane.
+  * Sort object files during linking (closes: #819352).
+  * Refactor XPDFParams to keep it better in sync with upstream's GlobalParams.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Sun, 31 Jul 2016 21:31:54 +0000
+
 xpdf (3.04-1) unstable; urgency=medium
 
   * New upstream release.

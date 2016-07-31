@@ -1,5 +1,5 @@
-description: fix some invalid type conversions
-author: Michael Gilbert <michael.s.gilbert@gmail.com> 
+description: fix invalid type conversion
+author: Michael Gilbert <mgilbert@debian.org> 
 
 --- a/xpdf/XPDFViewer.cc
 +++ b/xpdf/XPDFViewer.cc

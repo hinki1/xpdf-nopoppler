@@ -1,4 +1,6 @@
 description: manpage updates
+author: Michael Gilbert <mgilbert@debian.org>
+
 --- a/doc/xpdf.1
 +++ b/doc/xpdf.1
 @@ -10,7 +10,7 @@ xpdf \- Portable Document Format (PDF) f

@@ -1,4 +1,4 @@
-description: make compatible with poppler's text destructor
+description: compatibility with poppler's text destructor
 origin: gentoo's xpdf-poppler 0.12 patches (http://bugs.gentoo.org/289803)
 
 --- a/xpdf/PDFCore.cc

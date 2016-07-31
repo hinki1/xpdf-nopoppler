@@ -1,5 +1,5 @@
 description: fix continuous mode crashiness
-author: Michael Gilbert <michael.s.gilbert@gmail.com>
+author: Michael Gilbert <mgilbert@debian.org>
 bug-debian: http://bugs.debian.org/521381
 
 --- a/xpdf/XPDFCore.cc

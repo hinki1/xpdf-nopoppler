@@ -15,14 +15,12 @@ hardening-pointer-casting.patch
 
 # patches to use poppler
 poppler-copyright.patch
-poppler-textpage-destructor.patch
+poppler-textpage.patch
 poppler-filespecname.patch
 poppler-findtext.patch
 poppler-startdoc.patch
 poppler-xpdfparams.patch
 poppler-startpage.patch
-poppler-0.30.patch
-poppler-0.33.patch
 
 # poppler patches added for xpdf 3.04
 poppler-textoutputdev.patch

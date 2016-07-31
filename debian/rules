@@ -7,21 +7,32 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 includes=$(strip $(shell pkg-config --cflags poppler))
 LIBS+=-lXm $(shell pkg-config --libs poppler --libs xt --libs x11) -pthread
 CPPFLAGS+=$(includes) $(includes)/goo $(includes)/splash
-CPPFLAGS+=-Wno-write-strings -Wno-format-extra-args
+CPPFLAGS+=-Wno-write-strings -Wno-format-extra-args -Wfatal-errors
 CPPFLAGS+=-DHAVE_DIRENT_H -DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
 
-files=goo/parseargs goo/gfile xpdf/CoreOutputDev xpdf/XPDFParams xpdf/PDFCore
+files=goo/parseargs xpdf/xfile xpdf/XPDFParams xpdf/CoreOutputDev xpdf/PDFCore
 files+=xpdf/XPDFApp xpdf/XPDFCore xpdf/XPDFTree xpdf/XPDFViewer xpdf/xpdf
 headers=xpdf/config.h xpdf/XPDFTreeP.h xpdf/about-text.h xpdf/*.xbm xpdf/xpdfIcon.xpm
 
-sources=$(shell for file in $(files); do echo $$file.*; done)
-objects=$(shell for file in $(files); do echo build/$$(basename $$file).o; done)
+sources=$(sort $(shell for file in $(files); do echo $$file.*; done))
+objects=$(sort $(shell for file in $(files); do echo build/$$(basename $$file).o; done))
 
 override_dh_clean:
 	dh_clean
-	rm -rf build
+	rm -rf build xpdf/xfile.* xpdf/XPDFParams.*
 
-override_dh_auto_configure:
+xpdf/xfile.%: goo/gfile.%
+	cp $< $@
+	sed -e s/GFILE/XFILE/g -i $@
+
+xpdf/XPDFParams.%: xpdf/GlobalParams.%
+	cp $< $@
+	sed -e s/globalParams/xpdfParams/g -e s/GlobalParams/XPDFParams/g \
+	    -e s/GLOBALPARAMS/XPDFPARAMS/g -e s/popplerParams/globalParams/g \
+	    -e s/PopplerParams/GlobalParams/g \
+	    -i $@
+
+override_dh_auto_configure: xpdf/xfile.h xpdf/xfile.cc xpdf/XPDFParams.h xpdf/XPDFParams.cc
 	mkdir -p build
 	cp $(sources) $(headers) build
 	sed -e s/GString/GooString/g -e s/GMutex/GooMutex/g -e s/GHash/GooHash/g \
@@ -30,7 +41,7 @@ override_dh_auto_configure:
 	mv build/parseargs.c build/parseargs.cc
 
 override_dh_auto_build: $(objects)
-	$(CXX) $(LDFLAGS) -o build/xpdf.real build/*.o $(LIBS)
+	$(CXX) $(LDFLAGS) -o build/xpdf.real $^ $(LIBS)
 
 %:
 	dh ${@}

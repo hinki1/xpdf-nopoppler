@@ -1,5 +1,5 @@
 description: use poppler's findtext api
-author: Michael Gilbert <michael.s.gilbert@gmail.com>
+author: Michael Gilbert <mgilbert@debian.org>
 
 --- a/xpdf/PDFCore.cc
 +++ b/xpdf/PDFCore.cc

@@ -1,5 +1,5 @@
 description: check exit codes of system calls 
-author: Michael Gilbert <michael.s.gilbert@gmail.com>
+author: Michael Gilbert <mgilbert@debian.org>
 
 --- a/xpdf/XPDFCore.cc
 +++ b/xpdf/XPDFCore.cc

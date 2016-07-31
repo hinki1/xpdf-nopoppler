@@ -1,4 +1,6 @@
 description: remove pdf file permission checks
+author: Hamish Moffatt
+
 --- a/xpdf/PDFCore.cc
 +++ b/xpdf/PDFCore.cc
 @@ -4,6 +4,8 @@

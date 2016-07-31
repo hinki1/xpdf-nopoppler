@@ -3,7 +3,7 @@ author: Michael Gilbert <mgilbert@debian.org>
 
 --- a/xpdf/XPDFCore.cc
 +++ b/xpdf/XPDFCore.cc
-@@ -686,8 +686,6 @@ void XPDFCore::doAction(LinkAction *acti
+@@ -682,8 +682,6 @@ void XPDFCore::doAction(LinkAction *acti
  
    // unsupported action types
    case actionJavaScript:
@@ -12,7 +12,7 @@ author: Michael Gilbert <mgilbert@debian.org>
      error(errSyntaxError, -1, "Unsupported link action type");
      break;
  
-@@ -1162,8 +1160,6 @@ void XPDFCore::inputCbk(Widget widget, X
+@@ -1158,8 +1156,6 @@ void XPDFCore::inputCbk(Widget widget, X
  		s = "[movie]";
  		break;
  	      case actionJavaScript:
