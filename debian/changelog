@@ -1,3 +1,13 @@
+xpdf (3.04-3) unstable; urgency=medium
+
+  * Set maintainer field Debian QA Group (see: #848631).
+  * Support cross building (closes: #843267).
+    - Thanks to Helmut Grohne.
+  * Fix argument handling in the wrapper script (closes: #793552).
+    - Thanks to Vincent Lefevre.
+
+ -- Michael Gilbert <mgilbert@debian.org>  Mon, 19 Dec 2016 02:48:12 +0000
+
 xpdf (3.04-2) experimental; urgency=medium
 
   * Remove menu file.
