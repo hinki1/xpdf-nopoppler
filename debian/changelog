@@ -1,14 +1,7 @@
-xpdf (3.04-5) unstable; urgency=medium
-
-  * QA upload.
-  * Reset maintainer to QA (mistake in previous upload)
-  * Fix VCS fields, now in secure mode.
-
- -- Gianfranco Costamagna <locutusofborg@debian.org>  Thu, 05 Jan 2017 12:38:56 +0100
-
 xpdf (3.04-4) unstable; urgency=medium
 
   * QA upload.
+  * Fix VCS fields, now in secure mode.
 
   [ Iain Lane ]
   * debian/xpdf.{svg,install}: Install a .svg icon created by Bryan Quigley,
