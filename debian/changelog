@@ -1,3 +1,13 @@
+xpdf (3.04-4) unstable; urgency=medium
+
+  * QA upload.
+
+  [ Iain Lane ]
+  * debian/xpdf.{svg,install}: Install a .svg icon created by Bryan Quigley,
+    so that xpdf appears in AppStream. (LP: #1557675)
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Thu, 05 Jan 2017 11:15:33 +0100
+
 xpdf (3.04-3) unstable; urgency=medium
 
   * Set maintainer field Debian QA Group (see: #848631).
@@ -1348,35 +1358,21 @@ xpdf (0.6-1) unstable frozen; urgency=low
  -- Dirk Eddelbuettel <edd@debian.org>  Sun, 24 Nov 1996 16:50:23 -0500
 
 Sat Aug 10 16:22:28 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
-
 	* xpdf-0.5-1 release: only changes to Debian package files
-
 	* debian.control: now Depends on mime-support, suitable postinst
  	  and postrm scripts added (with thanks to Brian White);
 	  also updated virtual package dependencies, now Provides: a 
 	  pdf-viewer as well as postscript-preview and Depends changed 
 	  to X11R6 from elf-x11r6lib 
-
 	* debian.rules: install xpdf.1x, not xpdf.1 
-
 Mon May 27 20:58:19 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
-
 	* xpdf-0.5-0 release: upgraded to upstream version 0.5 
-
 Sun Apr 28 09:51:02 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
-
 	* xpdf-0.4-0 release: upgraded to upstream version 0.4
-
 	* debian.control: added Architecture:, changed Section: to text,
 	  added note that xpdftops is now included
-
 Wed Feb 14 21:49:17 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
-
 	* xpdf-0.3-1 release
-
 	* debian.rules: fix location of README to /usr/doc/xpdf (bug#2333)
-
 Sun Jan 28 17:36:31 1996  Dirk Eddelbuettel  <edd@miles.econ.queensu.ca>
-
 	* xpdf-0.3-0: Initial Debian release
-
