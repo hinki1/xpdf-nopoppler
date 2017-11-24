@@ -1,6 +1,5 @@
 build/xpdf.real /usr/bin
 debian/scripts/xpdf /usr/bin
-debian/scripts/zxpdf /usr/bin
 debian/xpdf.svg /usr/share/icons/hicolor/scalable/apps
 debian/languages/* /usr/share/xpdf
 debian/xpdf.desktop /usr/share/applications
