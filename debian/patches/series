@@ -25,3 +25,6 @@ poppler-startpage.patch
 # poppler patches added for xpdf 3.04
 poppler-textoutputdev.patch
 poppler-linkactionkind.patch
+
+# misc fixes
+fix-737989.patch
