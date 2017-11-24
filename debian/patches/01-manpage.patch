@@ -99,15 +99,6 @@ author: Michael Gilbert <mgilbert@debian.org>
  .TP
  .B \-cont
  Start in continuous view mode, i.e., with one vertical scroll bar for
-@@ -118,7 +124,7 @@
- .BI \-ps " PS-file"
- Set the default file name for PostScript output (i.e., the name which
- will appear in the print dialog).  This can also be of the form
--\'|command' to pipe the PostScript through a command.
-+'|command' to pipe the PostScript through a command.
- .RB "[config file: " psFile ]
- .TP
- .BI \-paper " size"
 @@ -205,10 +211,20 @@
  .B \-\-help
  are equivalent.)
