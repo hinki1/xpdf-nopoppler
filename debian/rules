@@ -10,10 +10,10 @@ headers=xpdf/config.h xpdf/XPDFTreeP.h xpdf/about-text.h xpdf/*.xbm xpdf/xpdfIco
 includes=$(strip $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --cflags poppler))
 
 CXX=$(DEB_HOST_GNU_TYPE)-g++
-LIBS+=-lXm $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --libs poppler --libs xt --libs x11) -pthread
+LIBS+=-lXm -lpaper $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --libs poppler --libs xt --libs x11) -pthread
 CPPFLAGS+=$(includes) $(includes)/goo $(includes)/splash
 CPPFLAGS+=-Wno-write-strings -Wno-format-extra-args -Wfatal-errors
-CPPFLAGS+=-DHAVE_DIRENT_H -DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
+CPPFLAGS+=-DHAVE_DIRENT_H -DHAVE_PAPER_H -DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
 
 sources=$(sort $(shell for file in $(files); do echo $$file.*; done))
 objects=$(sort $(shell for file in $(files); do echo build/$$(basename $$file).o; done))
