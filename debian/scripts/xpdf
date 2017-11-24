@@ -42,7 +42,13 @@ while [ "$#" -gt "0" ]; do
         cmd="$cmd $1" ;;
     *)
         test -f "$1" && file="$1" && shift && pages="$@" && break ||
-            ( echo "error: \"$1\" file not found" && false ) ;;
+            (
+                if [ -d "$1" ]; then
+                    echo "error: \"$1\" is a directory" && false
+                else
+                    echo "error: \"$1\" file not found" && false
+                fi
+            ) ;;
     esac
     shift
 done
