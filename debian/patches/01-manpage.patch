@@ -3,7 +3,7 @@ author: Michael Gilbert <mgilbert@debian.org>
 
 --- a/doc/xpdf.1
 +++ b/doc/xpdf.1
-@@ -10,7 +10,7 @@ xpdf \- Portable Document Format (PDF) f
+@@ -10,7 +10,7 @@
  .SH DESCRIPTION
  .B Xpdf
  is a viewer for Portable Document Format (PDF) files.  (These are also
@@ -12,7 +12,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  software.)  Xpdf runs under the X Window System on UNIX, VMS, and
  OS/2.
  .PP
-@@ -29,7 +29,7 @@ specifying the page which should be disp
+@@ -29,7 +29,7 @@
  xpdf file.pdf 18
  .RE
  .PP
@@ -21,7 +21,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  the page number.  (This is only useful with PDF files that provide
  named destination targets.)
  .PP
-@@ -38,11 +38,17 @@ You can also start xpdf without opening
+@@ -38,11 +38,17 @@
  .RS
  xpdf
  .RE
@@ -41,7 +41,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  .BR xpdfrc (5)
  man page for details.
  .SH OPTIONS
-@@ -54,48 +60,48 @@ description of the corresponding command
+@@ -54,48 +60,48 @@
  Set the initial window geometry.
  .RB ( \-geometry
  is equivalent.)
@@ -99,7 +99,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  .TP
  .B \-cont
  Start in continuous view mode, i.e., with one vertical scroll bar for
-@@ -118,7 +124,7 @@ Enable or disable vector anti-aliasing.
+@@ -118,7 +124,7 @@
  .BI \-ps " PS-file"
  Set the default file name for PostScript output (i.e., the name which
  will appear in the print dialog).  This can also be of the form
@@ -108,7 +108,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  .RB "[config file: " psFile ]
  .TP
  .BI \-paper " size"
-@@ -205,10 +211,20 @@ and
+@@ -205,10 +211,20 @@
  .B \-\-help
  are equivalent.)
  .PP
@@ -130,7 +130,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  .TP
  .BI \-fg " color"
  .RB ( \-foreground
-@@ -226,15 +242,15 @@ is equivalent.)
+@@ -226,15 +242,15 @@
  .RB "[X resource: " xpdf*fontList ]
  .PP
  The color and font options only affect the user interface elements,
@@ -149,7 +149,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  Sets the matte color to be used in full-screen mode.  The default
  setting is "black".
  .SH CONTROLS
-@@ -249,7 +265,7 @@ Move backward or forward by ten pages.
+@@ -249,7 +265,7 @@
  .B "dashed left/right arrow buttons"
  Move backward or forward along the history path.
  .TP
@@ -158,7 +158,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  Move to a specific page number.  Click in the box to activate it, type
  the page number, then hit return.
  .TP
-@@ -262,17 +278,17 @@ Find a text string.
+@@ -262,17 +278,17 @@
  .B "print button"
  Bring up a dialog for generating a PostScript file.  The dialog has
  options to set the pages to be printed and the PostScript file name.
@@ -182,7 +182,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  Quit xpdf.
  .PP
  .SS Menu
-@@ -328,9 +344,9 @@ the X selection buffer.
+@@ -328,9 +344,9 @@
  .PP
  .SS Links
  Clicking on a hyperlink will jump to the link's destination.  A link
@@ -195,7 +195,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  command (see the
  .B WEB BROWSERS
  section below).
-@@ -453,7 +469,7 @@ Make sure that xpdf is on your executabl
+@@ -453,7 +469,7 @@
  .PP
  When you click on a URL link in a PDF file, xpdf will execute the
  command specified by the urlCommand config file option, replacing an
@@ -204,7 +204,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  the URL, add this line to your config file:
  .PP
  .RS
-@@ -829,8 +845,8 @@ Xpdf can be started in remote server mod
+@@ -829,8 +845,8 @@
  xpdf \-remote myServer file.pdf
  .RE
  .PP
@@ -217,7 +217,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  xpdf \-remote myServer another.pdf 9
 --- a/doc/xpdfrc.5
 +++ b/doc/xpdfrc.5
-@@ -7,7 +7,7 @@ All of the Xpdf tools read a single conf
+@@ -7,7 +7,7 @@
  .I .xpdfrc
  file in your home directory, it will be read.  Otherwise, a
  system-wide configuration file will be read from
@@ -226,7 +226,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  if it exists.  (This is its default location; depending on build
  options, it may be placed elsewhere.)  On Win32 systems, the
  .I xpdfrc
-@@ -22,6 +22,9 @@ file names that contain spaces.
+@@ -22,6 +22,9 @@
  .PP
  The following sections list all of the configuration options, sorted
  into functional groups.  There is an examples section at the end.
@@ -236,7 +236,20 @@ author: Michael Gilbert <mgilbert@debian.org>
  .SH INCLUDE FILES
  .TP
  .BI include " config\-file"
-@@ -484,7 +487,7 @@ OP/op/OPM settings in the PDF file.  Ign
+@@ -402,12 +405,6 @@
+ FreeType support.  ("enableFreeType" replaces the old
+ "freetypeControl" option.)  This option defaults to "yes".
+ .TP
+-.BR enableFreeType " yes | no"
+-Enables or disables use of FreeType (a TrueType / Type 1 font
+-rasterizer).  This is only relevant if the Xpdf tools were built with
+-FreeType support.  ("enableFreeType" replaces the old
+-"freetypeControl" option.)  This option defaults to "yes".
+-.TP
+ .BR disableFreeTypeHinting " yes | no"
+ If this is set to "yes", FreeType hinting will be forced off.  This
+ option defaults to "no".
+@@ -484,7 +481,7 @@
  default value is "no".
  .TP
  .BI launchCommand " command"
@@ -245,7 +258,7 @@ author: Michael Gilbert <mgilbert@debian.org>
  intent is for the command to be a program/script which determines the
  file type and runs the appropriate viewer.  The command line will
  consist of the file to be launched, followed by any parameters
-@@ -672,7 +675,7 @@ urlCommand      "netscape \-remote 'open
+@@ -672,7 +669,7 @@
  .fi
  .SH FILES
  .TP
