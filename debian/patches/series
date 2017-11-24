@@ -28,3 +28,4 @@ poppler-linkactionkind.patch
 
 # misc fixes
 fix-737989.patch
+poppler-manpage.patch

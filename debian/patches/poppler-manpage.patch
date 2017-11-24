@@ -1,0 +1,135 @@
+Description: Annotate config file options not currently supported
+Author: Florian Schlichting <fsfs@debian.org>
+Bug-Debian: https://bugs.debian.org/873953
+
+--- a/doc/xpdfrc.5
++++ b/doc/xpdfrc.5
+@@ -51,6 +51,9 @@
+ be used; if a character name is given more than once, the code in the
+ last specified file is used.  There is a built-in default
+ nameToUnicode table with all of Adobe's standard character names.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI cidToUnicode " registry\-ordering map\-file"
+ Specifies the file with the mapping from character collection to
+@@ -65,6 +68,9 @@
+ the character collection.  Only one file is allowed per character
+ collection; the last specified file is used.  There are no built-in
+ cidToUnicode mappings.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI unicodeToUnicode " font\-name\-substring map\-file"
+ This is used to work around PDF fonts which have incorrect Unicode
+@@ -83,6 +89,9 @@
+ occurrence of
+ .I in\-hex
+ will be converted to the specified output sequence.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI unicodeMap " encoding\-name map\-file"
+ Specifies the file with mapping from Unicode to
+@@ -128,6 +137,9 @@
+ and
+ .I UCS-2
+ encodings are predefined.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI cMapDir " registry\-ordering dir"
+ Specifies a search directory,
+@@ -136,12 +148,18 @@
+ .I registry\-ordering
+ character collection.  There can be multiple directories for a
+ particular collection.  There are no default CMap directories.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI toUnicodeDir " dir"
+ Specifies a search directory,
+ .IR dir ,
+ for ToUnicode CMaps.  There can be multiple ToUnicode directories.
+ There are no default ToUnicode directories.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .SH GENERAL FONT CONFIGURATION
+ .TP
+ .BI fontFile " PDF\-font\-name font\-file"
+@@ -161,6 +179,9 @@
+ name.  This search is performed if the font name doesn't match any of
+ the fonts declared with the fontFile command.  There are no default
+ fontDir directories.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI fontFileCC " registry\-ordering font\-file"
+ Maps the
+@@ -169,6 +190,9 @@
+ mapping is used if the font name doesn't match any of the fonts
+ declared with the fontFile, fontDir, psResidentFont16, or
+ psResidentFontCC commands.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .SH POSTSCRIPT FONT CONFIGURATION
+ .TP
+ .BR psFontPassthrough " yes | no"
+@@ -189,6 +213,9 @@
+ .I PS\-font\-name
+ are the same.  By default, only the Base-14 fonts are assumed to be
+ resident.
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI psResidentFont16 " PDF\-font\-name wMode PS\-font\-name encoding"
+ When the 16-bit (CID) font
+@@ -202,6 +229,9 @@
+ must be either \'H' for horizontal or \'V' for vertical.  The resident
+ font is assumed to use the specified encoding (which must have been
+ defined with the unicodeMap command).
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI psResidentFontCC " registry\-ordering wMode PS\-font\-name encoding"
+ When a 16-bit (CID) font using the
+@@ -216,6 +246,9 @@
+ horizontal or \'V' for vertical.  The resident font is assumed to use
+ the specified encoding (which must have been defined with the
+ unicodeMap command).
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BR psEmbedType1Fonts " yes | no"
+ If set to "no", prevents embedding of Type 1 fonts in generated
+@@ -343,6 +376,9 @@
+ .BR psAlwaysRasterize " yes | no"
+ If set to "yes", all PostScript output will be rasterized.  This
+ defaults to "no".
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI psFile " file\-or\-command"
+ Sets the default PostScript file or print command for xpdf.  Commands
+@@ -474,6 +510,9 @@
+ .BI drawAnnotations " yes | no"
+ If set to "no", annotations will not be drawn or printed.  The default
+ value is "yes".
++
++.B NOTE:
++This option is not currently supported in the Poppler version of xpdf.
+ .TP
+ .BI overprintPreview " yes | no"
+ If set to "yes", generate overprint preview output, honoring the
