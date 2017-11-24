@@ -236,6 +236,15 @@ author: Michael Gilbert <mgilbert@debian.org>
  .SH INCLUDE FILES
  .TP
  .BI include " config\-file"
+@@ -349,7 +352,7 @@
+ PDF file <file>.pdf.
+ .TP
+ .BI fontDir " dir"
+-See the description above, in the DISPLAY FONTS section.
++See the description above, in the GENERAL FONT CONFIGURATION section.
+ .SH TEXT CONTROL
+ .TP
+ .BI textEncoding " encoding\-name"
 @@ -402,12 +405,6 @@
  FreeType support.  ("enableFreeType" replaces the old
  "freetypeControl" option.)  This option defaults to "yes".
