@@ -15,7 +15,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  #include "Splash.h"
  #include "SplashBitmap.h"
  #include "SplashPattern.h"
-@@ -86,7 +87,7 @@ PDFCore::PDFCore(SplashColorMode colorMo
+@@ -86,7 +87,7 @@
    int i;
  
    doc = NULL;
@@ -34,7 +34,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  #include "PDFDoc.h"
  #include "Link.h"
  #include "FileSpec.h"
-@@ -116,7 +117,7 @@ XPDFCore::XPDFCore(Widget shellA, Widget
+@@ -116,7 +117,7 @@
    if (fullScreen) {
      zoom = zoomPage;
    } else {
@@ -43,7 +43,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      if (!initialZoom->cmp("page")) {
        zoom = zoomPage;
      } else if (!initialZoom->cmp("width")) {
-@@ -567,9 +568,9 @@ void XPDFCore::doAction(LinkAction *acti
+@@ -567,9 +568,9 @@
  #else
        fileName->append(" &");
  #endif
@@ -55,7 +55,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  	errcode = system(fileName->getCString());
          if (errcode != 0) {
            error(errInternal, -1 , "non-zero error code returned by system call");
-@@ -591,7 +592,7 @@ void XPDFCore::doAction(LinkAction *acti
+@@ -591,7 +592,7 @@
  
    // URI action
    case actionURI:
@@ -64,7 +64,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
        error(errConfig, -1, "No urlCommand defined in config file");
        break;
      }
-@@ -629,7 +630,7 @@ void XPDFCore::doAction(LinkAction *acti
+@@ -629,7 +630,7 @@
  
    // Movie action
    case actionMovie:
@@ -91,7 +91,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  
  //------------------------------------------------------------------------
  
-@@ -605,7 +607,7 @@ void XPDFViewer::keyPressCbk(void *data,
+@@ -605,7 +607,7 @@
      return;
    }
  
@@ -100,7 +100,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  					  viewer->getModifiers(modifiers),
  					  viewer->getContext(modifiers)))) {
      for (i = 0; i < cmds->getLength(); ++i) {
-@@ -637,7 +639,7 @@ void XPDFViewer::mouseCbk(void *data, XE
+@@ -637,7 +639,7 @@
      return;
    }
  
@@ -109,7 +109,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  					  viewer->getModifiers(
  						      event->xkey.state),
  					  viewer->getContext(
-@@ -3532,7 +3534,7 @@ void XPDFViewer::initPrintDialog() {
+@@ -3532,7 +3534,7 @@
    XtSetValues(printDialog, args, n);
  
    //----- initial values
@@ -118,7 +118,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      if (psFileName->getChar(0) == '|') {
        XmTextFieldSetString(printCmdText,
  			   psFileName->getCString() + 1);
-@@ -3604,7 +3606,7 @@ void XPDFViewer::setupPrintDialog() {
+@@ -3604,7 +3606,7 @@
    char *p;
  
    doc = core->getDoc();
@@ -127,7 +127,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    if (!psFileName || psFileName->getChar(0) == '|') {
      if ((pdfFileName = doc->getFileName())) {
        p = pdfFileName->getCString() + pdfFileName->getLength() - 4;
-@@ -3717,15 +3719,26 @@ void XPDFViewer::printPrintCbk(Widget wi
+@@ -3717,15 +3719,26 @@
      lastPage = doc->getNumPages();
    }
  
@@ -158,7 +158,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      }
      delete psOut;
    }
-@@ -3734,6 +3747,8 @@ void XPDFViewer::printPrintCbk(Widget wi
+@@ -3734,6 +3747,8 @@
    {
      int step=1, i;
      int beginPage, endPage;
@@ -167,7 +167,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  
      if (!printAll)
      {
-@@ -3764,13 +3779,16 @@ void XPDFViewer::printPrintCbk(Widget wi
+@@ -3764,13 +3779,16 @@
  
      if (firstPage<=lastPage)
      {
@@ -198,7 +198,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  #include "Object.h"
  #include "XPDFApp.h"
  #include "config.h"
-@@ -152,23 +153,24 @@ int main(int argc, char *argv[]) {
+@@ -152,23 +153,24 @@
  
    // read config file
    globalParams = new GlobalParams(cfgFileName);
@@ -228,7 +228,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      }
    }
    if (level1) {
-@@ -188,12 +190,12 @@ int main(int argc, char *argv[]) {
+@@ -188,12 +190,12 @@
      }
    }
    if (antialiasStr[0]) {
@@ -243,7 +243,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
        fprintf(stderr, "Bad '-aaVector' value on command line\n");
      }
    }
-@@ -210,7 +212,7 @@ int main(int argc, char *argv[]) {
+@@ -210,7 +212,7 @@
    // the initialZoom parameter can be set in either the config file or
    // as an X resource (or command line arg)
    if (app->getInitialZoom()) {
@@ -252,7 +252,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    }
  
    // check command line
-@@ -326,6 +328,7 @@ int main(int argc, char *argv[]) {
+@@ -326,6 +328,7 @@
   done1:
    delete app;
    delete globalParams;
@@ -281,7 +281,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  
  #ifdef _WIN32
  #  define strcasecmp stricmp
-@@ -154,6 +157,8 @@ struct Base14FontInfo {
+@@ -154,6 +157,8 @@
  
  GlobalParams *globalParams = NULL;
  
@@ -290,7 +290,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  //------------------------------------------------------------------------
  // PSFontParam16
  //------------------------------------------------------------------------
-@@ -471,6 +476,8 @@ SysFontInfo *SysFontList::makeWindowsFon
+@@ -471,6 +476,8 @@
  }
  #endif
  
@@ -299,7 +299,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  //------------------------------------------------------------------------
  // KeyBinding
  //------------------------------------------------------------------------
-@@ -504,6 +511,8 @@ KeyBinding::~KeyBinding() {
+@@ -504,6 +511,8 @@
    deleteGList(cmds, GString);
  }
  
@@ -308,7 +308,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  #ifdef ENABLE_PLUGINS
  //------------------------------------------------------------------------
  // Plugin
-@@ -644,22 +653,25 @@ Plugin::~Plugin() {
+@@ -644,22 +653,25 @@
  
  #endif // ENABLE_PLUGINS
  
@@ -337,7 +337,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    initBuiltinFontTables();
  
    // scan the encoding in reverse because we want the lowest-numbered
-@@ -689,6 +701,7 @@ GlobalParams::GlobalParams(const char *c
+@@ -689,6 +701,7 @@
    ccFontFiles = new GHash(gTrue);
    base14SysFonts = new GHash(gTrue);
    sysFonts = new SysFontList();
@@ -345,7 +345,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  #if HAVE_PAPER_H
    char *paperName;
    const struct paper *paperType;
-@@ -711,13 +724,16 @@ GlobalParams::GlobalParams(const char *c
+@@ -711,13 +724,16 @@
    psImageableURX = psPaperWidth;
    psImageableURY = psPaperHeight;
    psCrop = gTrue;
@@ -363,7 +363,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    psResidentFonts = new GHash(gTrue);
    psResidentFonts16 = new GList();
    psResidentFontsCC = new GList();
-@@ -746,13 +762,17 @@ GlobalParams::GlobalParams(const char *c
+@@ -746,13 +762,17 @@
  #endif
    textPageBreaks = gTrue;
    textKeepTinyChars = gTrue;
@@ -381,7 +381,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    strokeAdjust = gTrue;
    screenType = screenUnset;
    screenSize = -1;
-@@ -763,14 +783,18 @@ GlobalParams::GlobalParams(const char *c
+@@ -763,14 +783,18 @@
    minLineWidth = 0.0;
    drawAnnotations = gTrue;
    overprintPreview = gFalse;
@@ -400,7 +400,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    printCommands = gFalse;
    errQuiet = gFalse;
  
-@@ -807,6 +831,7 @@ GlobalParams::GlobalParams(const char *c
+@@ -807,6 +831,7 @@
    residentUnicodeMaps->add(map->getEncodingName(), map);
    map = new UnicodeMap("UCS-2", gTrue, &mapUCS2);
    residentUnicodeMaps->add(map->getEncodingName(), map);
@@ -408,7 +408,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  
    // look for a user config file, then a system-wide config file
    f = NULL;
-@@ -1024,6 +1049,7 @@ void GlobalParams::parseLine(char *buf,
+@@ -1024,6 +1049,7 @@
  	error(errConfig, -1, "Bad 'include' config file command ({0:t}:{1:d})",
  	      fileName, line);
        }
@@ -416,7 +416,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      } else if (!cmd->cmp("nameToUnicode")) {
        parseNameToUnicode(tokens, fileName, line);
      } else if (!cmd->cmp("cidToUnicode")) {
-@@ -1036,12 +1062,15 @@ void GlobalParams::parseLine(char *buf,
+@@ -1036,12 +1062,15 @@
        parseCMapDir(tokens, fileName, line);
      } else if (!cmd->cmp("toUnicodeDir")) {
        parseToUnicodeDir(tokens, fileName, line);
@@ -432,7 +432,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      } else if (!cmd->cmp("psFile")) {
        parsePSFile(tokens, fileName, line);
      } else if (!cmd->cmp("psPaperSize")) {
-@@ -1050,6 +1079,7 @@ void GlobalParams::parseLine(char *buf,
+@@ -1050,6 +1079,7 @@
        parsePSImageableArea(tokens, fileName, line);
      } else if (!cmd->cmp("psCrop")) {
        parseYesNo("psCrop", &psCrop, tokens, fileName, line);
@@ -440,7 +440,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      } else if (!cmd->cmp("psUseCropBoxAsPage")) {
        parseYesNo("psUseCropBoxAsPage", &psUseCropBoxAsPage,
  		 tokens, fileName, line);
-@@ -1060,10 +1090,12 @@ void GlobalParams::parseLine(char *buf,
+@@ -1060,10 +1090,12 @@
        parseYesNo("psShrinkLarger", &psShrinkLarger, tokens, fileName, line);
      } else if (!cmd->cmp("psCenter")) {
        parseYesNo("psCenter", &psCenter, tokens, fileName, line);
@@ -453,7 +453,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      } else if (!cmd->cmp("psResidentFont")) {
        parsePSResidentFont(tokens, fileName, line);
      } else if (!cmd->cmp("psResidentFont16")) {
-@@ -1086,7 +1118,7 @@ void GlobalParams::parseLine(char *buf,
+@@ -1086,7 +1118,7 @@
  		 tokens, fileName, line);
      } else if (!cmd->cmp("psPreload")) {
        parseYesNo("psPreload", &psPreload, tokens, fileName, line);
@@ -462,7 +462,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
        parseYesNo("psOPI", &psOPI, tokens, fileName, line);
      } else if (!cmd->cmp("psASCIIHex")) {
        parseYesNo("psASCIIHex", &psASCIIHex, tokens, fileName, line);
-@@ -1119,15 +1151,18 @@ void GlobalParams::parseLine(char *buf,
+@@ -1119,15 +1151,18 @@
      } else if (!cmd->cmp("textKeepTinyChars")) {
        parseYesNo("textKeepTinyChars", &textKeepTinyChars,
  		 tokens, fileName, line);
@@ -481,7 +481,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      } else if (!cmd->cmp("antialias")) {
        parseYesNo("antialias", &antialias, tokens, fileName, line);
      } else if (!cmd->cmp("vectorAntialias")) {
-@@ -1136,6 +1171,7 @@ void GlobalParams::parseLine(char *buf,
+@@ -1136,6 +1171,7 @@
      } else if (!cmd->cmp("antialiasPrinting")) {
        parseYesNo("antialiasPrinting", &antialiasPrinting,
  		 tokens, fileName, line);
@@ -489,7 +489,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      } else if (!cmd->cmp("strokeAdjust")) {
        parseYesNo("strokeAdjust", &strokeAdjust, tokens, fileName, line);
      } else if (!cmd->cmp("screenType")) {
-@@ -1163,12 +1199,14 @@ void GlobalParams::parseLine(char *buf,
+@@ -1163,12 +1199,14 @@
      } else if (!cmd->cmp("overprintPreview")) {
        parseYesNo("overprintPreview", &overprintPreview,
  		 tokens, fileName, line);
@@ -504,7 +504,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      } else if (!cmd->cmp("mapNumericCharNames")) {
        parseYesNo("mapNumericCharNames", &mapNumericCharNames,
  		 tokens, fileName, line);
-@@ -1181,14 +1219,17 @@ void GlobalParams::parseLine(char *buf,
+@@ -1181,14 +1219,17 @@
  		 tokens, fileName, line);
      } else if (!cmd->cmp("enableXFA")) {
        parseYesNo("enableXFA", &enableXFA, tokens, fileName, line);
@@ -522,7 +522,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
      } else {
        error(errConfig, -1, "Unknown config file command '{0:t}' ({1:t}:{2:d})",
  	    cmd, fileName, line);
-@@ -1204,6 +1245,22 @@ void GlobalParams::parseLine(char *buf,
+@@ -1204,6 +1245,22 @@
        } else if (!cmd->cmp("fontpath") || !cmd->cmp("fontmap")) {
  	error(errConfig, -1,
  	      "The config file format has changed since Xpdf 0.9x");
@@ -541,11 +541,11 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
 +                 !cmd->cmp("psResidentFont16") ||
 +                 !cmd->cmp("psResidentFontCC")) {
 +        error(errConfig, -1,
-+              "Some work needs to be done to suppport this option in the Poppler version of xpdf");
++              "Some work needs to be done to support this option in the Poppler version of xpdf");
        }
      }
    }
-@@ -1211,6 +1268,8 @@ void GlobalParams::parseLine(char *buf,
+@@ -1211,6 +1268,8 @@
    deleteGList(tokens, GString);
  }
  
@@ -554,7 +554,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::parseNameToUnicode(GList *tokens, GString *fileName,
  				      int line) {
    GString *name;
-@@ -1329,16 +1388,20 @@ void GlobalParams::parseToUnicodeDir(GLi
+@@ -1329,16 +1388,20 @@
    toUnicodeDirs->append(((GString *)tokens->get(1))->copy());
  }
  
@@ -576,7 +576,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::parseFontDir(GList *tokens, GString *fileName, int line) {
    if (tokens->getLength() != 2) {
      error(errConfig, -1, "Bad 'fontDir' config file command ({0:t}:{1:d})",
-@@ -1359,6 +1422,8 @@ void GlobalParams::parseFontFileCC(GList
+@@ -1359,6 +1422,8 @@
  		   ((GString *)tokens->get(2))->copy());
  }
  
@@ -585,7 +585,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::parsePSFile(GList *tokens, GString *fileName, int line) {
    if (tokens->getLength() != 2) {
      error(errConfig, -1, "Bad 'psFile' config file command ({0:t}:{1:d})",
-@@ -1420,23 +1485,25 @@ void GlobalParams::parsePSLevel(GList *t
+@@ -1420,23 +1485,25 @@
    }
    tok = (GString *)tokens->get(1);
    if (!tok->cmp("level1")) {
@@ -617,7 +617,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::parsePSResidentFont(GList *tokens, GString *fileName,
  				       int line) {
    if (tokens->getLength() != 3) {
-@@ -1537,6 +1604,8 @@ void GlobalParams::parseTextEOL(GList *t
+@@ -1537,6 +1604,8 @@
    }
  }
  
@@ -626,7 +626,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::parseInitialZoom(GList *tokens,
  				    GString *fileName, int line) {
    if (tokens->getLength() != 2) {
-@@ -1559,11 +1628,11 @@ void GlobalParams::parseScreenType(GList
+@@ -1559,11 +1628,11 @@
    }
    tok = (GString *)tokens->get(1);
    if (!tok->cmp("dispersed")) {
@@ -641,7 +641,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    } else {
      error(errConfig, -1, "Bad 'screenType' config file command ({0:t}:{1:d})",
  	  fileName, line);
-@@ -1873,6 +1942,7 @@ GlobalParams::~GlobalParams() {
+@@ -1873,6 +1942,7 @@
    GString *key;
    GList *list;
  
@@ -649,7 +649,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    freeBuiltinFontTables();
  
    delete macRomanReverseMap;
-@@ -1889,13 +1959,16 @@ GlobalParams::~GlobalParams() {
+@@ -1889,13 +1959,16 @@
    deleteGHash(ccFontFiles, GString);
    deleteGHash(base14SysFonts, Base14FontInfo);
    delete sysFonts;
@@ -666,7 +666,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    delete initialZoom;
    if (launchCommand) {
      delete launchCommand;
-@@ -1908,6 +1981,7 @@ GlobalParams::~GlobalParams() {
+@@ -1908,6 +1981,7 @@
    }
    deleteGList(keyBindings, KeyBinding);
  
@@ -674,7 +674,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    cMapDirs->startIter(&iter);
    while (cMapDirs->getNext(&iter, &key, (void **)&list)) {
      deleteGList(list, GString);
-@@ -1923,16 +1997,19 @@ GlobalParams::~GlobalParams() {
+@@ -1923,16 +1997,19 @@
    delete securityHandlers;
    deleteGList(plugins, Plugin);
  #endif
@@ -696,7 +696,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::setBaseDir(char *dir) {
    delete baseDir;
    baseDir = new GString(dir);
-@@ -2323,6 +2400,8 @@ GString *GlobalParams::findCCFontFile(GS
+@@ -2323,6 +2400,8 @@
    return path;
  }
  
@@ -705,7 +705,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GString *GlobalParams::getPSFile() {
    GString *s;
  
-@@ -2368,6 +2447,8 @@ GBool GlobalParams::getPSCrop() {
+@@ -2368,6 +2447,8 @@
    return f;
  }
  
@@ -714,7 +714,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GBool GlobalParams::getPSUseCropBoxAsPage() {
    GBool f;
  
-@@ -2404,6 +2485,8 @@ GBool GlobalParams::getPSCenter() {
+@@ -2404,6 +2485,8 @@
    return f;
  }
  
@@ -723,7 +723,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GBool GlobalParams::getPSDuplex() {
    GBool d;
  
-@@ -2413,6 +2496,8 @@ GBool GlobalParams::getPSDuplex() {
+@@ -2413,6 +2496,8 @@
    return d;
  }
  
@@ -732,7 +732,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  PSLevel GlobalParams::getPSLevel() {
    PSLevel level;
  
-@@ -2656,6 +2741,8 @@ GBool GlobalParams::getTextKeepTinyChars
+@@ -2656,6 +2741,8 @@
    return tiny;
  }
  
@@ -741,7 +741,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GString *GlobalParams::getInitialZoom() {
    GString *s;
  
-@@ -2674,6 +2761,8 @@ GBool GlobalParams::getContinuousView()
+@@ -2674,6 +2761,8 @@
    return f;
  }
  
@@ -750,7 +750,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GBool GlobalParams::getEnableFreeType() {
    GBool f;
  
-@@ -2692,6 +2781,7 @@ GBool GlobalParams::getDisableFreeTypeHi
+@@ -2692,6 +2781,7 @@
    return f;
  }
  
@@ -758,7 +758,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  
  GBool GlobalParams::getAntialias() {
    GBool f;
-@@ -2720,6 +2810,8 @@ GBool GlobalParams::getAntialiasPrinting
+@@ -2720,6 +2810,8 @@
    return f;
  }
  
@@ -767,7 +767,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GBool GlobalParams::getStrokeAdjust() {
    GBool f;
  
-@@ -2838,6 +2930,8 @@ GBool GlobalParams::getEnableXFA() {
+@@ -2838,6 +2930,8 @@
    return enable;
  }
  
@@ -776,7 +776,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GList *GlobalParams::getKeyBinding(int code, int mods, int context) {
    KeyBinding *binding;
    GList *cmds;
-@@ -2864,6 +2958,8 @@ GList *GlobalParams::getKeyBinding(int c
+@@ -2864,6 +2958,8 @@
    return cmds;
  }
  
@@ -785,7 +785,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GBool GlobalParams::getPrintCommands() {
    GBool p;
  
-@@ -2960,6 +3056,8 @@ void GlobalParams::addFontFile(GString *
+@@ -2960,6 +3056,8 @@
    unlockGlobalParams;
  }
  
@@ -794,7 +794,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::setPSFile(char *file) {
    lockGlobalParams;
    if (psFile) {
-@@ -3027,6 +3125,8 @@ void GlobalParams::setPSCrop(GBool crop)
+@@ -3027,6 +3125,8 @@
    unlockGlobalParams;
  }
  
@@ -803,7 +803,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::setPSUseCropBoxAsPage(GBool crop) {
    lockGlobalParams;
    psUseCropBoxAsPage = crop;
-@@ -3051,12 +3151,16 @@ void GlobalParams::setPSCenter(GBool cen
+@@ -3051,12 +3151,16 @@
    unlockGlobalParams;
  }
  
@@ -820,7 +820,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::setPSLevel(PSLevel level) {
    lockGlobalParams;
    psLevel = level;
-@@ -3146,6 +3250,8 @@ void GlobalParams::setTextKeepTinyChars(
+@@ -3146,6 +3250,8 @@
    unlockGlobalParams;
  }
  
@@ -829,7 +829,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::setInitialZoom(char *s) {
    lockGlobalParams;
    delete initialZoom;
-@@ -3159,6 +3265,8 @@ void GlobalParams::setContinuousView(GBo
+@@ -3159,6 +3265,8 @@
    unlockGlobalParams;
  }
  
@@ -838,7 +838,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GBool GlobalParams::setEnableFreeType(char *s) {
    GBool ok;
  
-@@ -3168,6 +3276,7 @@ GBool GlobalParams::setEnableFreeType(ch
+@@ -3168,6 +3276,7 @@
    return ok;
  }
  
@@ -846,7 +846,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  
  GBool GlobalParams::setAntialias(char *s) {
    GBool ok;
-@@ -3187,6 +3296,8 @@ GBool GlobalParams::setVectorAntialias(c
+@@ -3187,6 +3296,8 @@
    return ok;
  }
  
@@ -855,7 +855,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  void GlobalParams::setScreenType(ScreenType t) {
    lockGlobalParams;
    screenType = t;
-@@ -3318,3 +3429,5 @@ GBool GlobalParams::loadPlugin(char *typ
+@@ -3318,3 +3429,5 @@
  }
  
  #endif // ENABLE_PLUGINS
@@ -871,7 +871,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  
  // Some systems don't define this, so just make it something reasonably
  // large.
-@@ -88,6 +89,8 @@ GString *getHomeDir() {
+@@ -88,6 +89,8 @@
  #endif
  }
  
@@ -880,7 +880,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GString *getCurrentDir() {
    char buf[PATH_MAX+1];
  
-@@ -345,6 +348,8 @@ GBool isAbsolutePath(char *path) {
+@@ -345,6 +348,8 @@
  #endif
  }
  
@@ -889,7 +889,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  GString *makePathAbsolute(GString *path) {
  #ifdef VMS
    //---------- VMS ----------
-@@ -427,6 +432,8 @@ GString *makePathAbsolute(GString *path)
+@@ -427,6 +432,8 @@
  #endif
  }
  
@@ -898,7 +898,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  time_t getModTime(char *fileName) {
  #ifdef _WIN32
    //~ should implement this, but it's (currently) only used in xpdf
-@@ -870,3 +877,5 @@ void GDir::rewind() {
+@@ -870,3 +877,5 @@
  #endif
  #endif
  }
@@ -923,7 +923,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  class GString;
  
  //------------------------------------------------------------------------
-@@ -56,6 +59,8 @@ class GString;
+@@ -56,6 +59,8 @@
  // Get home directory path.
  extern GString *getHomeDir();
  
@@ -932,7 +932,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  // Get current directory.
  extern GString *getCurrentDir();
  
-@@ -70,10 +75,14 @@ extern GString *grabPath(char *fileName)
+@@ -70,10 +75,14 @@
  // Is this an absolute path or file name?
  extern GBool isAbsolutePath(char *path);
  
@@ -947,7 +947,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  // Get the modification time for <fileName>.  Returns 0 if there is an
  // error.
  extern time_t getModTime(char *fileName);
-@@ -176,4 +185,6 @@ private:
+@@ -176,4 +185,6 @@
  #endif
  };
  
@@ -956,7 +956,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  #endif
 --- a/xpdf/GlobalParams.h
 +++ b/xpdf/GlobalParams.h
-@@ -44,6 +44,8 @@ extern GlobalParams *globalParams;
+@@ -44,6 +44,8 @@
  
  //------------------------------------------------------------------------
  
@@ -965,7 +965,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  enum SysFontType {
    sysFontPFA,
    sysFontPFB,
-@@ -95,6 +97,8 @@ enum ScreenType {
+@@ -95,6 +97,8 @@
    screenStochasticClustered
  };
  
@@ -974,7 +974,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
  //------------------------------------------------------------------------
  
  class KeyBinding {
-@@ -177,13 +181,16 @@ public:
+@@ -177,13 +181,16 @@
  
    ~GlobalParams();
  
@@ -991,7 +991,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    CharCode getMacRomanCharCode(char *charName);
  
    GString *getBaseDir();
-@@ -198,12 +205,14 @@ public:
+@@ -198,12 +205,14 @@
    GString *findSystemFontFile(GString *fontName, SysFontType *type,
  			      int *fontNum);
    GString *findCCFontFile(GString *collection);
@@ -1006,7 +1006,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    GBool getPSUseCropBoxAsPage();
    GBool getPSExpandSmaller();
    GBool getPSShrinkLarger();
-@@ -232,13 +241,17 @@ public:
+@@ -232,13 +241,17 @@
    EndOfLineKind getTextEOL();
    GBool getTextPageBreaks();
    GBool getTextKeepTinyChars();
@@ -1024,7 +1024,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    GBool getStrokeAdjust();
    ScreenType getScreenType();
    int getScreenSize();
-@@ -249,14 +262,18 @@ public:
+@@ -249,14 +262,18 @@
    double getMinLineWidth();
    GBool getDrawAnnotations();
    GBool getOverprintPreview() { return overprintPreview; }
@@ -1043,7 +1043,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    GBool getPrintCommands();
    GBool getErrQuiet();
  
-@@ -269,6 +286,7 @@ public:
+@@ -269,6 +286,7 @@
    //----- functions to set parameters
  
    void addFontFile(GString *fontName, GString *path);
@@ -1051,7 +1051,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    void setPSFile(char *file);
    GBool setPSPaperSize(char *size);
    void setPSPaperWidth(int width);
-@@ -276,6 +294,7 @@ public:
+@@ -276,6 +294,7 @@
    void setPSImageableArea(int llx, int lly, int urx, int ury);
    void setPSDuplex(GBool duplex);
    void setPSCrop(GBool crop);
@@ -1059,7 +1059,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    void setPSUseCropBoxAsPage(GBool crop);
    void setPSExpandSmaller(GBool expand);
    void setPSShrinkLarger(GBool shrink);
-@@ -293,11 +312,15 @@ public:
+@@ -293,11 +312,15 @@
    GBool setTextEOL(char *s);
    void setTextPageBreaks(GBool pageBreaks);
    void setTextKeepTinyChars(GBool keep);
@@ -1075,7 +1075,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    void setScreenType(ScreenType t);
    void setScreenSize(int size);
    void setScreenDotRadius(int r);
-@@ -315,30 +338,37 @@ public:
+@@ -315,30 +338,37 @@
  
    void addSecurityHandler(XpdfSecurityHandler *handler);
    XpdfSecurityHandler *getSecurityHandler(char *name);
@@ -1113,7 +1113,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    void parseInitialZoom(GList *tokens, GString *fileName, int line);
    void parseScreenType(GList *tokens, GString *fileName, int line);
    void parseBind(GList *tokens, GString *fileName, int line);
-@@ -356,6 +386,7 @@ private:
+@@ -356,6 +386,7 @@
  		    GList *tokens, GString *fileName, int line);
    void parseFloat(const char *cmdName, double *val,
  		  GList *tokens, GString *fileName, int line);
@@ -1121,7 +1121,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    UnicodeMap *getUnicodeMap2(GString *encodingName);
  #ifdef ENABLE_PLUGINS
    GBool loadPlugin(char *type, char *name);
-@@ -391,6 +422,7 @@ private:
+@@ -391,6 +422,7 @@
    GHash *base14SysFonts;	// Base-14 system font files: font name
  				//   mapped to path [Base14FontInfo]
    SysFontList *sysFonts;	// system fonts
@@ -1129,7 +1129,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    GString *psFile;		// PostScript file or command (for xpdf)
    int psPaperWidth;		// paper size, in PostScript points, for
    int psPaperHeight;		//   PostScript output
-@@ -399,11 +431,14 @@ private:
+@@ -399,11 +431,14 @@
        psImageableURX,
        psImageableURY;
    GBool psCrop;			// crop PS output to CropBox
@@ -1144,7 +1144,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    PSLevel psLevel;		// PostScript level to generate
    GHash *psResidentFonts;	// 8-bit fonts resident in printer:
  				//   PDF font name mapped to PS font name
-@@ -439,13 +474,17 @@ private:
+@@ -439,13 +474,17 @@
  				//   output
    GBool textPageBreaks;		// insert end-of-page markers?
    GBool textKeepTinyChars;	// keep all characters in text output
@@ -1162,7 +1162,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    GBool strokeAdjust;		// stroke adjustment enable flag
    ScreenType screenType;	// halftone screen type
    int screenSize;		// screen matrix size
-@@ -456,15 +495,19 @@ private:
+@@ -456,15 +495,19 @@
    double minLineWidth;		// minimum line width
    GBool drawAnnotations;	// draw annotations or not
    GBool overprintPreview;	// enable overprint preview
@@ -1182,7 +1182,7 @@ bug-ubuntu: https://bugs.launchpad.net/bugs/1205732
    GBool printCommands;		// print the drawing commands
    GBool errQuiet;		// suppress error messages?
  
-@@ -478,11 +521,12 @@ private:
+@@ -478,11 +521,12 @@
    GList *securityHandlers;	// list of loaded security handlers
  				//   [XpdfSecurityHandler]
  #endif
