@@ -27,12 +27,6 @@ Recommends:
  cups-bsd,
 Provides:
  pdf-viewer,
-Conflicts:
- xpdf-reader,
- xpdf-common,
-Replaces:
- xpdf-reader,
- xpdf-common,
 Description: Portable Document Format (PDF) reader
  xpdf is a light-weight open source viewer for Portable Document Format (PDF)
  files (also called 'Adobe Acrobat' or 'Acrobat' files).  This is just the
