@@ -84,10 +84,9 @@ private:
   int wMode;			// writing mode (0=horizontal, 1=vertical)
   CMapVectorEntry *vector;	// vector for first byte (NULL for
 				//   identity CMap)
-#if MULTITHREADED
-  GAtomicCounter refCnt;
-#else
   int refCnt;
+#if MULTITHREADED
+  GMutex mutex;
 #endif
 };
 

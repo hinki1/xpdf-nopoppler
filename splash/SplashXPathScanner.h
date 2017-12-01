@@ -16,15 +16,9 @@
 #endif
 
 #include "SplashTypes.h"
-#include "SplashXPath.h"
 
 class GList;
-
-//------------------------------------------------------------------------
-
-// Set this to 0 for antialiasing with 16 levels of gray.
-// Set it to 1 for (much slower) antialiasing with 256 levels of gray.
-#define ANTIALIAS_256 0
+class SplashXPath;
 
 //------------------------------------------------------------------------
 // SplashXPathScanner
@@ -34,51 +28,48 @@ class SplashXPathScanner {
 public:
 
   // Create a new SplashXPathScanner object.  <xPathA> must be sorted.
-  SplashXPathScanner(SplashXPath *xPathA, GBool eo,
+  SplashXPathScanner(SplashXPath *xPathA, GBool eoA,
 		     int yMinA, int yMaxA);
 
   ~SplashXPathScanner();
 
   // Compute shape values for a scan line.  Fills in line[] with shape
   // values for one scan line: ([x0, x1], y).  The values are in [0,
-  // 255].  Also returns the min/max x positions with non-zero shape
-  // values.
-  void getSpan(Guchar *line, int y, int x0, int x1, int *xMin, int *xMax);
+  // 255].
+  void getSpan(Guchar *line, int y, int x0, int x1);
 
   // Like getSpan(), but uses the values 0 and 255 only.  Writes 255
   // for all pixels which include non-zero area inside the path.
-  void getSpanBinary(Guchar *line, int y, int x0, int x1,
-		     int *xMin, int *xMax);
+  void getSpanBinary(Guchar *line, int y, int x0, int x1);
 
 private:
 
-  void insertSegmentBefore(SplashXPathSeg *s, SplashXPathSeg *sNext);
-  void removeSegment(SplashXPathSeg *s);
-  void moveSegmentAfter(SplashXPathSeg *s, SplashXPathSeg *sPrev);
-  void reset(GBool aa, GBool aaChanged);
-  void skip(int newYBottomI, GBool aa);
-  void advance(GBool aa);
-  void generatePixels(int x0, int x1, Guchar *line, int *xMin, int *xMax);
-  void generatePixelsBinary(int x0, int x1, Guchar *line,
-			    int *xMin, int *xMax);
-  void drawRectangleSpan(Guchar *line, int y, int x0, int x1,
-			 int *xMin, int *xMax);
-  void drawRectangleSpanBinary(Guchar *line, int y, int x0, int x1,
-			       int *xMin, int *xMax);
+  inline void addArea(Guchar *line, int x, SplashCoord a);
+  void drawTrapezoid(Guchar *line, int xMin, int xMax,
+		     SplashCoord y0, SplashCoord y1,
+		     SplashCoord xa0, SplashCoord xa1, SplashCoord dydxa,
+		     SplashCoord xb0, SplashCoord xb1, SplashCoord dydxb);
+  SplashCoord areaLeft(int xp,
+		       SplashCoord x0, SplashCoord y0,
+		       SplashCoord x1, SplashCoord y1,
+		       SplashCoord dydx);
+  SplashCoord areaRight(int xp,
+			SplashCoord x0, SplashCoord y0,
+			SplashCoord x1, SplashCoord y1,
+			SplashCoord dydx);
+  void drawRectangle(Guchar *line, int xMin, int xMax,
+		     SplashCoord y0, SplashCoord y1,
+		     SplashCoord x0, SplashCoord x1);
+  void sortActiveSegs();
+  void insertActiveSeg(SplashXPathSeg *seg);
 
   SplashXPath *xPath;
-  int eoMask;
+  GBool eo;
   int yMin, yMax;
-  int rectX0I, rectY0I, rectX1I, rectY1I;
 
-  SplashXPathSeg preSeg, postSeg;
-  SplashXPathSeg *pre, *post;
-
-  GBool resetDone;
-  GBool resetAA;
+  GList *activeSegs;		// [SplashXPathSeg]
   int nextSeg;
-  int yTopI, yBottomI;
-  SplashCoord yTop, yBottom;
+  int yNext;
 };
 
 #endif

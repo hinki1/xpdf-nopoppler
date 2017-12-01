@@ -8,7 +8,6 @@
 
 #include <aconf.h>
 #include <stdlib.h>
-#include "gmempp.h"
 #include "FontEncodingTables.h"
 
 const char *macRomanEncoding[256] = {

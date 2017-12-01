@@ -17,7 +17,6 @@
 #include <ctype.h>
 #include <math.h>
 #include "gmem.h"
-#include "gmempp.h"
 #include "GList.h"
 #include "Object.h"
 #include "Dict.h"
@@ -408,7 +407,7 @@ SampledFunction::~SampledFunction() {
 }
 
 SampledFunction::SampledFunction(SampledFunction *func) {
-  memcpy((void *)this, (void *)func, sizeof(SampledFunction));
+  memcpy(this, func, sizeof(SampledFunction));
   idxOffset = (int *)gmallocn(1 << m, sizeof(int));
   memcpy(idxOffset, func->idxOffset, (1 << m) * (int)sizeof(int));
   samples = (double *)gmallocn(nSamples, sizeof(double));
@@ -519,12 +518,6 @@ ExponentialFunction::ExponentialFunction(Object *funcObj, Dict *dict) {
       goto err2;
     }
     n = obj1.arrayGetLength();
-    if (n > funcMaxOutputs) {
-      error(errSyntaxError, -1,
-	    "Functions with more than {0:d} outputs are unsupported",
-	    funcMaxOutputs);
-      goto err2;
-    }
     for (i = 0; i < n; ++i) {
       obj1.arrayGet(i, &obj2);
       if (!obj2.isNum()) {
@@ -591,7 +584,7 @@ ExponentialFunction::~ExponentialFunction() {
 }
 
 ExponentialFunction::ExponentialFunction(ExponentialFunction *func) {
-  memcpy((void *)this, (void *)func, sizeof(ExponentialFunction));
+  memcpy(this, func, sizeof(ExponentialFunction));
 }
 
 void ExponentialFunction::transform(double *in, double *out) {
@@ -732,7 +725,7 @@ StitchingFunction::StitchingFunction(Object *funcObj, Dict *dict,
 StitchingFunction::StitchingFunction(StitchingFunction *func) {
   int i;
 
-  memcpy((void *)this, (void *)func, sizeof(StitchingFunction));
+  memcpy(this, func, sizeof(StitchingFunction));
   funcs = (Function **)gmallocn(k, sizeof(Function *));
   for (i = 0; i < k; ++i) {
     funcs[i] = func->funcs[i]->copy();
@@ -788,8 +781,6 @@ void StitchingFunction::transform(double *in, double *out) {
 
 // This is not an enum, because we can't foreward-declare the enum
 // type in Function.h
-//
-// NB: This must be kept in sync with psOpNames[] below.
 #define psOpAbs       0
 #define psOpAdd       1
 #define psOpAnd       2
@@ -830,17 +821,15 @@ void StitchingFunction::transform(double *in, double *out) {
 #define psOpTrue     37
 #define psOpTruncate 38
 #define psOpXor      39
-// the push/j/jz ops are used internally (and are not listed in psOpNames[])
 #define psOpPush     40
 #define psOpJ        41
 #define psOpJz       42
 
-#define nPSOps (sizeof(psOpNames) / sizeof(const char *))
+#define nPSOps 43
 
 // Note: 'if' and 'ifelse' are parsed separately.
 // The rest are listed here in alphabetical order.
-//
-// NB: This must be kept in sync with the psOpXXX defines above.
+// The index in this table is equivalent to the psOpXXX defines.
 static const char *psOpNames[] = {
   "abs",
   "add",
@@ -934,7 +923,7 @@ PostScriptFunction::PostScriptFunction(Object *funcObj, Dict *dict) {
   //----- parse the function
   if (tokens->getLength() < 1 ||
       ((GString *)tokens->get(0))->cmp("{")) {
-    error(errSyntaxError, -1, "Expected '{{' at start of PostScript function");
+    error(errSyntaxError, -1, "Expected '{' at start of PostScript function");
     goto err2;
   }
   tokPtr = 1;
@@ -960,7 +949,7 @@ PostScriptFunction::PostScriptFunction(Object *funcObj, Dict *dict) {
 }
 
 PostScriptFunction::PostScriptFunction(PostScriptFunction *func) {
-  memcpy((void *)this, (void *)func, sizeof(PostScriptFunction));
+  memcpy(this, func, sizeof(PostScriptFunction));
   codeString = func->codeString->copy();
   code = (PSCode *)gmallocn(codeSize, sizeof(PSCode));
   memcpy(code, func->code, codeSize * sizeof(PSCode));

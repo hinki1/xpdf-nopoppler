@@ -107,16 +107,6 @@ typedef void (*SplashBlendFunc)(SplashColorPtr src, SplashColorPtr dest,
 				SplashColorPtr blend, SplashColorMode cm);
 
 //------------------------------------------------------------------------
-// stroke adjustment mode
-//------------------------------------------------------------------------
-
-enum SplashStrokeAdjustMode {
-  splashStrokeAdjustOff,
-  splashStrokeAdjustNormal,
-  splashStrokeAdjustCAD
-};
-
-//------------------------------------------------------------------------
 // screen parameters
 //------------------------------------------------------------------------
 

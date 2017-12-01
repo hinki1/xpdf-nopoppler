@@ -15,9 +15,6 @@
 #pragma interface
 #endif
 
-#if MULTITHREADED
-#include "GMutex.h"
-#endif
 #include "CharTypes.h"
 
 class GList;
@@ -30,7 +27,6 @@ struct Ref;
 class LinkDest;
 class PageTreeNode;
 class Form;
-class TextString;
 
 //------------------------------------------------------------------------
 // Catalog
@@ -89,12 +85,7 @@ public:
 
   Form *getForm() { return form; }
 
-  GBool getNeedsRendering() { return needsRendering; }
-
   Object *getOCProperties() { return &ocProperties; }
-
-  // Return the DestOutputProfile stream, or NULL if there isn't one.
-  Object *getDestOutputProfile(Object *destOutProf);
 
   // Get the list of embedded files.
   int getNumEmbeddedFiles();
@@ -103,10 +94,6 @@ public:
   Object *getEmbeddedFileStreamRef(int idx);
   Object *getEmbeddedFileStreamObj(int idx, Object *strObj);
 
-  // Get the page label for page number [pageNum].  Returns NULL if
-  // the PDF file doesn't have page labels.
-  TextString *getPageLabel(int pageNum);
-
 private:
 
   PDFDoc *doc;
@@ -114,10 +101,8 @@ private:
   PageTreeNode *pageTree;	// the page tree
   Page **pages;			// array of pages
   Ref *pageRefs;		// object ID for each page
-#if MULTITHREADED
-  GMutex pageMutex;
-#endif
   int numPages;			// number of pages
+  int pagesSize;		// size of pages array
   Object dests;			// named destination dictionary
   Object nameTree;		// name tree
   GString *baseURI;		// base URI for URI-type links
@@ -125,7 +110,6 @@ private:
   Object structTreeRoot;	// structure tree root dictionary
   Object outline;		// outline dictionary
   Object acroForm;		// AcroForm dictionary
-  GBool needsRendering;		// NeedsRendering flag
   Form *form;			// parsed form
   Object ocProperties;		// OCProperties dictionary
   GList *embeddedFiles;		// embedded file list [EmbeddedFile]
@@ -141,10 +125,6 @@ private:
   void readFileAttachmentAnnots(Object *pageNodeRef,
 				char *touchedObjs);
   void readEmbeddedFile(Object *fileSpec, Object *name1);
-  GBool findPageLabel(Object *node, int pageIndex,
-		      Object *pageLabelObj, int *firstPageIndex);
-  GString *makeRomanNumeral(int num, GBool uppercase);
-  GString *makeLetterLabel(int num, GBool uppercase);
 };
 
 #endif

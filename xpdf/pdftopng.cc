@@ -10,13 +10,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <png.h>
-#ifdef _WIN32
-#  include <io.h>
-#  include <fcntl.h>
-#endif
-#include "gmem.h"
-#include "gmempp.h"
 #include "parseargs.h"
+#include "gmem.h"
 #include "GString.h"
 #include "GlobalParams.h"
 #include "Object.h"
@@ -28,10 +23,9 @@
 
 static int firstPage = 1;
 static int lastPage = 0;
-static double resolution = 150;
+static int resolution = 150;
 static GBool mono = gFalse;
 static GBool gray = gFalse;
-static GBool pngAlpha = gFalse;
 static char enableFreeTypeStr[16] = "";
 static char antialiasStr[16] = "";
 static char vectorAntialiasStr[16] = "";
@@ -47,15 +41,13 @@ static ArgDesc argDesc[] = {
    "first page to print"},
   {"-l",      argInt,      &lastPage,      0,
    "last page to print"},
-  {"-r",      argFP,       &resolution,    0,
+  {"-r",      argInt,      &resolution,    0,
    "resolution, in DPI (default is 150)"},
   {"-mono",   argFlag,     &mono,          0,
-   "generate a monochrome PNG file"},
+   "generate a monochrome PBM file"},
   {"-gray",   argFlag,     &gray,          0,
-   "generate a grayscale PNG file"},
-  {"-alpha",  argFlag,     &pngAlpha,      0,
-   "include an alpha channel in the PNG file"},
-#if HAVE_FREETYPE_H
+   "generate a grayscale PGM file"},
+#if HAVE_FREETYPE_FREETYPE_H | HAVE_FREETYPE_H
   {"-freetype",   argString,      enableFreeTypeStr, sizeof(enableFreeTypeStr),
    "enable FreeType font rasterizer: yes, no"},
 #endif
@@ -85,7 +77,7 @@ static ArgDesc argDesc[] = {
 };
 
 static void setupPNG(png_structp *png, png_infop *pngInfo, FILE *f,
-		     int bitDepth, int colorType, double res,
+		     int bitDepth, int colorType,
 		     SplashBitmap *bitmap);
 static void writePNGData(png_structp png, SplashBitmap *bitmap);
 static void finishPNG(png_structp *png, png_infop *pngInfo);
@@ -110,12 +102,7 @@ int main(int argc, char *argv[]) {
   // parse args
   ok = parseArgs(argDesc, &argc, argv);
   if (mono && gray) {
-    fprintf(stderr, "Specify one of -mono or -gray\n");
-    goto err0;
-  }
-  if (mono && pngAlpha) {
-    fprintf(stderr, "The -alpha flag cannot be used with -mono\n");
-    goto err0;
+    ok = gFalse;
   }
   if (!ok || argc != 3 || printVersion || printHelp) {
     fprintf(stderr, "pdftopng version %s\n", xpdfVersion);
@@ -191,9 +178,6 @@ int main(int argc, char *argv[]) {
     paperColor[0] = paperColor[1] = paperColor[2] = 0xff;
     splashOut = new SplashOutputDev(splashModeRGB8, 1, gFalse, paperColor);
   }
-  if (pngAlpha) {
-    splashOut->setNoComposite(gTrue);
-  }
   splashOut->startDoc(doc->getXRef());
   for (pg = firstPage; pg <= lastPage; ++pg) {
     doc->displayPage(splashOut, pg, resolution, resolution, 0,
@@ -201,9 +185,6 @@ int main(int argc, char *argv[]) {
     if (mono) {
       if (!strcmp(pngRoot, "-")) {
 	f = stdout;
-#ifdef _WIN32
-	_setmode(_fileno(f), _O_BINARY);
-#endif
       } else {
 	pngFile = GString::format("{0:s}-{1:06d}.png", pngRoot, pg);
 	if (!(f = fopen(pngFile->getCString(), "wb"))) {
@@ -212,16 +193,13 @@ int main(int argc, char *argv[]) {
 	delete pngFile;
       }
       setupPNG(&png, &pngInfo, f,
-	       1, PNG_COLOR_TYPE_GRAY, resolution, splashOut->getBitmap());
+	       1, PNG_COLOR_TYPE_GRAY, splashOut->getBitmap());
       writePNGData(png, splashOut->getBitmap());
       finishPNG(&png, &pngInfo);
       fclose(f);
     } else if (gray) {
       if (!strcmp(pngRoot, "-")) {
 	f = stdout;
-#ifdef _WIN32
-	_setmode(_fileno(f), _O_BINARY);
-#endif
       } else {
 	pngFile = GString::format("{0:s}-{1:06d}.png", pngRoot, pg);
 	if (!(f = fopen(pngFile->getCString(), "wb"))) {
@@ -230,17 +208,13 @@ int main(int argc, char *argv[]) {
 	delete pngFile;
       }
       setupPNG(&png, &pngInfo, f,
-	       8, pngAlpha ? PNG_COLOR_TYPE_GRAY_ALPHA : PNG_COLOR_TYPE_GRAY,
-	       resolution, splashOut->getBitmap());
+	       8, PNG_COLOR_TYPE_GRAY, splashOut->getBitmap());
       writePNGData(png, splashOut->getBitmap());
       finishPNG(&png, &pngInfo);
       fclose(f);
     } else { // RGB
       if (!strcmp(pngRoot, "-")) {
 	f = stdout;
-#ifdef _WIN32
-	_setmode(_fileno(f), _O_BINARY);
-#endif
       } else {
 	pngFile = GString::format("{0:s}-{1:06d}.png", pngRoot, pg);
 	if (!(f = fopen(pngFile->getCString(), "wb"))) {
@@ -249,8 +223,7 @@ int main(int argc, char *argv[]) {
 	delete pngFile;
       }
       setupPNG(&png, &pngInfo, f,
-	       8, pngAlpha ? PNG_COLOR_TYPE_RGB_ALPHA : PNG_COLOR_TYPE_RGB,
-	       resolution, splashOut->getBitmap());
+	       8, PNG_COLOR_TYPE_RGB, splashOut->getBitmap());
       writePNGData(png, splashOut->getBitmap());
       finishPNG(&png, &pngInfo);
       fclose(f);
@@ -274,11 +247,8 @@ int main(int argc, char *argv[]) {
 }
 
 static void setupPNG(png_structp *png, png_infop *pngInfo, FILE *f,
-		     int bitDepth, int colorType, double res,
+		     int bitDepth, int colorType,
 		     SplashBitmap *bitmap) {
-  png_color_16 background;
-  int pixelsPerMeter;
-
   if (!(*png = png_create_write_struct(PNG_LIBPNG_VER_STRING,
 				       NULL, NULL, NULL)) ||
       !(*pngInfo = png_create_info_struct(*png))) {
@@ -291,61 +261,20 @@ static void setupPNG(png_structp *png, png_infop *pngInfo, FILE *f,
   png_set_IHDR(*png, *pngInfo, bitmap->getWidth(), bitmap->getHeight(),
 	       bitDepth, colorType, PNG_INTERLACE_NONE,
 	       PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-  if (colorType == PNG_COLOR_TYPE_GRAY_ALPHA ||
-      colorType == PNG_COLOR_TYPE_RGB_ALPHA) {
-    background.index = 0;
-    background.red = 0xff;
-    background.green = 0xff;
-    background.blue = 0xff;
-    background.gray = 0xff;
-    png_set_bKGD(*png, *pngInfo, &background);
-  }
-  pixelsPerMeter = (int)(res * (1000 / 25.4) + 0.5);
-  png_set_pHYs(*png, *pngInfo, pixelsPerMeter, pixelsPerMeter,
-	       PNG_RESOLUTION_METER);
   png_write_info(*png, *pngInfo);
 }
 
 static void writePNGData(png_structp png, SplashBitmap *bitmap) {
-  Guchar *p, *alpha, *rowBuf, *rowBufPtr;
-  int y, x;
+  Guchar *p;
+  int y;
 
   if (setjmp(png_jmpbuf(png))) {
     exit(2);
   }
   p = bitmap->getDataPtr();
-  if (pngAlpha) {
-    alpha = bitmap->getAlphaPtr();
-    if (bitmap->getMode() == splashModeMono8) {
-      rowBuf = (Guchar *)gmallocn(bitmap->getWidth(), 2);
-      for (y = 0; y < bitmap->getHeight(); ++y) {
-	rowBufPtr = rowBuf;
-	for (x = 0; x < bitmap->getWidth(); ++x) {
-	  *rowBufPtr++ = *p++;
-	  *rowBufPtr++ = *alpha++;
-	}
-	png_write_row(png, (png_bytep)rowBuf);
-      }
-      gfree(rowBuf);
-    } else { // splashModeRGB8
-      rowBuf = (Guchar *)gmallocn(bitmap->getWidth(), 4);
-      for (y = 0; y < bitmap->getHeight(); ++y) {
-	rowBufPtr = rowBuf;
-	for (x = 0; x < bitmap->getWidth(); ++x) {
-	  *rowBufPtr++ = *p++;
-	  *rowBufPtr++ = *p++;
-	  *rowBufPtr++ = *p++;
-	  *rowBufPtr++ = *alpha++;
-	}
-	png_write_row(png, (png_bytep)rowBuf);
-      }
-      gfree(rowBuf);
-    }
-  } else {
-    for (y = 0; y < bitmap->getHeight(); ++y) {
-      png_write_row(png, (png_bytep)p);
-      p += bitmap->getRowSize();
-    }
+  for (y = 0; y < bitmap->getHeight(); ++y) {
+    png_write_row(png, (png_bytep)p);
+    p += bitmap->getRowSize();
   }
 }
 

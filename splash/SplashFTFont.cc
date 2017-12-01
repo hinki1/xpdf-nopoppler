@@ -8,7 +8,7 @@
 
 #include <aconf.h>
 
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
 
 #ifdef USE_GCC_PRAGMAS
 #pragma implementation
@@ -19,7 +19,6 @@
 #include FT_SIZES_H
 #include FT_GLYPH_H
 #include "gmem.h"
-#include "gmempp.h"
 #include "SplashMath.h"
 #include "SplashGlyphBitmap.h"
 #include "SplashPath.h"
@@ -67,10 +66,6 @@ SplashFTFont::SplashFTFont(SplashFTFontFile *fontFileA, SplashCoord *matA,
   // if the textMat values are too small, FreeType's fixed point
   // arithmetic doesn't work so well
   textScale = splashDist(0, 0, textMat[2], textMat[3]) / size;
-  // avoid problems with singular (or close-to-singular) matrices
-  if (textScale < 0.00001) {
-    textScale = 0.00001;
-  }
 
   div = face->bbox.xMax > 20000 ? 65536 : 1;
 
@@ -225,7 +220,7 @@ GBool SplashFTFont::makeGlyph(int c, int xFrac, int yFrac,
   SplashFTFontFile *ff;
   FT_Vector offset;
   FT_GlyphSlot slot;
-  int gid;
+  FT_UInt gid;
   FT_Int32 flags;
   int rowSize;
   Guchar *p, *q;
@@ -240,11 +235,11 @@ GBool SplashFTFont::makeGlyph(int c, int xFrac, int yFrac,
   slot = ff->face->glyph;
 
   if (ff->codeToGID && c < ff->codeToGIDLen) {
-    gid = ff->codeToGID[c];
+    gid = (FT_UInt)ff->codeToGID[c];
   } else {
-    gid = c;
+    gid = (FT_UInt)c;
   }
-  if (ff->fontType == splashFontTrueType && gid < 0) {
+  if (ff->trueType && gid < 0) {
     // skip the TrueType notdef glyph
     return gFalse;
   }
@@ -263,19 +258,13 @@ GBool SplashFTFont::makeGlyph(int c, int xFrac, int yFrac,
   flags = FT_LOAD_NO_BITMAP;
   if (ff->engine->flags & splashFTNoHinting) {
     flags |= FT_LOAD_NO_HINTING;
-  } else if (ff->fontType == splashFontType1) {
+  } else if (ff->useLightHinting) {
     flags |= FT_LOAD_TARGET_LIGHT;
   } else {
     flags |= FT_LOAD_NO_AUTOHINT;
   }
-  if (FT_Load_Glyph(ff->face, (FT_UInt)gid, flags)) {
-    // fonts with broken hinting instructions can cause errors here;
-    // try again with no hinting (this is probably only relevant for
-    // TrueType fonts)
-    flags = FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING;
-    if (FT_Load_Glyph(ff->face, (FT_UInt)gid, flags)) {
-      return gFalse;
-    }
+  if (FT_Load_Glyph(ff->face, gid, flags)) {
+    return gFalse;
   }
   if (FT_Render_Glyph(slot, aa ? FT_RENDER_MODE_NORMAL
 		               : FT_RENDER_MODE_MONO)) {
@@ -332,7 +321,7 @@ SplashPath *SplashFTFont::getGlyphPath(int c) {
   SplashFTFontFile *ff;
   SplashFTFontPath path;
   FT_GlyphSlot slot;
-  int gid;
+  FT_UInt gid;
   FT_Glyph glyph;
 
   ff = (SplashFTFontFile *)fontFile;
@@ -342,20 +331,14 @@ SplashPath *SplashFTFont::getGlyphPath(int c) {
   if (ff->codeToGID && c < ff->codeToGIDLen) {
     gid = ff->codeToGID[c];
   } else {
-    gid = c;
+    gid = (FT_UInt)c;
   }
-  if (ff->fontType == splashFontTrueType && gid < 0) {
+  if (ff->trueType && gid < 0) {
     // skip the TrueType notdef glyph
     return NULL;
   }
-  if (FT_Load_Glyph(ff->face, (FT_UInt)gid, FT_LOAD_NO_BITMAP)) {
-    // fonts with broken hinting instructions can cause errors here;
-    // try again with no hinting (this is probably only relevant for
-    // TrueType fonts)
-    if (FT_Load_Glyph(ff->face, (FT_UInt)gid,
-		      FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING)) {
-      return NULL;
-    }
+  if (FT_Load_Glyph(ff->face, gid, FT_LOAD_NO_BITMAP)) {
+    return NULL;
   }
   if (FT_Get_Glyph(slot, &glyph)) {
     return NULL;
@@ -446,4 +429,4 @@ static int glyphPathCubicTo(const FT_Vector *ctrl1, const FT_Vector *ctrl2,
   return 0;
 }
 
-#endif // HAVE_FREETYPE_H
+#endif // HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H

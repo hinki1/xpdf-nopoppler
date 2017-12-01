@@ -35,7 +35,6 @@ public:
 
   JBIG2Stream(Stream *strA, Object *globalsStreamA);
   virtual ~JBIG2Stream();
-  virtual Stream *copy();
   virtual StreamKind getKind() { return strJBIG2; }
   virtual void reset();
   virtual void close();

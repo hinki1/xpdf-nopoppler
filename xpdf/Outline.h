@@ -61,11 +61,8 @@ public:
   GBool isOpen() { return startsOpen; }
   GBool hasKids() { return firstRef.isRef(); }
   GList *getKids() { return kids; }
-  OutlineItem *getParent() { return parent; }
 
 private:
-
-  friend class PDFDoc;
 
   XRef *xref;
   TextString *title;		// may be NULL
@@ -75,8 +72,6 @@ private:
   Object lastRef;
   Object nextRef;
   GBool startsOpen;
-  int pageNum;			// page number (used by
-				//   PDFDoc::getOutlineTargetPage)
   GList *kids;			// NULL unless this item is open [OutlineItem]
   OutlineItem *parent;
 };

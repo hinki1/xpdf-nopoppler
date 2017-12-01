@@ -22,7 +22,6 @@
 #include <io.h>    // for setmode
 #endif
 #include "gmem.h"
-#include "gmempp.h"
 #include "GString.h"
 #include "GList.h"
 #include "config.h"
@@ -98,7 +97,7 @@
 
 // If the space between two lines is greater than
 // paragraphSpacingThreshold * avgLineSpacing, start a new paragraph.
-#define paragraphSpacingThreshold 1.25
+#define paragraphSpacingThreshold 1.2
 
 // If font size changes by at least this much (measured in points)
 // between lines, start a new paragraph.
@@ -107,10 +106,6 @@
 // Spaces at the start of a line in physical layout mode are this wide
 // (as a multiple of font size).
 #define physLayoutSpaceWidth 0.33
-
-// In simple layout mode, lines are broken at gaps larger than this
-// value multiplied by font size.
-#define simpleLayoutGapThreshold 0.4
 
 // Table cells (TextColumns) are allowed to overlap by this much
 // in table layout mode (as a fraction of cell width or height).
@@ -147,14 +142,6 @@
 // fraction of font size).
 #define hyperlinkSlack 0.2
 
-// Text is considered diagonal if abs(tan(angle)) > diagonalThreshold.
-// (Or 1/tan(angle) for 90/270 degrees.)
-#define diagonalThreshold 0.1
-
-// This value is used as the ascent when computing selection
-// rectangles, in order to work around flakey ascent values in fonts.
-#define selectionAscent 0.8
-
 //------------------------------------------------------------------------
 // TextChar
 //------------------------------------------------------------------------
@@ -178,7 +165,6 @@ public:
   Guchar rot;
   char clipped;
   char invisible;
-  char spaceAfter;
   TextFontInfo *font;
   double fontSize;
   double colorR,
@@ -208,25 +194,9 @@ TextChar::TextChar(Unicode cA, int charPosA, int charLenA,
   if (yMin > yMax) {
     t = yMin; yMin = yMax; yMax = t;
   }
-  // TextPage::findGaps uses integer coordinates, so clip the char
-  // bbox to fit in a 32-bit int (this is generally only a problem in
-  // damaged PDF files)
-  if (xMin < -1e8) {
-    xMin = -1e8;
-  }
-  if (xMax > 1e8) {
-    xMax = 1e8;
-  }
-  if (yMin < -1e8) {
-    yMin = -1e8;
-  }
-  if (yMax > 1e8) {
-    yMax = 1e8;
-  }
   rot = (Guchar)rotA;
   clipped = (char)clippedA;
   invisible = (char)invisibleA;
-  spaceAfter = (char)gFalse;
   font = fontA;
   fontSize = fontSizeA;
   colorR = colorRA;
@@ -273,7 +243,6 @@ enum TextBlockType {
 enum TextBlockTag {
   blkTagMulticolumn,
   blkTagColumn,
-  blkTagSuperLine,
   blkTagLine
 };
 
@@ -283,7 +252,7 @@ public:
   TextBlock(TextBlockType typeA, int rotA);
   ~TextBlock();
   void addChild(TextBlock *child);
-  void addChild(TextChar *child, GBool updateBox);
+  void addChild(TextChar *child);
   void prependChild(TextChar *child);
   void updateBounds(int childIdx);
 
@@ -337,26 +306,24 @@ void TextBlock::addChild(TextBlock *child) {
   children->append(child);
 }
 
-void TextBlock::addChild(TextChar *child, GBool updateBox) {
-  if (updateBox) {
-    if (children->getLength() == 0) {
+void TextBlock::addChild(TextChar *child) {
+  if (children->getLength() == 0) {
+    xMin = child->xMin;
+    yMin = child->yMin;
+    xMax = child->xMax;
+    yMax = child->yMax;
+  } else {
+    if (child->xMin < xMin) {
       xMin = child->xMin;
+    }
+    if (child->yMin < yMin) {
       yMin = child->yMin;
+    }
+    if (child->xMax > xMax) {
       xMax = child->xMax;
+    }
+    if (child->yMax > yMax) {
       yMax = child->yMax;
-    } else {
-      if (child->xMin < xMin) {
-	xMin = child->xMin;
-      }
-      if (child->yMin < yMin) {
-	yMin = child->yMin;
-      }
-      if (child->xMax > xMax) {
-	xMax = child->xMax;
-      }
-      if (child->yMax > yMax) {
-	yMax = child->yMax;
-      }
     }
   }
   children->append(child);
@@ -401,57 +368,6 @@ void TextBlock::updateBounds(int childIdx) {
   if (child->yMax > yMax) {
     yMax = child->yMax;
   }
-}
-
-//------------------------------------------------------------------------
-// TextGap
-//------------------------------------------------------------------------
-
-class TextGap {
-public:
-
-  TextGap(double aXY, double aW): xy(aXY), w(aW) {}
-
-  double xy;			// center of gap: x for vertical gaps,
-				//   y for horizontal gaps
-  double w;			// width of gap
-};
-
-//------------------------------------------------------------------------
-// TextSuperLine
-//------------------------------------------------------------------------
-
-class TextSuperLine {
-public:
-
-  TextSuperLine(GList *linesA);
-  ~TextSuperLine();
-
-  GList *lines;			// [TextLine]
-  double yMin, yMax;
-  double fontSize;
-};
-
-TextSuperLine::TextSuperLine(GList *linesA) {
-  TextLine *line;
-  int i;
-
-  lines = linesA;
-  yMin = yMax = 0;
-  fontSize = ((TextLine *)lines->get(0))->fontSize;
-  for (i = 0; i < lines->getLength(); ++i) {
-    line = (TextLine *)lines->get(i);
-    if (i == 0 || line->yMin < yMin) {
-      yMin = line->yMin;
-    }
-    if (i == 0 || line->yMax > yMax) {
-      yMax = line->yMax;
-    }
-  }
-}
-
-TextSuperLine::~TextSuperLine() {
-  deleteGList(lines, TextLine);
 }
 
 //------------------------------------------------------------------------
@@ -501,10 +417,6 @@ TextOutputControl::TextOutputControl() {
   fixedLineSpacing = 0;
   html = gFalse;
   clipText = gFalse;
-  discardDiagonalText = gFalse;
-  discardInvisibleText = gFalse;
-  discardClippedText = gFalse;
-  insertBOM = gFalse;
 }
 
 
@@ -577,7 +489,7 @@ GBool TextFontInfo::matches(GfxState *state) {
 // Build a TextWord object, using chars[start .. start+len-1].
 // (If rot >= 2, the chars list is in reverse order.)
 TextWord::TextWord(GList *chars, int start, int lenA,
-		   int rotA, int dirA, GBool spaceAfterA) {
+		   int rotA, GBool spaceAfterA) {
   TextChar *ch;
   int i;
 
@@ -586,20 +498,40 @@ TextWord::TextWord(GList *chars, int start, int lenA,
   text = (Unicode *)gmallocn(len, sizeof(Unicode));
   edge = (double *)gmallocn(len + 1, sizeof(double));
   charPos = (int *)gmallocn(len + 1, sizeof(int));
-  if (rot & 1) {
-    ch = (TextChar *)chars->get(start);
-    xMin = ch->xMin;
-    xMax = ch->xMax;
-    yMin = ch->yMin;
-    ch = (TextChar *)chars->get(start + len - 1);
-    yMax = ch->yMax;
-  } else {
+  switch (rot) {
+  case 0:
+  default:
     ch = (TextChar *)chars->get(start);
     xMin = ch->xMin;
     yMin = ch->yMin;
     yMax = ch->yMax;
     ch = (TextChar *)chars->get(start + len - 1);
     xMax = ch->xMax;
+    break;
+  case 1:
+    ch = (TextChar *)chars->get(start);
+    xMin = ch->xMin;
+    xMax = ch->xMax;
+    yMin = ch->yMin;
+    ch = (TextChar *)chars->get(start + len - 1);
+    yMax = ch->yMax;
+    break;
+  case 2:
+    ch = (TextChar *)chars->get(start);
+    xMax = ch->xMax;
+    yMin = ch->yMin;
+    yMax = ch->yMax;
+    ch = (TextChar *)chars->get(start + len - 1);
+    xMin = ch->xMin;
+    break;
+  case 3:
+    ch = (TextChar *)chars->get(start);
+    xMin = ch->xMin;
+    xMax = ch->xMax;
+    yMax = ch->yMax;
+    ch = (TextChar *)chars->get(start + len - 1);
+    yMin = ch->yMin;
+    break;
   }
   for (i = 0; i < len; ++i) {
     ch = (TextChar *)chars->get(rot >= 2 ? start + len - 1 - i : start + i);
@@ -639,7 +571,6 @@ TextWord::TextWord(GList *chars, int start, int lenA,
   ch = (TextChar *)chars->get(start);
   font = ch->font;
   fontSize = ch->fontSize;
-  dir = dirA;
   spaceAfter = spaceAfterA;
   underlined = gFalse;
   link = NULL;
@@ -663,6 +594,48 @@ TextWord::~TextWord() {
   gfree(text);
   gfree(edge);
   gfree(charPos);
+}
+
+// This is used to append a clipped character to a word.
+void TextWord::appendChar(TextChar *ch) {
+  if (ch->xMin < xMin) {
+    xMin = ch->xMin;
+  }
+  if (ch->xMax > xMax) {
+    xMax = ch->xMax;
+  }
+  if (ch->yMin < yMin) {
+    yMin = ch->yMin;
+  }
+  if (ch->yMax > yMax) {
+    yMax = ch->yMax;
+  }
+  text = (Unicode *)greallocn(text, len + 1, sizeof(Unicode));
+  edge = (double *)greallocn(edge, len + 2, sizeof(double));
+  charPos = (int *)greallocn(charPos, len + 2, sizeof(int));
+  text[len] = ch->c;
+  charPos[len] = ch->charPos;
+  charPos[len+1] = ch->charPos + ch->charLen;
+  switch (rot) {
+  case 0:
+  default:
+    edge[len] = ch->xMin;
+    edge[len+1] = ch->xMax;
+    break;
+  case 1:
+    edge[len] = ch->yMin;
+    edge[len+1] = ch->yMax;
+    break;
+  case 2:
+    edge[len] = ch->xMax;
+    edge[len+1] = ch->xMin;
+    break;
+  case 3:
+    edge[len] = ch->yMax;
+    edge[len+1] = ch->yMin;
+    break;
+  }
+  ++len;
 }
 
 int TextWord::cmpYX(const void *p1, const void *p2) {
@@ -811,19 +784,19 @@ TextLine::~TextLine() {
 }
 
 double TextLine::getBaseline() {
-  return ((TextWord *)words->get(0))->getBaseline();
-}
+  TextWord *word0;
 
-int TextLine::cmpX(const void *p1, const void *p2) {
-  const TextLine *line1 = *(const TextLine **)p1;
-  const TextLine *line2 = *(const TextLine **)p2;
-
-  if (line1->xMin < line2->xMin) {
-    return -1;
-  } else if (line1->xMin > line2->xMin) {
-    return 1;
-  } else {
-    return 0;
+  word0 = (TextWord *)words->get(0);
+  switch (rot) {
+  case 0:
+  default:
+    return yMax + fontSize * word0->font->descent;
+  case 1:
+    return xMin - fontSize * word0->font->descent;
+  case 2:
+    return yMin - fontSize * word0->font->descent;
+  case 3:
+    return xMax + fontSize * word0->font->descent;
   }
 }
 
@@ -831,12 +804,11 @@ int TextLine::cmpX(const void *p1, const void *p2) {
 // TextParagraph
 //------------------------------------------------------------------------
 
-TextParagraph::TextParagraph(GList *linesA, GBool dropCapA) {
+TextParagraph::TextParagraph(GList *linesA) {
   TextLine *line;
   int i;
 
   lines = linesA;
-  dropCap = dropCapA;
   xMin = yMin = xMax = yMax = 0;
   for (i = 0; i < lines->getLength(); ++i) {
     line = (TextLine *)lines->get(i);
@@ -876,15 +848,6 @@ TextColumn::TextColumn(GList *paragraphsA, double xMinA, double yMinA,
 
 TextColumn::~TextColumn() {
   deleteGList(paragraphs, TextParagraph);
-}
-
-int TextColumn::getRotation() {
-  TextParagraph *par;
-  TextLine *line;
-
-  par = (TextParagraph *)paragraphs->get(0);
-  line = (TextLine *)par->getLines()->get(0);
-  return line->getRotation();
 }
 
 int TextColumn::cmpX(const void *p1, const void *p2) {
@@ -930,9 +893,8 @@ int TextColumn::cmpPX(const void *p1, const void *p2) {
 // TextWordList
 //------------------------------------------------------------------------
 
-TextWordList::TextWordList(GList *wordsA, GBool primaryLRA) {
+TextWordList::TextWordList(GList *wordsA) {
   words = wordsA;
-  primaryLR = primaryLRA;
 }
 
 TextWordList::~TextWordList() {
@@ -951,44 +913,6 @@ TextWord *TextWordList::get(int idx) {
 }
 
 //------------------------------------------------------------------------
-// TextPosition
-//------------------------------------------------------------------------
-
-int TextPosition::operator==(TextPosition pos) {
-  return colIdx == pos.colIdx &&
-         parIdx == pos.parIdx &&
-         lineIdx == pos.lineIdx &&
-         charIdx == pos.charIdx;
-}
-
-int TextPosition::operator!=(TextPosition pos) {
-  return colIdx != pos.colIdx ||
-         parIdx != pos.parIdx ||
-         lineIdx != pos.lineIdx ||
-         charIdx != pos.charIdx;
-}
-
-int TextPosition::operator<(TextPosition pos) {
-  return colIdx < pos.colIdx ||
-         (colIdx == pos.colIdx &&
-	  (parIdx < pos.parIdx ||
-	   (parIdx == pos.parIdx &&
-	    (lineIdx < pos.lineIdx ||
-	     (lineIdx == pos.lineIdx &&
-	      charIdx < pos.charIdx)))));
-}
-
-int TextPosition::operator>(TextPosition pos) {
-  return colIdx > pos.colIdx ||
-         (colIdx == pos.colIdx &&
-	  (parIdx > pos.parIdx ||
-	   (parIdx == pos.parIdx &&
-	    (lineIdx > pos.lineIdx ||
-	     (lineIdx == pos.lineIdx &&
-	      charIdx > pos.charIdx)))));
-}
-
-//------------------------------------------------------------------------
 // TextPage
 //------------------------------------------------------------------------
 
@@ -999,7 +923,6 @@ TextPage::TextPage(TextOutputControl *controlA) {
   curFont = NULL;
   curFontSize = 0;
   curRot = 0;
-  diagonal = gFalse;
   nTinyChars = 0;
   actualText = NULL;
   actualTextLen = 0;
@@ -1016,10 +939,9 @@ TextPage::TextPage(TextOutputControl *controlA) {
   links = new GList();
 
   findCols = NULL;
+  findLR = gTrue;
   lastFindXMin = lastFindYMin = 0;
   haveLastFind = gFalse;
-
-  problematic = gFalse;
 }
 
 TextPage::~TextPage() {
@@ -1049,7 +971,6 @@ void TextPage::clear() {
   curFont = NULL;
   curFontSize = 0;
   curRot = 0;
-  diagonal = gFalse;
   nTinyChars = 0;
   gfree(actualText);
   actualText = NULL;
@@ -1068,10 +989,9 @@ void TextPage::clear() {
     deleteGList(findCols, TextColumn);
     findCols = NULL;
   }
+  findLR = gTrue;
   lastFindXMin = lastFindYMin = 0;
   haveLastFind = gFalse;
-
-  problematic = gFalse;
 }
 
 void TextPage::updateFont(GfxState *state) {
@@ -1095,9 +1015,6 @@ void TextPage::updateFont(GfxState *state) {
   if (!curFont) {
     curFont = new TextFontInfo(state);
     fonts->append(curFont);
-    if (state->getFont() && state->getFont()->problematicForUnicode()) {
-      problematic = gTrue;
-    }
   }
 
   // adjust the font size
@@ -1158,20 +1075,10 @@ void TextPage::updateFont(GfxState *state) {
     m[2] = m2[2];
     m[3] = m2[3];
   }
-  if (fabs(m[0]) >= fabs(m[1]))  {
-    if (m[0] > 0) {
-      curRot = 0;
-    } else {
-      curRot = 2;
-    }
-    diagonal = fabs(m[1]) > diagonalThreshold * fabs(m[0]);
+  if (fabs(m[0] * m[3]) > fabs(m[1] * m[2])) {
+    curRot = (m[0] > 0 || m[3] < 0) ? 0 : 2;
   } else {
-    if (m[1] > 0) {
-      curRot = 1;
-    } else {
-      curRot = 3;
-    }
-    diagonal = fabs(m[0]) > diagonalThreshold * fabs(m[1]);
+    curRot = (m[2] > 0) ? 1 : 3;
   }
 }
 
@@ -1179,10 +1086,9 @@ void TextPage::addChar(GfxState *state, double x, double y,
 		       double dx, double dy,
 		       CharCode c, int nBytes, Unicode *u, int uLen) {
   double x1, y1, x2, y2, w1, h1, dx2, dy2, ascent, descent, sp;
-  double xMin, yMin, xMax, yMax, xMid, yMid;
+  double xMin, yMin, xMax, yMax;
   double clipXMin, clipYMin, clipXMax, clipYMax;
   GfxRGB rgb;
-  double alpha;
   GBool clipped, rtl;
   int i, j;
 
@@ -1196,12 +1102,6 @@ void TextPage::addChar(GfxState *state, double x, double y,
     actualTextX1 = x + dx;
     actualTextY1 = y + dy;
     actualTextNBytes += nBytes;
-    return;
-  }
-
-  // throw away diagonal chars
-  if (control.discardDiagonalText && diagonal) {
-    charPos += nBytes;
     return;
   }
 
@@ -1234,16 +1134,20 @@ void TextPage::addChar(GfxState *state, double x, double y,
     }
   }
 
-  // skip space, tab, and non-breaking space characters
-  if (uLen == 1 && (u[0] == (Unicode)0x20 ||
-		    u[0] == (Unicode)0x09 ||
-		    u[0] == (Unicode)0xa0)) {
+  // skip space characters
+  if (uLen == 1 && u[0] == (Unicode)0x20) {
     charPos += nBytes;
-    if (chars->getLength() > 0) {
-      ((TextChar *)chars->get(chars->getLength() - 1))->spaceAfter =
-	  (char)gTrue;
-    }
     return;
+  }
+
+  // check for clipping
+  clipped = gFalse;
+  if (control.clipText) {
+    state->getClipBBox(&clipXMin, &clipYMin, &clipXMax, &clipYMax);
+    if (x1 + 0.1 * w1 < clipXMin || x1 + 0.9 * w1 > clipXMax ||
+	y1 + 0.1 * h1 < clipYMin || y1 + 0.9 * h1 > clipYMax) {
+      clipped = gTrue;
+    }
   }
 
   // add the characters
@@ -1264,7 +1168,6 @@ void TextPage::addChar(GfxState *state, double x, double y,
       rtl = gFalse;
     }
 
-    // compute the bounding box
     w1 /= uLen;
     h1 /= uLen;
     ascent = curFont->ascent * curFontSize;
@@ -1299,25 +1202,10 @@ void TextPage::addChar(GfxState *state, double x, double y,
 	yMax = y2;
 	break;
       }
-
-      // check for clipping
-      clipped = gFalse;
-      if (control.clipText || control.discardClippedText) {
-	state->getClipBBox(&clipXMin, &clipYMin, &clipXMax, &clipYMax);
-	xMid = 0.5 * (xMin + xMax);
-	yMid = 0.5 * (yMin + yMax);
-	if (xMid < clipXMin || xMid > clipXMax ||
-	    yMid < clipYMin || yMid > clipYMax) {
-	  clipped = gTrue;
-	}
-      }
-
       if ((state->getRender() & 3) == 1) {
 	state->getStrokeRGB(&rgb);
-	alpha = state->getStrokeOpacity();
       } else {
 	state->getFillRGB(&rgb);
-	alpha = state->getFillOpacity();
       }
       if (rtl) {
 	j = uLen - 1 - i;
@@ -1326,7 +1214,7 @@ void TextPage::addChar(GfxState *state, double x, double y,
       }
       chars->append(new TextChar(u[j], charPos, nBytes, xMin, yMin, xMax, yMax,
 				 curRot, clipped,
-				 state->getRender() == 3 || alpha < 0.001,
+				 state->getRender() == 3,
 				 curFont, curFontSize,
 				 colToDbl(rgb.r), colToDbl(rgb.g),
 				 colToDbl(rgb.b)));
@@ -1424,10 +1312,6 @@ void TextPage::write(void *outputStream, TextOutputFunc outputFunc) {
     writePhysLayout(outputStream, outputFunc, uMap, space, spaceLen,
 		    eol, eolLen);
     break;
-  case textOutSimpleLayout:
-    writeSimpleLayout(outputStream, outputFunc, uMap, space, spaceLen,
-		      eol, eolLen);
-    break;
   case textOutLinePrinter:
     writeLinePrinter(outputStream, outputFunc, uMap, space, spaceLen,
 		     eol, eolLen);
@@ -1471,7 +1355,7 @@ void TextPage::writeReadingOrder(void *outputStream,
     unrotateChars(chars, rot);
     return;
   }
-  columns = buildColumns(tree, primaryLR);
+  columns = buildColumns(tree);
   delete tree;
   unrotateChars(chars, rot);
   if (control.html) {
@@ -1511,20 +1395,14 @@ void TextPage::writeReadingOrder(void *outputStream,
 GList *TextPage::makeColumns() {
   TextBlock *tree;
   GList *columns;
-  GBool primaryLR;
-  int rot;
 
-  rot = rotateChars(chars);
-  primaryLR = checkPrimaryLR(chars);
-  if ((tree = splitChars(chars))) {
-    columns = buildColumns(tree, primaryLR);
-    delete tree;
-  } else {
+  tree = splitChars(chars);
+  if (!tree) {
     // no text
-    columns = new GList();
+    return new GList();
   }
-  unrotateChars(chars, rot);
-  unrotateColumns(columns, rot);
+  columns = buildColumns(tree);
+  delete tree;
   if (control.html) {
     generateUnderlinesAndLinks(columns);
   }
@@ -1550,9 +1428,6 @@ void TextPage::writePhysLayout(void *outputStream,
 #if 0 //~debug
   dumpChars(chars);
 #endif
-#if 0 //~debug
-  dumpUnderlines();
-#endif
   rot = rotateChars(chars);
   primaryLR = checkPrimaryLR(chars);
   tree = splitChars(chars);
@@ -1564,8 +1439,7 @@ void TextPage::writePhysLayout(void *outputStream,
     unrotateChars(chars, rot);
     return;
   }
-  //~ this doesn't correctly handle the right-to-left case
-  columns = buildColumns(tree, gTrue);
+  columns = buildColumns(tree);
   delete tree;
   unrotateChars(chars, rot);
   if (control.html) {
@@ -1625,66 +1499,6 @@ void TextPage::writePhysLayout(void *outputStream,
   gfree(outLen);
 
   deleteGList(columns, TextColumn);
-}
-
-void TextPage::writeSimpleLayout(void *outputStream,
-				 TextOutputFunc outputFunc,
-				 UnicodeMap *uMap,
-				 char *space, int spaceLen,
-				 char *eol, int eolLen) {
-  TextBlock *tree;
-  TextSuperLine *superLine0, *superLine1;
-  TextLine *line;
-  GList *superLines;
-  GString *out;
-  GBool primaryLR;
-  int rot, x, i, j;
-
-#if 0 //~debug
-  dumpChars(chars);
-#endif
-  rot = rotateChars(chars);
-  primaryLR = checkPrimaryLR(chars);
-  tree = splitChars(chars);
-#if 0 //~debug
-  dumpTree(tree);
-#endif
-  if (!tree) {
-    // no text
-    unrotateChars(chars, rot);
-    return;
-  }
-  superLines = new GList();
-  buildSuperLines(tree, superLines);
-  delete tree;
-  unrotateChars(chars, rot);
-  assignSimpleLayoutPositions(superLines, uMap);
-
-  for (i = 0; i < superLines->getLength(); ++i) {
-    superLine0 = (TextSuperLine *)superLines->get(i);
-    out = new GString();
-    x = 0;
-    for (j = 0; j < superLine0->lines->getLength(); ++j) {
-      line = (TextLine *)superLine0->lines->get(j);
-      while (x < line->px) {
-	out->append(space, spaceLen);
-	++x;
-      }
-      encodeFragment(line->text, line->len, uMap, primaryLR, out);
-      x += line->pw;
-    }
-    (*outputFunc)(outputStream, out->getCString(), out->getLength());
-    delete out;
-    (*outputFunc)(outputStream, eol, eolLen);
-    if (i + 1 < superLines->getLength()) {
-      superLine1 = (TextSuperLine *)superLines->get(i + 1);
-      if (superLine1->yMin - superLine0->yMax > 1.0 * superLine0->fontSize) {
-	(*outputFunc)(outputStream, eol, eolLen);
-      }
-    }
-  }
-
-  deleteGList(superLines, TextSuperLine);
 }
 
 void TextPage::writeLinePrinter(void *outputStream,
@@ -2213,7 +2027,7 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
   TextParagraph *par;
   TextLine *line;
   TextWord *word;
-  double xMin, yMin, xMax, yMax;
+  double xMin, yMin, xMax, yMax, t;
   int colIdx, parIdx, lineIdx, wordIdx, i;
 
   switch (rot) {
@@ -2222,8 +2036,9 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
     // no transform
     break;
   case 1:
-    // NB: this is called after unrotateChars(), which will have
-    // swapped pageWidth and pageHeight already.
+    t = pageWidth;
+    pageWidth = pageHeight;
+    pageHeight = t;
     for (colIdx = 0; colIdx < columns->getLength(); ++colIdx) {
       col = (TextColumn *)columns->get(colIdx);
       xMin = pageWidth - col->yMax;
@@ -2259,11 +2074,6 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
 	  line->yMin = yMin;
 	  line->yMax = yMax;
 	  line->rot = (line->rot + 1) & 3;
-	  if (!(line->rot & 1)) {
-	    for (i = 0; i <= line->len; ++i) {
-	      line->edge[i] = pageWidth - line->edge[i];
-	    }
-	  }
 	  for (wordIdx = 0; wordIdx < line->words->getLength(); ++wordIdx) {
 	    word = (TextWord *)line->words->get(wordIdx);
 	    xMin = pageWidth - word->yMax;
@@ -2275,11 +2085,6 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
 	    word->yMin = yMin;
 	    word->yMax = yMax;
 	    word->rot = (word->rot + 1) & 3;
-	    if (!(word->rot & 1)) {
-	      for (i = 0; i <= word->len; ++i) {
-		word->edge[i] = pageWidth - word->edge[i];
-	      }
-	    }
 	  }
 	}
       }
@@ -2321,14 +2126,8 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
 	  line->yMin = yMin;
 	  line->yMax = yMax;
 	  line->rot = (line->rot + 2) & 3;
-	  if (line->rot & 1) {
-	    for (i = 0; i <= line->len; ++i) {
-	      line->edge[i] = pageHeight - line->edge[i];
-	    }
-	  } else {
-	    for (i = 0; i <= line->len; ++i) {
-	      line->edge[i] = pageWidth - line->edge[i];
-	    }
+	  for (i = 0; i <= line->len; ++i) {
+	    line->edge[i] = pageWidth - line->edge[i];
 	  }
 	  for (wordIdx = 0; wordIdx < line->words->getLength(); ++wordIdx) {
 	    word = (TextWord *)line->words->get(wordIdx);
@@ -2341,14 +2140,8 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
 	    word->yMin = yMin;
 	    word->yMax = yMax;
 	    word->rot = (word->rot + 2) & 3;
-	    if (word->rot & 1) {
-	      for (i = 0; i <= word->len; ++i) {
-		word->edge[i] = pageHeight - word->edge[i];
-	      }
-	    } else {
-	      for (i = 0; i <= word->len; ++i) {
-		word->edge[i] = pageWidth - word->edge[i];
-	      }
+	    for (i = 0; i <= word->len; ++i) {
+	      word->edge[i] = pageWidth - word->edge[i];
 	    }
 	  }
 	}
@@ -2356,8 +2149,9 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
     }
     break;
   case 3:
-    // NB: this is called after unrotateChars(), which will have
-    // swapped pageWidth and pageHeight already.
+    t = pageWidth;
+    pageWidth = pageHeight;
+    pageHeight = t;
     for (colIdx = 0; colIdx < columns->getLength(); ++colIdx) {
       col = (TextColumn *)columns->get(colIdx);
       xMin = col->yMin;
@@ -2393,10 +2187,8 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
 	  line->yMin = yMin;
 	  line->yMax = yMax;
 	  line->rot = (line->rot + 3) & 3;
-	  if (line->rot & 1) {
-	    for (i = 0; i <= line->len; ++i) {
-	      line->edge[i] = pageHeight - line->edge[i];
-	    }
+	  for (i = 0; i <= line->len; ++i) {
+	    line->edge[i] = pageHeight - line->edge[i];
 	  }
 	  for (wordIdx = 0; wordIdx < line->words->getLength(); ++wordIdx) {
 	    word = (TextWord *)line->words->get(wordIdx);
@@ -2409,10 +2201,8 @@ void TextPage::unrotateColumns(GList *columns, int rot) {
 	    word->yMin = yMin;
 	    word->yMax = yMax;
 	    word->rot = (word->rot + 3) & 3;
-	    if (word->rot & 1) {
-	      for (i = 0; i <= word->len; ++i) {
-		word->edge[i] = pageHeight - word->edge[i];
-	      }
+	    for (i = 0; i <= word->len; ++i) {
+	      word->edge[i] = pageHeight - word->edge[i];
 	    }
 	  }
 	}
@@ -2444,11 +2234,6 @@ void TextPage::unrotateWords(GList *words, int rot) {
       word->yMin = yMin;
       word->yMax = yMax;
       word->rot = (word->rot + 1) & 3;
-      if (!(word->rot & 1)) {
-	for (j = 0; j <= word->len; ++j) {
-	  word->edge[j] = pageWidth - word->edge[j];
-	}
-      }
     }
     break;
   case 2:
@@ -2463,14 +2248,8 @@ void TextPage::unrotateWords(GList *words, int rot) {
       word->yMin = yMin;
       word->yMax = yMax;
       word->rot = (word->rot + 2) & 3;
-      if (word->rot & 1) {
-	for (j = 0; j <= word->len; ++j) {
-	  word->edge[j] = pageHeight - word->edge[j];
-	}
-      } else {
-	for (j = 0; j <= word->len; ++j) {
-	  word->edge[j] = pageWidth - word->edge[j];
-	}
+      for (j = 0; j <= word->len; ++j) {
+	word->edge[j] = pageWidth - word->edge[j];
       }
     }
     break;
@@ -2486,10 +2265,8 @@ void TextPage::unrotateWords(GList *words, int rot) {
       word->yMin = yMin;
       word->yMax = yMax;
       word->rot = (word->rot + 3) & 3;
-      if (word->rot & 1) {
-	for (j = 0; j <= word->len; ++j) {
-	  word->edge[j] = pageHeight - word->edge[j];
-	}
+      for (j = 0; j <= word->len; ++j) {
+	word->edge[j] = pageHeight - word->edge[j];
       }
     }
     break;
@@ -2536,9 +2313,6 @@ void TextPage::removeDuplicates(GList *charsA, int rot) {
 	    fabs(ch2->xMin - ch->xMin) < xDelta &&
 	    fabs(ch2->xMax - ch->xMax) < xDelta &&
 	    fabs(ch2->yMax - ch->yMax) < yDelta) {
-	  if (ch2->spaceAfter) {
-	    ch->spaceAfter = (char)gTrue;
-	  }
 	  charsA->del(j);
 	} else {
 	  ++j;
@@ -2584,9 +2358,7 @@ TextBlock *TextPage::splitChars(GList *charsA) {
     chars2 = new GList();
     for (i = 0; i < charsA->getLength(); ++i) {
       ch = (TextChar *)charsA->get(i);
-      if (ch->rot == rot &&
-	  !(control.discardInvisibleText && ch->invisible) &&
-	  !(control.discardClippedText && ch->clipped)) {
+      if (ch->rot == rot) {
 	chars2->append(ch);
       }
     }
@@ -2616,14 +2388,6 @@ TextBlock *TextPage::splitChars(GList *charsA) {
   // if the page contains no (unclipped) text, just leave an empty
   // column list
   if (!tree[0]) {
-    // normally tree[0] is empty only if there is no text at all, but
-    // if the caller didn't do rotation, the rotated trees may be
-    // non-empty, so we need to free them
-    for (rot = 1; rot < 4; ++rot) {
-      if (tree[rot]) {
-	delete tree[rot];
-      }
-    }
     delete clippedChars;
     return NULL;
   }
@@ -2661,323 +2425,23 @@ TextBlock *TextPage::splitChars(GList *charsA) {
 TextBlock *TextPage::split(GList *charsA, int rot) {
   TextBlock *blk;
   GList *chars2, *chars3;
-  GList *horizGaps, *vertGaps;
-  TextGap *gap;
-  TextChar *ch;
-  double xMin, yMin, xMax, yMax, avgFontSize;
-  double horizGapSize, vertGapSize, minHorizChunkWidth, minVertChunkWidth;
-  double nLines, vertGapThreshold, minChunk;
-  double largeCharSize;
-  double x0, x1, y0, y1;
-  int nHorizGaps, nVertGaps, nLargeChars;
-  int i;
-  GBool doHorizSplit, doVertSplit, smallSplit;
-
-  //----- find all horizontal and vertical gaps
-
-  horizGaps = new GList();
-  vertGaps = new GList();
-  findGaps(charsA, rot, &xMin, &yMin, &xMax, &yMax, &avgFontSize,
-	   horizGaps, vertGaps);
-
-  //----- find the largest horizontal and vertical gaps
-
-  horizGapSize = 0;
-  for (i = 0; i < horizGaps->getLength(); ++i) {
-    gap = (TextGap *)horizGaps->get(i);
-    if (gap->w > horizGapSize) {
-      horizGapSize = gap->w;
-    }
-  }
-  vertGapSize = 0;
-  for (i = 0; i < vertGaps->getLength(); ++i) {
-    gap = (TextGap *)vertGaps->get(i);
-    if (gap->w > vertGapSize) {
-      vertGapSize = gap->w;
-    }
-  }
-
-  //----- count horiz/vert gaps equivalent to largest gaps
-
-  minHorizChunkWidth = yMax - yMin;
-  nHorizGaps = 0;
-  if (horizGaps->getLength() > 0) {
-    y0 = yMin;
-    for (i = 0; i < horizGaps->getLength(); ++i) {
-      gap = (TextGap *)horizGaps->get(i);
-      if (gap->w > horizGapSize - splitGapSlack * avgFontSize) {
-	++nHorizGaps;
-	y1 = gap->xy - 0.5 * gap->w;
-	if (y1 - y0 < minHorizChunkWidth) {
-	  minHorizChunkWidth = y1 - y0;
-	}
-	y0 = y1 + gap->w;
-      }
-    }
-    y1 = yMax;
-    if (y1 - y0 < minHorizChunkWidth) {
-      minHorizChunkWidth = y1 - y0;
-    }
-  }
-  minVertChunkWidth = xMax - xMin;
-  nVertGaps = 0;
-  if (vertGaps->getLength() > 0) {
-    x0 = xMin;
-    for (i = 0; i < vertGaps->getLength(); ++i) {
-      gap = (TextGap *)vertGaps->get(i);
-      if (gap->w > vertGapSize - splitGapSlack * avgFontSize) {
-	++nVertGaps;
-	x1 = gap->xy - 0.5 * gap->w;
-	if (x1 - x0 < minVertChunkWidth) {
-	  minVertChunkWidth = x1 - x0;
-	}
-	x0 = x1 + gap->w;
-      }
-    }
-    x1 = xMax;
-    if (x1 - x0 < minVertChunkWidth) {
-      minVertChunkWidth = x1 - x0;
-    }
-  }
-
-  //----- compute splitting parameters
-
-  // approximation of number of lines in block
-  if (fabs(avgFontSize) < 0.001) {
-    nLines = 1;
-  } else if (rot & 1) {
-    nLines = (xMax - xMin) / avgFontSize;
-  } else {
-    nLines = (yMax - yMin) / avgFontSize;
-  }
-
-  // compute the minimum allowed vertical gap size
-  // (this is a horizontal gap threshold for rot=1,3
-  if (control.mode == textOutTableLayout) {
-    vertGapThreshold = vertGapThresholdTableMax
-                       + vertGapThresholdTableSlope * nLines;
-    if (vertGapThreshold < vertGapThresholdTableMin) {
-      vertGapThreshold = vertGapThresholdTableMin;
-    }
-  } else if (control.mode == textOutSimpleLayout) {
-    vertGapThreshold = simpleLayoutGapThreshold;
-  } else {
-    vertGapThreshold = vertGapThresholdMax + vertGapThresholdSlope * nLines;
-    if (vertGapThreshold < vertGapThresholdMin) {
-      vertGapThreshold = vertGapThresholdMin;
-    }
-  }
-  vertGapThreshold = vertGapThreshold * avgFontSize;
-
-  // compute the minimum allowed chunk width
-  if (control.mode == textOutTableLayout) {
-    minChunk = 0;
-  } else {
-    minChunk = vertSplitChunkThreshold * avgFontSize;
-  }
-
-  // look for large chars
-  // -- this kludge (multiply by 256, convert to int, divide by 256.0)
-  //    prevents floating point stability issues on x86 with gcc, where
-  //    largeCharSize could otherwise have slightly different values
-  //    here and where it's used below to do the large char partition
-  //    (because it gets truncated from 80 to 64 bits when spilled)
-  largeCharSize = (int)(largeCharThreshold * avgFontSize * 256) / 256.0;
-  nLargeChars = 0;
-  for (i = 0; i < charsA->getLength(); ++i) {
-    ch = (TextChar *)charsA->get(i);
-    if (ch->fontSize > largeCharSize) {
-      ++nLargeChars;
-    }
-  }
-
-  // figure out which type of split to do
-  doHorizSplit = doVertSplit = gFalse;
-  smallSplit = gFalse;
-  if (rot & 1) {
-    if (control.mode == textOutSimpleLayout) {
-      if (nVertGaps > 0) {
-	doVertSplit = gTrue;
-      } else if (nHorizGaps > 0) {
-	doHorizSplit = gTrue;
-	smallSplit = horizGapSize <= vertGapThreshold;
-      }
-    } else if (nHorizGaps > 0 &&
-	       (horizGapSize > vertGapSize ||
-		control.mode == textOutTableLayout) &&
-	       horizGapSize > vertGapThreshold &&
-	       (minHorizChunkWidth > minChunk ||
-		nVertGaps == 0)) {
-      doHorizSplit = gTrue;
-    } else if (nVertGaps > 0) {
-      doVertSplit = gTrue;
-    } else if (nLargeChars == 0 && nHorizGaps > 0) {
-      doHorizSplit = gTrue;
-      smallSplit = gTrue;
-    }
-  } else {
-    if (control.mode == textOutSimpleLayout) {
-      if (nHorizGaps > 0) {
-	doHorizSplit = gTrue;
-      } else if (nVertGaps > 0) {
-	doVertSplit = gTrue;
-	smallSplit = vertGapSize <= vertGapThreshold;
-      }
-    } else if (nVertGaps > 0 &&
-	       (vertGapSize > horizGapSize ||
-		control.mode == textOutTableLayout) &&
-	       vertGapSize > vertGapThreshold &&
-	       (minVertChunkWidth > minChunk ||
-		nHorizGaps == 0)) {
-      doVertSplit = gTrue;
-    } else if (nHorizGaps > 0) {
-      doHorizSplit = gTrue;
-    } else if (nLargeChars == 0 && nVertGaps > 0) {
-      doVertSplit = gTrue;
-      smallSplit = gTrue;
-    }
-  }
-
-  //----- split the block
-
-  //~ this could use "other content" (vector graphics, rotated text) --
-  //~ presence of other content in a gap means we should definitely split
-
-  // split vertically
-  if (doVertSplit) {
-#if 0 //~debug
-    printf("vert split xMin=%g yMin=%g xMax=%g yMax=%g small=%d\n",
-	   xMin, pageHeight - yMax, xMax, pageHeight - yMin, smallSplit);
-    for (i = 0; i < vertGaps->getLength(); ++i) {
-      gap = (TextGap *)vertGaps->get(i);
-      if (gap->w > vertGapSize - splitGapSlack * avgFontSize) {
-	printf("    x=%g\n", gap->xy);
-      }
-    }
-#endif
-    blk = new TextBlock(blkVertSplit, rot);
-    blk->smallSplit = smallSplit;
-    x0 = xMin - 1;
-    for (i = 0; i < vertGaps->getLength(); ++i) {
-      gap = (TextGap *)vertGaps->get(i);
-      if (gap->w > vertGapSize - splitGapSlack * avgFontSize) {
-	x1 = gap->xy;
-	chars2 = getChars(charsA, x0, yMin - 1, x1, yMax + 1);
-	blk->addChild(split(chars2, rot));
-	delete chars2;
-	x0 = x1;
-      }
-    }
-    chars2 = getChars(charsA, x0, yMin - 1, xMax + 1, yMax + 1);
-    blk->addChild(split(chars2, rot));
-    delete chars2;
-
-  // split horizontally
-  } else if (doHorizSplit) {
-#if 0 //~debug
-    printf("horiz split xMin=%g yMin=%g xMax=%g yMax=%g small=%d\n",
-	   xMin, pageHeight - yMax, xMax, pageHeight - yMin, smallSplit);
-    for (i = 0; i < horizGaps->getLength(); ++i) {
-      gap = (TextGap *)horizGaps->get(i);
-      if (gap->w > horizGapSize - splitGapSlack * avgFontSize) {
-	printf("    y=%g\n", pageHeight - gap->xy);
-      }
-    }
-#endif
-    blk = new TextBlock(blkHorizSplit, rot);
-    blk->smallSplit = smallSplit;
-    y0 = yMin - 1;
-    for (i = 0; i < horizGaps->getLength(); ++i) {
-      gap = (TextGap *)horizGaps->get(i);
-      if (gap->w > horizGapSize - splitGapSlack * avgFontSize) {
-	y1 = gap->xy;
-	chars2 = getChars(charsA, xMin - 1, y0, xMax + 1, y1);
-	blk->addChild(split(chars2, rot));
-	delete chars2;
-	y0 = y1;
-      }
-    }
-    chars2 = getChars(charsA, xMin - 1, y0, xMax + 1, yMax + 1);
-    blk->addChild(split(chars2, rot));
-    delete chars2;
-
-  // split into larger and smaller chars
-  } else if (nLargeChars > 0) {
-#if 0 //~debug
-    printf("large char split xMin=%g yMin=%g xMax=%g yMax=%g\n",
-	   xMin, pageHeight - yMax, xMax, pageHeight - yMin);
-#endif
-    chars2 = new GList();
-    chars3 = new GList();
-    for (i = 0; i < charsA->getLength(); ++i) {
-      ch = (TextChar *)charsA->get(i);
-      if (ch->fontSize > largeCharSize) {
-	chars2->append(ch);
-      } else {
-	chars3->append(ch);
-      }
-    }
-    blk = split(chars3, rot);
-    insertLargeChars(chars2, blk);
-    delete chars2;
-    delete chars3;
-
-  // create a leaf node
-  } else {
-#if 0 //~debug
-    printf("leaf xMin=%g yMin=%g xMax=%g yMax=%g\n",
-	   xMin, pageHeight - yMax, xMax, pageHeight - yMin);
-#endif
-    blk = new TextBlock(blkLeaf, rot);
-    for (i = 0; i < charsA->getLength(); ++i) {
-      blk->addChild((TextChar *)charsA->get(i), gTrue);
-    }
-  }
-
-  deleteGList(horizGaps, TextGap);
-  deleteGList(vertGaps, TextGap);
-
-  tagBlock(blk);
-
-  return blk;
-}
-
-// Return the subset of chars inside a rectangle.
-GList *TextPage::getChars(GList *charsA, double xMin, double yMin,
-			  double xMax, double yMax) {
-  GList *ret;
-  TextChar *ch;
-  double x, y;
-  int i;
-
-  ret = new GList();
-  for (i = 0; i < charsA->getLength(); ++i) {
-    ch = (TextChar *)charsA->get(i);
-    // because of {ascent,descent}AdjustFactor, the y coords (or x
-    // coords for rot 1,3) for the gaps will be a little bit tight --
-    // so we use the center of the character here
-    x = 0.5 * (ch->xMin + ch->xMax);
-    y = 0.5 * (ch->yMin + ch->yMax);
-    if (x > xMin && x < xMax && y > yMin && y < yMax) {
-      ret->append(ch);
-    }
-  }
-  return ret;
-}
-
-void TextPage::findGaps(GList *charsA, int rot,
-			double *xMinOut, double *yMinOut,
-			double *xMaxOut, double *yMaxOut,
-			double *avgFontSizeOut,
-			GList *horizGaps, GList *vertGaps) {
-  TextChar *ch;
   int *horizProfile, *vertProfile;
-  double xMin, yMin, xMax, yMax, w;
-  double minFontSize, avgFontSize, splitPrecision, ascentAdjust, descentAdjust;
-  int xMinI, yMinI, xMaxI, yMaxI, xMinI2, yMinI2, xMaxI2, yMaxI2;
-  int start, x, y, i;
+  double xMin, yMin, xMax, yMax;
+  int xMinI, yMinI, xMaxI, yMaxI;
+  int xMinI2, yMinI2, xMaxI2, yMaxI2;
+  TextChar *ch;
+  double minFontSize, avgFontSize, splitPrecision;
+  double nLines, vertGapThreshold, ascentAdjust, descentAdjust, minChunk;
+  int horizGapSize, vertGapSize;
+  double horizGapSize2, vertGapSize2;
+  int minHorizChunkWidth, minVertChunkWidth, nHorizGaps, nVertGaps;
+  double largeCharSize;
+  int nLargeChars;
+  GBool doHorizSplit, doVertSplit, smallSplit;
+  int i, x, y, prev, start;
 
-  //----- compute bbox, min font size, average font size, and split precision
+  //----- compute bbox, min font size, average font size, and
+  //      split precision for this block
 
   xMin = yMin = xMax = yMax = 0; // make gcc happy
   minFontSize = avgFontSize = 0;
@@ -3005,11 +2469,6 @@ void TextPage::findGaps(GList *charsA, int rot,
   if (splitPrecision < minSplitPrecision) {
     splitPrecision = minSplitPrecision;
   }
-  *xMinOut = xMin;
-  *yMinOut = yMin;
-  *xMaxOut = xMax;
-  *yMaxOut = yMax;
-  *avgFontSizeOut = avgFontSize;
 
   //----- compute the horizontal and vertical profiles
 
@@ -3069,42 +2528,263 @@ void TextPage::findGaps(GList *charsA, int rot,
     }
   }
 
-  //----- build the list of horizontal gaps
+  //----- find the largest gaps in the horizontal and vertical profiles
 
+  horizGapSize = 0;
   for (start = yMinI; start < yMaxI && !horizProfile[start - yMinI]; ++start) ;
   for (y = start; y < yMaxI; ++y) {
-    if (horizProfile[y - yMinI]) {
-      if (!horizProfile[y + 1 - yMinI]) {
-	start = y;
+    if (horizProfile[y - yMinI] && !horizProfile[y + 1 - yMinI]) {
+      start = y;
+    } else if (!horizProfile[y - yMinI] && horizProfile[y + 1 - yMinI]) {
+      if (y - start > horizGapSize) {
+	horizGapSize = y - start;
       }
-    } else {
-      if (horizProfile[y + 1 - yMinI]) {
-	w = (y - start) * splitPrecision;
-	horizGaps->append(new TextGap((start + 1) * splitPrecision + 0.5 * w,
-				      w));
+    }
+  }
+  vertGapSize = 0;
+  for (start = xMinI; start < xMaxI && !vertProfile[start - xMinI]; ++start) ;
+  for (x = start; x < xMaxI; ++x) {
+    if (vertProfile[x - xMinI] && !vertProfile[x + 1 - xMinI]) {
+      start = x;
+    } else if (!vertProfile[x - xMinI] && vertProfile[x + 1 - xMinI]) {
+      if (x - start > vertGapSize) {
+	vertGapSize = x - start;
+      }
+    }
+  }
+  horizGapSize2 = horizGapSize - splitGapSlack * avgFontSize / splitPrecision;
+  if (horizGapSize2 < 0.99) {
+    horizGapSize2 = 0.99;
+  }
+  vertGapSize2 = vertGapSize - splitGapSlack * avgFontSize / splitPrecision;
+  if (vertGapSize2 < 0.99) {
+    vertGapSize2 = 0.99;
+  }
+
+  //----- count horiz/vert gaps equivalent to largest gaps
+
+  minHorizChunkWidth = yMaxI - yMinI;
+  nHorizGaps = 0;
+  for (start = yMinI; start < yMaxI && !horizProfile[start - yMinI]; ++start) ;
+  prev = start - 1;
+  for (y = start; y < yMaxI; ++y) {
+    if (horizProfile[y - yMinI] && !horizProfile[y + 1 - yMinI]) {
+      start = y;
+    } else if (!horizProfile[y - yMinI] && horizProfile[y + 1 - yMinI]) {
+      if (y - start > horizGapSize2) {
+	++nHorizGaps;
+	if (start - prev < minHorizChunkWidth) {
+	  minHorizChunkWidth = start - prev;
+	}
+	prev = y;
+      }
+    }
+  }
+  minVertChunkWidth = xMaxI - xMinI;
+  nVertGaps = 0;
+  for (start = xMinI; start < xMaxI && !vertProfile[start - xMinI]; ++start) ;
+  prev = start - 1;
+  for (x = start; x < xMaxI; ++x) {
+    if (vertProfile[x - xMinI] && !vertProfile[x + 1 - xMinI]) {
+      start = x;
+    } else if (!vertProfile[x - xMinI] && vertProfile[x + 1 - xMinI]) {
+      if (x - start > vertGapSize2) {
+	++nVertGaps;
+	if (start - prev < minVertChunkWidth) {
+	  minVertChunkWidth = start - prev;
+	}
+	prev = x;
       }
     }
   }
 
-  //----- build the list of vertical gaps
+  //----- compute splitting parameters
 
-  for (start = xMinI; start < xMaxI && !vertProfile[start - xMinI]; ++start) ;
-  for (x = start; x < xMaxI; ++x) {
-    if (vertProfile[x - xMinI]) {
-      if (!vertProfile[x + 1 - xMinI]) {
+  // approximation of number of lines in block
+  if (fabs(avgFontSize) < 0.001) {
+    nLines = 1;
+  } else if (rot & 1) {
+    nLines = (xMax - xMin) / avgFontSize;
+  } else {
+    nLines = (yMax - yMin) / avgFontSize;
+  }
+
+  // compute the minimum allowed vertical gap size
+  // (this is a horizontal gap threshold for rot=1,3
+  if (control.mode == textOutTableLayout) {
+    vertGapThreshold = vertGapThresholdTableMax
+                       + vertGapThresholdTableSlope * nLines;
+    if (vertGapThreshold < vertGapThresholdTableMin) {
+      vertGapThreshold = vertGapThresholdTableMin;
+    }
+  } else {
+    vertGapThreshold = vertGapThresholdMax + vertGapThresholdSlope * nLines;
+    if (vertGapThreshold < vertGapThresholdMin) {
+      vertGapThreshold = vertGapThresholdMin;
+    }
+  }
+  vertGapThreshold = vertGapThreshold * avgFontSize / splitPrecision;
+
+  // compute the minimum allowed chunk width
+  if (control.mode == textOutTableLayout) {
+    minChunk = 0;
+  } else {
+    minChunk = vertSplitChunkThreshold * avgFontSize / splitPrecision;
+  }
+
+  // look for large chars
+  // -- this kludge (multiply by 256, convert to int, divide by 256.0)
+  //    prevents floating point stability issues on x86 with gcc, where
+  //    largeCharSize could otherwise have slightly different values
+  //    here and where it's used below to do the large char partition
+  //    (because it gets truncated from 80 to 64 bits when spilled)
+  largeCharSize = (int)(largeCharThreshold * avgFontSize * 256) / 256.0;
+  nLargeChars = 0;
+  for (i = 0; i < charsA->getLength(); ++i) {
+    ch = (TextChar *)charsA->get(i);
+    if (ch->fontSize > largeCharSize) {
+      ++nLargeChars;
+    }
+  }
+
+  // figure out which type of split to do
+  doHorizSplit = doVertSplit = gFalse;
+  smallSplit = gFalse;
+  if (rot & 1) {
+    if (nHorizGaps > 0 &&
+	(horizGapSize > vertGapSize || control.mode == textOutTableLayout) &&
+	horizGapSize > vertGapThreshold &&
+	minHorizChunkWidth > minChunk) {
+      doHorizSplit = gTrue;
+    } else if (nVertGaps > 0) {
+      doVertSplit = gTrue;
+    } else if (nLargeChars == 0 && nHorizGaps > 0) {
+      doHorizSplit = gTrue;
+      smallSplit = gTrue;
+    }
+  } else {
+    if (nVertGaps > 0 &&
+	(vertGapSize > horizGapSize || control.mode == textOutTableLayout) &&
+	vertGapSize > vertGapThreshold &&
+	minVertChunkWidth > minChunk) {
+      doVertSplit = gTrue;
+    } else if (nHorizGaps > 0) {
+      doHorizSplit = gTrue;
+    } else if (nLargeChars == 0 && nVertGaps > 0) {
+      doVertSplit = gTrue;
+      smallSplit = gTrue;
+    }
+  }
+
+  //----- split the block
+
+  //~ this could use "other content" (vector graphics, rotated text) --
+  //~ presence of other content in a gap means we should definitely split
+
+  // split vertically
+  if (doVertSplit) {
+    blk = new TextBlock(blkVertSplit, rot);
+    blk->smallSplit = smallSplit;
+    for (start = xMinI; start < xMaxI && !vertProfile[start - xMinI]; ++start) ;
+    prev = start - 1;
+    for (x = start; x < xMaxI; ++x) {
+      if (vertProfile[x - xMinI] && !vertProfile[x + 1 - xMinI]) {
 	start = x;
+      } else if (!vertProfile[x - xMinI] && vertProfile[x + 1 - xMinI]) {
+	if (x - start > vertGapSize2) {
+	  chars2 = getChars(charsA, (prev + 0.5) * splitPrecision, yMin - 1,
+			    (start + 1.5) * splitPrecision, yMax + 1);
+	  blk->addChild(split(chars2, rot));
+	  delete chars2;
+	  prev = x;
+	}
       }
-    } else {
-      if (vertProfile[x + 1 - xMinI]) {
-	w = (x - start) * splitPrecision;
-	vertGaps->append(new TextGap((start + 1) * splitPrecision + 0.5 * w,
-				     w));
+    }
+    chars2 = getChars(charsA, (prev + 0.5) * splitPrecision, yMin - 1,
+		      xMax + 1, yMax + 1);
+    blk->addChild(split(chars2, rot));
+    delete chars2;
+
+  // split horizontally
+  } else if (doHorizSplit) {
+    blk = new TextBlock(blkHorizSplit, rot);
+    blk->smallSplit = smallSplit;
+    for (start = yMinI;
+	 start < yMaxI && !horizProfile[start - yMinI];
+	 ++start) ;
+    prev = start - 1;
+    for (y = start; y < yMaxI; ++y) {
+      if (horizProfile[y - yMinI] && !horizProfile[y + 1 - yMinI]) {
+	start = y;
+      } else if (!horizProfile[y - yMinI] && horizProfile[y + 1 - yMinI]) {
+	if (y - start > horizGapSize2) {
+	  chars2 = getChars(charsA, xMin - 1, (prev + 0.5) * splitPrecision,
+			    xMax + 1, (start + 1.5) * splitPrecision);
+	  blk->addChild(split(chars2, rot));
+	  delete chars2;
+	  prev = y;
+	}
       }
+    }
+    chars2 = getChars(charsA, xMin - 1, (prev + 0.5) * splitPrecision,
+		      xMax + 1, yMax + 1);
+    blk->addChild(split(chars2, rot));
+    delete chars2;
+
+  // split into larger and smaller chars
+  } else if (nLargeChars > 0) {
+    chars2 = new GList();
+    chars3 = new GList();
+    for (i = 0; i < charsA->getLength(); ++i) {
+      ch = (TextChar *)charsA->get(i);
+      if (ch->fontSize > largeCharSize) {
+	chars2->append(ch);
+      } else {
+	chars3->append(ch);
+      }
+    }
+    blk = split(chars3, rot);
+    insertLargeChars(chars2, blk);
+    delete chars2;
+    delete chars3;
+
+  // create a leaf node
+  } else {
+    blk = new TextBlock(blkLeaf, rot);
+    for (i = 0; i < charsA->getLength(); ++i) {
+      blk->addChild((TextChar *)charsA->get(i));
     }
   }
 
   gfree(horizProfile);
   gfree(vertProfile);
+
+  tagBlock(blk);
+
+  return blk;
+}
+
+// Return the subset of chars inside a rectangle.
+GList *TextPage::getChars(GList *charsA, double xMin, double yMin,
+			  double xMax, double yMax) {
+  GList *ret;
+  TextChar *ch;
+  double x, y;
+  int i;
+
+  ret = new GList();
+  for (i = 0; i < charsA->getLength(); ++i) {
+    ch = (TextChar *)charsA->get(i);
+    // because of {ascent,descent}AdjustFactor, the y coords (or x
+    // coords for rot 1,3) for the gaps will be a little bit tight --
+    // so we use the center of the character here
+    x = 0.5 * (ch->xMin + ch->xMax);
+    y = 0.5 * (ch->yMin + ch->yMax);
+    if (x > xMin && x < xMax && y > yMin && y < yMax) {
+      ret->append(ch);
+    }
+  }
+  return ret;
 }
 
 // Decide whether this block is a line, column, or multiple columns:
@@ -3118,11 +2798,6 @@ void TextPage::findGaps(GList *charsA, int rot,
 // - all leaf nodes are lines
 // - vert split nodes, with small gaps, whose children are lines are lines
 // - everything else is multiple columns
-// In simple layout mode:
-// - all leaf nodes are lines
-// - vert split nodes with small gaps are lines
-// - vert split nodes with large gaps are super-lines
-// - horiz split nodes are columns
 void TextPage::tagBlock(TextBlock *blk) {
   TextBlock *child;
   int i;
@@ -3142,17 +2817,6 @@ void TextPage::tagBlock(TextBlock *blk) {
       }
     } else {
       blk->tag = blkTagMulticolumn;
-    }
-    return;
-  }
-
-  if (control.mode == textOutSimpleLayout) {
-    if (blk->type == blkLeaf) {
-      blk->tag = blkTagLine;
-    } else if (blk->type == ((blk->rot & 1) ? blkHorizSplit : blkVertSplit)) {
-      blk->tag = blk->smallSplit ? blkTagLine : blkTagSuperLine;
-    } else {
-      blk->tag = blkTagColumn;
     }
     return;
   }
@@ -3191,22 +2855,32 @@ void TextPage::tagBlock(TextBlock *blk) {
 void TextPage::insertLargeChars(GList *largeChars, TextBlock *blk) {
   TextChar *ch, *ch2;
   GBool singleLine;
-  double minOverlap;
+  double xLimit, yLimit, minOverlap;
   int i;
 
   //~ this currently works only for characters in the primary rotation
 
-  // check to see if the large chars are a single line
+  // check to see if the large chars are a single line, in the
+  // upper-left corner of blk (this is just a rough estimate)
+  xLimit = blk->xMin + 0.5 * (blk->xMin + blk->xMax);
+  yLimit = blk->yMin + 0.5 * (blk->yMin + blk->yMax);
   singleLine = gTrue;
-  for (i = 1; i < largeChars->getLength(); ++i) {
-    ch = (TextChar *)largeChars->get(i-1);
+  // note: largeChars are already sorted by x
+  for (i = 0; i < largeChars->getLength(); ++i) {
     ch2 = (TextChar *)largeChars->get(i);
-    minOverlap = 0.5 * (ch->fontSize < ch2->fontSize ? ch->fontSize
-			                             : ch2->fontSize);
-    if (ch->yMax - ch2->yMin < minOverlap ||
-	ch2->yMax - ch->yMin < minOverlap) {
+    if (ch2->xMax > xLimit || ch2->yMax > yLimit) {
       singleLine = gFalse;
       break;
+    }
+    if (i > 0) {
+      ch = (TextChar *)largeChars->get(i-1);
+      minOverlap = 0.5 * (ch->fontSize < ch2->fontSize ? ch->fontSize
+			                               : ch2->fontSize);
+      if (ch->yMax - ch2->yMin < minOverlap ||
+	  ch2->yMax - ch->yMin < minOverlap) {
+	singleLine = gFalse;
+	break;
+      }
     }
   }
 
@@ -3369,7 +3043,7 @@ void TextPage::insertClippedChars(GList *clippedChars, TextBlock *tree) {
     if (!(leaf = findClippedCharLeaf(ch, tree))) {
       continue;
     }
-    leaf->addChild(ch, gFalse);
+    leaf->addChild(ch);
     i = 0;
     while (i < clippedChars->getLength()) {
       ch2 = (TextChar *)clippedChars->get(i);
@@ -3379,7 +3053,7 @@ void TextPage::insertClippedChars(GList *clippedChars, TextBlock *tree) {
       y = 0.5 * (ch2->yMin + ch2->yMax);
       if (y > leaf->yMin && y < leaf->yMax) {
 	ch2 = (TextChar *)clippedChars->del(i);
-	leaf->addChild(ch2, gFalse);
+	leaf->addChild(ch2);
 	ch = ch2;
       } else {
 	++i;
@@ -3417,39 +3091,28 @@ TextBlock *TextPage::findClippedCharLeaf(TextChar *ch, TextBlock *tree) {
 }
 
 // Convert the tree of TextBlocks into a list of TextColumns.
-GList *TextPage::buildColumns(TextBlock *tree, GBool primaryLR) {
+GList *TextPage::buildColumns(TextBlock *tree) {
   GList *columns;
 
   columns = new GList();
-  buildColumns2(tree, columns, primaryLR);
+  buildColumns2(tree, columns);
   return columns;
 }
 
-void TextPage::buildColumns2(TextBlock *blk, GList *columns, GBool primaryLR) {
+void TextPage::buildColumns2(TextBlock *blk, GList *columns) {
   TextColumn *col;
   int i;
 
   switch (blk->tag) {
-  case blkTagSuperLine: // should never happen
   case blkTagLine:
   case blkTagColumn:
     col = buildColumn(blk);
     columns->append(col);
     break;
   case blkTagMulticolumn:
-#if 0 //~tmp
-    if (!primaryLR && blk->type == blkVertSplit) {
-      for (i = blk->children->getLength() - 1; i >= 0; --i) {
-	buildColumns2((TextBlock *)blk->children->get(i), columns, primaryLR);
-      }
-    } else {
-#endif
-      for (i = 0; i < blk->children->getLength(); ++i) {
-	buildColumns2((TextBlock *)blk->children->get(i), columns, primaryLR);
-      }
-#if 0 //~tmp
+    for (i = 0; i < blk->children->getLength(); ++i) {
+      buildColumns2((TextBlock *)blk->children->get(i), columns);
     }
-#endif
     break;
   }
 }
@@ -3458,7 +3121,6 @@ TextColumn *TextPage::buildColumn(TextBlock *blk) {
   GList *lines, *parLines;
   GList *paragraphs;
   TextLine *line0, *line1;
-  GBool dropCap;
   double spaceThresh, indent0, indent1, fontSize0, fontSize1;
   int i;
 
@@ -3470,9 +3132,6 @@ TextColumn *TextPage::buildColumn(TextBlock *blk) {
   //~ could look for bulleted lists here: look for the case where
   //~   all out-dented lines start with the same char
 
-  //~ this doesn't handle right-to-left scripts (need to look for indents
-  //~   on the right instead of left, etc.)
-
   // build the paragraphs
   paragraphs = new GList();
   i = 0;
@@ -3480,7 +3139,6 @@ TextColumn *TextPage::buildColumn(TextBlock *blk) {
 
     // get the first line of the paragraph
     parLines = new GList();
-    dropCap = gFalse;
     line0 = (TextLine *)lines->get(i);
     parLines->append(line0);
     ++i;
@@ -3519,7 +3177,6 @@ TextColumn *TextPage::buildColumn(TextBlock *blk) {
       } else if (fontSize0 > largeCharThreshold * fontSize1 &&
 		 indent1 - indent0 > minParagraphIndent * fontSize1 &&
 		 getLineSpacing(line0, line1) < 0) {
-	dropCap = gTrue;
 	parLines->append(line1);
 	fontSize0 = fontSize1;
 	for (++i; i < lines->getLength(); ++i) {
@@ -3575,7 +3232,7 @@ TextColumn *TextPage::buildColumn(TextBlock *blk) {
       }
     }
 
-    paragraphs->append(new TextParagraph(parLines, dropCap));
+    paragraphs->append(new TextParagraph(parLines));
   }
 
   delete lines;
@@ -3645,7 +3302,6 @@ void TextPage::buildLines(TextBlock *blk, GList *lines) {
       lines->append(line);
     }
     break;
-  case blkTagSuperLine:
   case blkTagColumn:
   case blkTagMulticolumn: // multicolumn should never happen here
     for (i = 0; i < blk->children->getLength(); ++i) {
@@ -3661,8 +3317,7 @@ TextLine *TextPage::buildLine(TextBlock *blk) {
   TextChar *ch, *ch2;
   TextWord *word;
   double wordSp, lineFontSize, sp;
-  int dir, dir2;
-  GBool spaceAfter, spaceBefore;
+  GBool spaceAfter, spaceAfter2;
   int i, j;
 
   charsA = new GList();
@@ -3672,42 +3327,27 @@ TextLine *TextPage::buildLine(TextBlock *blk) {
 
   words = new GList();
   lineFontSize = 0;
-  spaceBefore = gFalse;
+  spaceAfter = gFalse;
   i = 0;
   while (i < charsA->getLength()) {
     sp = wordSp - 1;
-    spaceAfter = gFalse;
-    dir = getCharDirection((TextChar *)charsA->get(i));
     for (j = i+1; j < charsA->getLength(); ++j) {
       ch = (TextChar *)charsA->get(j-1);
       ch2 = (TextChar *)charsA->get(j);
       sp = (blk->rot & 1) ? (ch2->yMin - ch->yMax) : (ch2->xMin - ch->xMax);
-      if (sp > wordSp) {
-	spaceAfter = gTrue;
-	break;
-      }
-      // look for significant overlaps, which can happen with clipped
-      // characters (among other things)
-      if (sp < -ch->fontSize) {
-	spaceAfter = gTrue;
-	break;
-      }
-      dir2 = getCharDirection(ch2);
-      if (ch->font != ch2->font ||
+      if (sp > wordSp ||
+	  ch->font != ch2->font ||
 	  fabs(ch->fontSize - ch2->fontSize) > 0.01 ||
-	  (dir && dir2 && dir2 != dir) ||
 	  (control.mode == textOutRawOrder &&
 	   ch2->charPos != ch->charPos + ch->charLen)) {
 	break;
       }
-      if (!dir && dir2) {
-	dir = dir2;
-      }
       sp = wordSp - 1;
     }
-    word = new TextWord(charsA, i, j - i, blk->rot, dir,
-			(blk->rot >= 2) ? spaceBefore : spaceAfter);
-    spaceBefore = spaceAfter;
+    spaceAfter2 = spaceAfter;
+    spaceAfter = sp > wordSp;
+    word = new TextWord(charsA, i, j - i, blk->rot,
+			(blk->rot >= 2) ? spaceAfter2 : spaceAfter);
     i = j;
     if (blk->rot >= 2) {
       words->insert(0, word);
@@ -3742,96 +3382,47 @@ void TextPage::getLineChars(TextBlock *blk, GList *charsA) {
 // spaces.
 double TextPage::computeWordSpacingThreshold(GList *charsA, int rot) {
   TextChar *ch, *ch2;
-  double avgFontSize;
-  double minAdjGap, maxAdjGap, minSpGap, maxSpGap, minGap, maxGap, gap, gap2;
+  double avgFontSize, minSp, maxSp, sp;
   int i;
 
   avgFontSize = 0;
-  minGap = maxGap = 0;
-  minAdjGap = minSpGap = 1;
-  maxAdjGap = maxSpGap = 0;
+  minSp = maxSp = 0;
   for (i = 0; i < charsA->getLength(); ++i) {
     ch = (TextChar *)charsA->get(i);
     avgFontSize += ch->fontSize;
     if (i < charsA->getLength() - 1) {
       ch2 = (TextChar *)charsA->get(i+1);
-      gap = (rot & 1) ? (ch2->yMin - ch->yMax) : (ch2->xMin - ch->xMax);
-      if (ch->spaceAfter) {
-	if (minSpGap > maxSpGap) {
-	  minSpGap = maxSpGap = gap;
-	} else if (gap < minSpGap) {
-	  minSpGap = gap;
-	} else if (gap > maxSpGap) {
-	  maxSpGap = gap;
-	}
-      } else {
-	if (minAdjGap > maxAdjGap) {
-	  minAdjGap = maxAdjGap = gap;
-	} else if (gap < minAdjGap) {
-	  minAdjGap = gap;
-	} else if (gap > maxAdjGap) {
-	  maxAdjGap = gap;
-	}
+      sp = (rot & 1) ? (ch2->yMin - ch->yMax) : (ch2->xMin - ch->xMax);
+      if (i == 0 || sp < minSp) {
+	minSp = sp;
       }
-      if (i == 0 || gap < minGap) {
-	minGap = gap;
-      }
-      if (gap > maxGap) {
-	maxGap = gap;
+      if (sp > maxSp) {
+	maxSp = sp;
       }
     }
   }
   avgFontSize /= charsA->getLength();
-  if (minGap < 0) {
-    minGap = 0;
+  if (minSp < 0) {
+    minSp = 0;
   }
 
-  // if spacing is nearly uniform (minGap is close to maxGap), use the
-  // SpGap/AdjGap values if available, otherwise assume it's a single
-  // word (technically it could be either "ABC" or "A B C", but it's
+  // if spacing is completely uniform, assume it's a single word
+  // (technically it could be either "ABC" or "A B C", but it's
   // essentially impossible to tell)
-  if (maxGap - minGap < uniformSpacing * avgFontSize) {
-    if (minAdjGap <= maxAdjGap &&
-	minSpGap <= maxSpGap &&
-	minSpGap - maxAdjGap > 0.01) {
-      return 0.5 * (maxAdjGap + minSpGap);
-    } else {
-      return maxGap + 1;
-    }
+  if (maxSp - minSp < uniformSpacing * avgFontSize) {
+    return maxSp + 1;
 
   // if there is some variation in spacing, but it's small, assume
   // there are some inter-word spaces
-  } else if (maxGap - minGap < wordSpacing * avgFontSize) {
-    return 0.5 * (minGap + maxGap);
+  } else if (maxSp - minSp < wordSpacing * avgFontSize) {
+    return 0.5 * (minSp + maxSp);
 
-  // if there is a large variation in spacing, use the SpGap/AdjGap
-  // values if they look reasonable, otherwise, assume a reasonable
-  // threshold for inter-word spacing (we can't use something like
-  // 0.5*(minGap+maxGap) here because there can be outliers at the
-  // high end)
+  // otherwise, assume a reasonable threshold for inter-word spacing
+  // (we can't use something like 0.5*(minSp+maxSp) here because there
+  // can be outliers at the high end)
   } else {
-    if (minAdjGap <= maxAdjGap &&
-	minSpGap <= maxSpGap &&
-	minSpGap - maxAdjGap > uniformSpacing * avgFontSize) {
-      gap = wordSpacing * avgFontSize;
-      gap2 = 0.5 * (minSpGap - minGap);
-      return minGap + (gap < gap2 ? gap : gap2);
-    } else {
-      return minGap + wordSpacing * avgFontSize;
-    }
+    return minSp + wordSpacing * avgFontSize;
   }
-}
-
-// Check the characters direction: returns 1 for L or Num; -1 for R; 0
-// for others.
-int TextPage::getCharDirection(TextChar *ch) {
-  if (unicodeTypeL(ch->c) || unicodeTypeNum(ch->c)) {
-    return 1;
-  }
-  if (unicodeTypeR(ch->c)) {
-    return -1;
-  }
-  return 0;
 }
 
 int TextPage::assignPhysLayoutPositions(GList *columns) {
@@ -3976,66 +3567,6 @@ int TextPage::assignColumnPhysPositions(GList *columns) {
   return ph;
 }
 
-void TextPage::buildSuperLines(TextBlock *blk, GList *superLines) {
-  GList *lines;
-  int i;
-
-  if (blk->tag == blkTagLine) {
-    lines = new GList();
-    buildLines(blk, lines);
-    superLines->append(new TextSuperLine(lines));
-  } else if (blk->tag == blkTagSuperLine) {
-    lines = new GList();
-    for (i = 0; i < blk->children->getLength(); ++i) {
-      buildLines((TextBlock *)blk->children->get(i), lines);
-    }
-    superLines->append(new TextSuperLine(lines));
-  } else {
-    for (i = 0; i < blk->children->getLength(); ++i) {
-      buildSuperLines((TextBlock *)blk->children->get(i), superLines);
-    }
-  }
-}
-
-void TextPage::assignSimpleLayoutPositions(GList *superLines,
-					   UnicodeMap *uMap) {
-  GList *lines;
-  TextLine *line0, *line1;
-  double xMin;
-  int px, sp, i, j;
-
-  // build a list of lines and sort by x
-  lines = new GList();
-  for (i = 0; i < superLines->getLength(); ++i) {
-    lines->append(((TextSuperLine *)superLines->get(i))->lines);
-  }
-  lines->sort(&TextLine::cmpX);
-
-  // assign positions
-  xMin = ((TextLine *)lines->get(0))->xMin;
-  for (i = 0; i < lines->getLength(); ++i) {
-    line0 = (TextLine *)lines->get(i);
-    computeLinePhysWidth(line0, uMap);
-    line0->px = (int)((line0->xMin - xMin) / (0.5 * line0->fontSize));
-    for (j = 0; j < i; ++j) {
-      line1 = (TextLine *)lines->get(j);
-      if (line0->xMin > line1->xMax) {
-	sp = (int)((line0->xMin - line1->xMax) /
-		   (0.5 * line0->fontSize) + 0.5);
-	if (sp < 1) {
-	  sp = 1;
-	}
-	px = line1->px + line1->pw + sp;
-	if (px > line0->px) {
-	  line0->px = px;
-	}
-      }
-    }
-  }
-
-  delete lines;
-}
-
 void TextPage::generateUnderlinesAndLinks(GList *columns) {
   TextColumn *col;
   TextParagraph *par;
@@ -4108,6 +3639,7 @@ GBool TextPage::findText(Unicode *s, int len,
 			 GBool wholeWord,
 			 double *xMin, double *yMin,
 			 double *xMax, double *yMax) {
+  TextBlock *tree;
   TextColumn *column;
   TextParagraph *par;
   TextLine *line;
@@ -4117,12 +3649,22 @@ GBool TextPage::findText(Unicode *s, int len,
   double xMin0, yMin0, xMax0, yMax0;
   double xMin1, yMin1, xMax1, yMax1;
   GBool found;
-  int txtSize, m, colIdx, parIdx, lineIdx, i, j, k;
+  int txtSize, m, rot, colIdx, parIdx, lineIdx, i, j, k;
 
   //~ need to handle right-to-left text
-  //~ - pass primaryLR to buildColumns
 
-  buildFindCols();
+  if (!findCols) {
+    rot = rotateChars(chars);
+    if ((tree = splitChars(chars))) {
+      findCols = buildColumns(tree);
+      delete tree;
+    } else {
+      // no text
+      findCols = new GList();
+    }
+    unrotateChars(chars, rot);
+    unrotateColumns(findCols, rot);
+  }
 
   // convert the search string to uppercase
   if (!caseSensitive) {
@@ -4328,7 +3870,7 @@ GBool TextPage::findText(Unicode *s, int len,
 }
 
 GString *TextPage::getText(double xMin, double yMin,
-			   double xMax, double yMax, GBool forceEOL) {
+			   double xMax, double yMax) {
   UnicodeMap *uMap;
   char space[8], eol[16];
   int spaceLen, eolLen;
@@ -4391,7 +3933,7 @@ GString *TextPage::getText(double xMin, double yMin,
 #if 0 //~debug
   dumpTree(tree);
 #endif
-  columns = buildColumns(tree, primaryLR);
+  columns = buildColumns(tree);
   delete tree;
   ph = assignPhysLayoutPositions(columns);
 #if 0 //~debug
@@ -4442,7 +3984,7 @@ GString *TextPage::getText(double xMin, double yMin,
       ret->append(out[i]);
       delete out[i];
     }
-    if (ph > 1 || forceEOL) {
+    if (ph > 1) {
       ret->append(eol, eolLen);
     }
   }
@@ -4497,216 +4039,6 @@ GBool TextPage::findCharRange(int pos, int length,
   return gTrue;
 }
 
-GBool TextPage::findPointInside(double x, double y, TextPosition *pos) {
-  TextColumn *col;
-  int colIdx;
-
-  buildFindCols();
-
-  //~ this doesn't handle RtL, vertical, or rotated text
-  //~ this doesn't handle drop caps
-
-  for (colIdx = 0; colIdx < findCols->getLength(); ++colIdx) {
-    col = (TextColumn *)findCols->get(colIdx);
-    if (col->getRotation() != 0) {
-      continue;
-    }
-    if (x >= col->getXMin() && x <= col->getXMax() &&
-	y >= col->getYMin() && y <= col->getYMax()) {
-      pos->colIdx = colIdx;
-      findPointInColumn(col, x, y, pos);
-      return gTrue;
-    }
-  }
-  return gFalse;
-}
-
-GBool TextPage::findPointNear(double x, double y, TextPosition *pos) {
-  TextColumn *col;
-  double nearestDist, dx, dy;
-  int nearestColIdx, colIdx;
-
-  buildFindCols();
-
-  //~ this doesn't handle RtL, vertical, or rotated text
-  //~ this doesn't handle drop caps
-
-  nearestColIdx = -1;
-  nearestDist = 0;
-  for (colIdx = 0; colIdx < findCols->getLength(); ++colIdx) {
-    col = (TextColumn *)findCols->get(colIdx);
-    if (col->getRotation() != 0) {
-      continue;
-    }
-    if (x < col->getXMin()) {
-      dx = col->getXMin() - x;
-    } else if (x > col->getXMax()) {
-      dx = x - col->getXMax();
-    } else {
-      dx = 0;
-    }
-    if (y < col->getYMin()) {
-      dy = col->getYMin() - y;
-    } else if (y > col->getYMax()) {
-      dy = y - col->getYMax();
-    } else {
-      dy = 0;
-    }
-    if (nearestColIdx < 0 || dx + dy < nearestDist) {
-      nearestColIdx = colIdx;
-      nearestDist = dx + dy;
-    }
-  }
-  if (nearestColIdx < 0) {
-    return gFalse;
-  }
-  pos->colIdx = nearestColIdx;
-  col = (TextColumn *)findCols->get(nearestColIdx);
-  findPointInColumn(col, x, y, pos);
-  return gTrue;
-}
-
-// Find the position in [col] corresponding to [x],[y].  The column,
-// [col], was found by findPointInside() or findPointNear().
-void TextPage::findPointInColumn(TextColumn *col, double x, double y,
-				 TextPosition *pos) {
-   TextParagraph *par;
-   TextLine *line;
-   GList *pars, *lines;
-   int parIdx, lineIdx, charIdx;
- 
-   //~ this doesn't handle RtL, vertical, or rotated text
-   //~ this doesn't handle drop caps
- 
-   pars = col->getParagraphs();
-   //~ could use a binary search here
-   for (parIdx = 0; parIdx < pars->getLength() - 1; ++parIdx) {
-     par = (TextParagraph *)pars->get(parIdx);
-     if (y <= par->getYMax()) {
-       break;
-     }
-   }
-   par = (TextParagraph *)pars->get(parIdx);
-
-   lines = par->getLines();
-   //~ could use a binary search here
-   for (lineIdx = 0; lineIdx < lines->getLength() - 1; ++lineIdx) {
-     line = (TextLine *)lines->get(lineIdx);
-     if (y <= line->getYMax()) {
-       break;
-     }
-   }
-   line = (TextLine *)lines->get(lineIdx);
-
-   //~ could use a binary search here
-   for (charIdx = 0; charIdx < line->getLength(); ++charIdx) {
-     if (x <= 0.5 * (line->getEdge(charIdx) + line->getEdge(charIdx + 1))) {
-       break;
-     }
-   }
-
-   pos->parIdx = parIdx;
-   pos->lineIdx = lineIdx;
-   pos->charIdx = charIdx;
-}
-
-void TextPage::convertPosToPointUpper(TextPosition *pos,
-				      double *x, double *y) {
-  TextColumn *col;
-  TextParagraph *par;
-  TextLine *line;
-
-  buildFindCols();
-  col = (TextColumn *)findCols->get(pos->colIdx);
-  par = (TextParagraph *)col->getParagraphs()->get(pos->parIdx);
-  line = (TextLine *)par->getLines()->get(pos->lineIdx);
-  *x = line->getEdge(pos->charIdx);
-  *y = line->getBaseline() - selectionAscent * line->fontSize;
-}
-
-void TextPage::convertPosToPointLower(TextPosition *pos,
-				      double *x, double *y) {
-  TextColumn *col;
-  TextParagraph *par;
-  TextLine *line;
-
-  buildFindCols();
-  col = (TextColumn *)findCols->get(pos->colIdx);
-  par = (TextParagraph *)col->getParagraphs()->get(pos->parIdx);
-  line = (TextLine *)par->getLines()->get(pos->lineIdx);
-  *x = line->getEdge(pos->charIdx);
-  *y = line->getYMax();
-}
-
-void TextPage::convertPosToPointLeftEdge(TextPosition *pos,
-					 double *x, double *y) {
-  TextColumn *col;
-  TextParagraph *par;
-  TextLine *line;
-
-  buildFindCols();
-  col = (TextColumn *)findCols->get(pos->colIdx);
-  par = (TextParagraph *)col->getParagraphs()->get(pos->parIdx);
-  line = (TextLine *)par->getLines()->get(pos->lineIdx);
-  *x = col->getXMin();
-  *y = line->getBaseline() - selectionAscent * line->fontSize;
-}
-
-void TextPage::convertPosToPointRightEdge(TextPosition *pos,
-					  double *x, double *y) {
-  TextColumn *col;
-  TextParagraph *par;
-  TextLine *line;
-
-  buildFindCols();
-  col = (TextColumn *)findCols->get(pos->colIdx);
-  par = (TextParagraph *)col->getParagraphs()->get(pos->parIdx);
-  line = (TextLine *)par->getLines()->get(pos->lineIdx);
-  *x = col->getXMax();
-  *y = line->getYMax();
-}
-
-void TextPage::getColumnUpperRight(int colIdx, double *x, double *y) {
-  TextColumn *col;
-  TextParagraph *par0;
-  TextLine *line0;
-
-  buildFindCols();
-  col = (TextColumn *)findCols->get(colIdx);
-  *x = col->getXMax();
-  par0 = (TextParagraph *)col->paragraphs->get(0);
-  line0 = (TextLine *)par0->lines->get(0);
-  *y = line0->getBaseline() - selectionAscent * line0->fontSize;
-}
-
-void TextPage::getColumnLowerLeft(int colIdx, double *x, double *y) {
-  TextColumn *col;
-
-  buildFindCols();
-  col = (TextColumn *)findCols->get(colIdx);
-  *x = col->getXMin();
-  *y = col->getYMax();
-}
-
-void TextPage::buildFindCols() {
-  TextBlock *tree;
-  int rot;
-
-  if (findCols) {
-    return;
-  }
-  rot = rotateChars(chars);
-  if ((tree = splitChars(chars))) {
-    findCols = buildColumns(tree, gFalse);
-    delete tree;
-  } else {
-    // no text
-    findCols = new GList();
-  }
-  unrotateChars(chars, rot);
-  unrotateColumns(findCols, rot);
-}
-
 TextWordList *TextPage::makeWordList() {
   TextBlock *tree;
   GList *columns;
@@ -4715,21 +4047,16 @@ TextWordList *TextPage::makeWordList() {
   TextLine *line;
   TextWord *word;
   GList *words;
-  GBool primaryLR;
   int rot, colIdx, parIdx, lineIdx, wordIdx;
 
   rot = rotateChars(chars);
-  primaryLR = checkPrimaryLR(chars);
   tree = splitChars(chars);
   if (!tree) {
     // no text
     unrotateChars(chars, rot);
-    return new TextWordList(new GList(), gTrue);
+    return new TextWordList(new GList());
   }
-  columns = buildColumns(tree, primaryLR);
-#if 0 //~debug
-  dumpColumns(columns, gTrue);
-#endif
+  columns = buildColumns(tree);
   delete tree;
   unrotateChars(chars, rot);
   if (control.html) {
@@ -4757,7 +4084,6 @@ TextWordList *TextPage::makeWordList() {
     // already in reading order
     break;
   case textOutPhysLayout:
-  case textOutSimpleLayout:
   case textOutTableLayout:
   case textOutLinePrinter:
     words->sort(&TextWord::cmpYX);
@@ -4768,15 +4094,12 @@ TextWordList *TextPage::makeWordList() {
   }
 
   // this has to be done after sorting with cmpYX
+  unrotateColumns(columns, rot);
   unrotateWords(words, rot);
 
   deleteGList(columns, TextColumn);
 
-  return new TextWordList(words, primaryLR);
-}
-
-GBool TextPage::primaryDirectionIsLR() {
-  return checkPrimaryLR(chars);
+  return new TextWordList(words);
 }
 
 //------------------------------------------------------------------------
@@ -4791,9 +4114,9 @@ void TextPage::dumpChars(GList *charsA) {
 
   for (i = 0; i < charsA->getLength(); ++i) {
     ch = (TextChar *)charsA->get(i);
-    printf("char: U+%04x '%c' xMin=%g yMin=%g xMax=%g yMax=%g fontSize=%g rot=%d charPos=%d charLen=%d\n",
+    printf("char: U+%04x '%c' xMin=%g yMin=%g xMax=%g yMax=%g fontSize=%g rot=%d\n",
 	   ch->c, ch->c & 0xff, ch->xMin, ch->yMin, ch->xMax, ch->yMax,
-	   ch->fontSize, ch->rot, ch->charPos, ch->charLen);
+	   ch->fontSize, ch->rot);
   }
 }
 
@@ -4824,12 +4147,11 @@ void TextPage::dumpTree(TextBlock *tree, int indent) {
   }
 }
 
-void TextPage::dumpColumns(GList *columns, GBool dumpWords) {
+void TextPage::dumpColumns(GList *columns) {
   TextColumn *col;
   TextParagraph *par;
   TextLine *line;
-  TextWord *word;
-  int colIdx, parIdx, lineIdx, wordIdx, i;
+  int colIdx, parIdx, lineIdx, i;
 
   for (colIdx = 0; colIdx < columns->getLength(); ++colIdx) {
     col = (TextColumn *)columns->get(colIdx);
@@ -4844,40 +4166,16 @@ void TextPage::dumpColumns(GList *columns, GBool dumpWords) {
 	printf("    line: xMin=%g yMin=%g xMax=%g yMax=%g px=%d pw=%d rot=%d\n",
 	       line->xMin, line->yMin, line->xMax, line->yMax,
 	       line->px, line->pw, line->rot);
-	if (dumpWords) {
-	  for (wordIdx = 0; wordIdx < line->words->getLength(); ++wordIdx) {
-	    word = (TextWord *)line->words->get(wordIdx);
-	    printf("      word: xMin=%g yMin=%g xMax=%g yMax=%g\n",
-		   word->xMin, word->yMin, word->xMax, word->yMax);
-	    printf("            ");
-	    for (i = 0; i < word->len; ++i) {
-	      printf("%c", word->text[i] & 0xff);
-	    }
-	    printf("\n");
-	  }
-	} else {
-	  printf("          ");
-	  for (i = 0; i < line->len; ++i) {
-	    printf("%c", line->text[i] & 0xff);
-	  }
-	  printf("\n");
+	printf("          ");
+	for (i = 0; i < line->len; ++i) {
+	  printf("%c", line->text[i] & 0xff);
 	}
+	printf("\n");
       }
     }
   }
 }
 
-void TextPage::dumpUnderlines() {
-  TextUnderline *u;
-  int i;
-
-  printf("underlines:\n");
-  for (i = 0; i < underlines->getLength(); ++i) {
-    u = (TextUnderline *)underlines->get(i);
-    printf("    horiz=%d x0=%g y0=%g x1=%g y1=%g\n",
-	   u->horiz, u->x0, u->y0, u->x1, u->y1);
-  }
-}
 #endif //~debug
 
 //------------------------------------------------------------------------
@@ -4917,7 +4215,6 @@ TextOutputDev::TextOutputDev(char *fileName, TextOutputControl *controlA,
 
   // set up text object
   text = new TextPage(&control);
-  generateBOM();
 }
 
 TextOutputDev::TextOutputDev(TextOutputFunc func, void *stream,
@@ -4927,7 +4224,6 @@ TextOutputDev::TextOutputDev(TextOutputFunc func, void *stream,
   needClose = gFalse;
   control = *controlA;
   text = new TextPage(&control);
-  generateBOM();
   ok = gTrue;
 }
 
@@ -4937,22 +4233,6 @@ TextOutputDev::~TextOutputDev() {
   }
   if (text) {
     delete text;
-  }
-}
-
-void TextOutputDev::generateBOM() {
-  UnicodeMap *uMap;
-  char bom[8];
-  int bomLen;
-
-  // insert Unicode BOM
-  if (control.insertBOM && outputStream) {
-    if (!(uMap = globalParams->getTextEncoding())) {
-      return;
-    }
-    bomLen = uMap->mapUnicode(0xfeff, bom, sizeof(bom));
-    uMap->decRefCnt();
-    (*outputFunc)(outputStream, bom, bomLen);
   }
 }
 
@@ -5002,7 +4282,7 @@ void TextOutputDev::endActualText(GfxState *state) {
 void TextOutputDev::stroke(GfxState *state) {
   GfxPath *path;
   GfxSubpath *subpath;
-  double x[2], y[2], t;
+  double x[2], y[2];
 
   if (!control.html) {
     return;
@@ -5020,12 +4300,6 @@ void TextOutputDev::stroke(GfxState *state) {
 
   // look for a vertical or horizontal line
   if (x[0] == x[1] || y[0] == y[1]) {
-    if (x[0] > x[1]) {
-      t = x[0];  x[0] = x[1];  x[1] = t;
-    }
-    if (y[0] > y[1]) {
-      t = y[0];  y[0] = y[1];  y[1] = t;
-    }
     text->addUnderline(x[0], y[0], x[1], y[1]);
   }
 }

@@ -13,8 +13,6 @@
 #endif
 
 #include <stddef.h>
-#include <string.h>
-#include "gmempp.h"
 #include "Object.h"
 #include "Array.h"
 #include "Dict.h"
@@ -154,11 +152,8 @@ Stream *Parser::makeStream(Object *dict, Guchar *fileKey,
 			   int objNum, int objGen, int recursion) {
   Object obj;
   BaseStream *baseStr;
-  Stream *str, *str2;
+  Stream *str;
   GFileOffset pos, endPos, length;
-  char endstreamBuf[8];
-  GBool foundEndstream;
-  int c, i;
 
   // get stream start position
   lexer->skipToNextLine();
@@ -189,51 +184,25 @@ Stream *Parser::makeStream(Object *dict, Guchar *fileKey,
   if (!lexer->getStream()) {
     return NULL;
   }
-  // copy the base stream (Lexer will free stream objects when it gets
-  // to end of stream -- which can happen in the shift() calls below)
-  baseStr = (BaseStream *)lexer->getStream()->getBaseStream()->copy();
-
-  // make new base stream
-  str = baseStr->makeSubStream(pos, gTrue, length, dict);
+  baseStr = lexer->getStream()->getBaseStream();
 
   // skip over stream data
   lexer->setPos(pos + length);
 
-  // check for 'endstream'
-  // NB: we never reuse the Parser object to parse objects after a
-  // stream, and we could (if the PDF file is damaged) be in the
-  // middle of binary data at this point, so we check the stream data
-  // directly for 'endstream', rather than calling shift() to parse
-  // objects
-  foundEndstream = gFalse;
-  if ((str2 = lexer->getStream())) {
-    // skip up to 100 whitespace chars
-    for (i = 0; i < 100; ++i) {
-      c = str2->getChar();
-      if (!Lexer::isSpace(c)) {
-	break;
-      }
-    }
-    if (c == 'e') {
-      if (str2->getBlock(endstreamBuf, 8) == 8 ||
-	  !memcmp(endstreamBuf, "ndstream", 8)) {
-	foundEndstream = gTrue;
-      }
-    }
-  }
-  if (!foundEndstream) {
+  // refill token buffers and check for 'endstream'
+  shift();  // kill '>>'
+  shift();  // kill 'stream'
+  if (buf1.isCmd("endstream")) {
+    shift();
+  } else {
     error(errSyntaxError, getPos(), "Missing 'endstream'");
     // kludge for broken PDF files: just add 5k to the length, and
-    // hope it's enough
-    // (dict is now owned by str, so we need to copy it before deleting str)
-    dict->copy(&obj);
-    delete str;
+    // hope its enough
     length += 5000;
-    str = baseStr->makeSubStream(pos, gTrue, length, &obj);
   }
 
-  // free the copied base stream
-  delete baseStr;
+  // make base stream
+  str = baseStr->makeSubStream(pos, gTrue, length, dict);
 
   // handle decryption
   if (fileKey) {

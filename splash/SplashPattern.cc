@@ -12,7 +12,6 @@
 #pragma implementation
 #endif
 
-#include "gmempp.h"
 #include "SplashMath.h"
 #include "SplashScreen.h"
 #include "SplashPattern.h"

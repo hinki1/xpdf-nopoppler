@@ -162,9 +162,6 @@ public:
   // Get contents.
   Object *getContents(Object *obj) { return contents.fetch(xref, obj); }
 
-  // Get the page's thumbnail image.
-  Object *getThumbnail(Object *obj) { return thumbnail.fetch(xref, obj); }
-
   // Display a page.
   void display(OutputDev *out, double hDPI, double vDPI,
 	       int rotate, GBool useMediaBox, GBool crop,
@@ -199,7 +196,6 @@ private:
   PageAttrs *attrs;		// page attributes
   Object annots;		// annotations array
   Object contents;		// page contents
-  Object thumbnail;		// reference to thumbnail image
   GBool ok;			// true if page is valid
 };
 

@@ -8,7 +8,7 @@
 
 #include <aconf.h>
 
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
 
 #ifdef USE_GCC_PRAGMAS
 #pragma implementation
@@ -19,7 +19,6 @@
 #  include <unistd.h>
 #endif
 #include "gmem.h"
-#include "gmempp.h"
 #include "GString.h"
 #include "gfile.h"
 #include "FoFiTrueType.h"
@@ -88,13 +87,13 @@ SplashFontFile *SplashFTFontEngine::loadType1Font(SplashFontFileID *idA,
 						  GBool deleteFile,
 #endif
 						  const char **enc) {
-  return SplashFTFontFile::loadType1Font(this, idA, splashFontType1,
+  return SplashFTFontFile::loadType1Font(this, idA,
 #if LOAD_FONTS_FROM_MEM
 					 fontBuf,
 #else
 					 fileName, deleteFile,
 #endif
-					 enc);
+					 enc, gTrue);
 }
 
 SplashFontFile *SplashFTFontEngine::loadType1CFont(SplashFontFileID *idA,
@@ -105,13 +104,13 @@ SplashFontFile *SplashFTFontEngine::loadType1CFont(SplashFontFileID *idA,
 						   GBool deleteFile,
 #endif
 						   const char **enc) {
-  return SplashFTFontFile::loadType1Font(this, idA, splashFontType1C,
+  return SplashFTFontFile::loadType1Font(this, idA,
 #if LOAD_FONTS_FROM_MEM
 					 fontBuf,
 #else
 					 fileName, deleteFile,
 #endif
-					 enc);
+					 enc, gFalse);
 }
 
 SplashFontFile *SplashFTFontEngine::loadOpenTypeT1CFont(SplashFontFileID *idA,
@@ -144,8 +143,8 @@ SplashFontFile *SplashFTFontEngine::loadOpenTypeT1CFont(SplashFontFileID *idA,
     fontBuf2 = new GString();
     ff->convertToType1(NULL, enc, gFalse, &gstringWrite, fontBuf2);
     delete ff;
-    ret = SplashFTFontFile::loadType1Font(this, idA, splashFontType1,
-					  fontBuf2, enc);
+    ret = SplashFTFontFile::loadType1Font(this, idA, fontBuf2, enc,
+					  gFalse);
     if (ret) {
       delete fontBuf;
     } else {
@@ -160,9 +159,8 @@ SplashFontFile *SplashFTFontEngine::loadOpenTypeT1CFont(SplashFontFileID *idA,
     ff->convertToType1(NULL, enc, gFalse, &fileWrite, tmpFile);
     delete ff;
     fclose(tmpFile);
-    ret = SplashFTFontFile::loadType1Font(this, idA, splashFontType1,
-					  tmpFileName->getCString(),
-					  gTrue, enc);
+    ret = SplashFTFontFile::loadType1Font(this, idA, tmpFileName->getCString(),
+					  gTrue, enc, gFalse);
     if (ret) {
       if (deleteFile) {
 	unlink(fileName);
@@ -174,36 +172,32 @@ SplashFontFile *SplashFTFontEngine::loadOpenTypeT1CFont(SplashFontFileID *idA,
 #endif
   } else {
     delete ff;
-    ret = SplashFTFontFile::loadType1Font(this, idA, splashFontOpenTypeT1C,
+    ret = SplashFTFontFile::loadType1Font(this, idA,
 #if LOAD_FONTS_FROM_MEM
 					  fontBuf,
 #else
 					  fileName, deleteFile,
 #endif
-					  enc);
+					  enc, gFalse);
   }
   return ret;
 }
 
 SplashFontFile *SplashFTFontEngine::loadCIDFont(SplashFontFileID *idA,
 #if LOAD_FONTS_FROM_MEM
-						GString *fontBuf,
+						GString *fontBuf
 #else
 						char *fileName,
-						GBool deleteFile,
+						GBool deleteFile
 #endif
-						int *codeToGID,
-						int codeToGIDLen) {
+						) {
   FoFiType1C *ff;
   int *cidToGIDMap;
   int nCIDs;
   SplashFontFile *ret;
 
   // check for a CFF font
-  if (codeToGID) {
-    cidToGIDMap = NULL;
-    nCIDs = 0;
-  } else if (useCIDs) {
+  if (useCIDs) {
     cidToGIDMap = NULL;
     nCIDs = 0;
 #if LOAD_FONTS_FROM_MEM
@@ -218,14 +212,13 @@ SplashFontFile *SplashFTFontEngine::loadCIDFont(SplashFontFileID *idA,
     cidToGIDMap = NULL;
     nCIDs = 0;
   }
-  ret = SplashFTFontFile::loadCIDFont(this, idA, splashFontCID,
+  ret = SplashFTFontFile::loadCIDFont(this, idA,
 #if LOAD_FONTS_FROM_MEM
 				      fontBuf,
 #else
 				      fileName, deleteFile,
 #endif
-				      codeToGID ? codeToGID : cidToGIDMap,
-				      codeToGID ? codeToGIDLen : nCIDs);
+				      cidToGIDMap, nCIDs);
   if (!ret) {
     gfree(cidToGIDMap);
   }
@@ -273,8 +266,8 @@ SplashFontFile *SplashFTFontEngine::loadOpenTypeCFFFont(SplashFontFileID *idA,
     if (!useCIDs) {
       cidToGIDMap = ff->getCIDToGIDMap(&nCIDs);
     }
-    ret = SplashFTFontFile::loadCIDFont(this, idA, splashFontOpenTypeCFF,
-					fontBuf2, cidToGIDMap, nCIDs);
+    ret = SplashFTFontFile::loadCIDFont(this, idA, fontBuf2,
+					cidToGIDMap, nCIDs);
     if (ret) {
       delete fontBuf;
     } else {
@@ -291,7 +284,7 @@ SplashFontFile *SplashFTFontEngine::loadOpenTypeCFFFont(SplashFontFileID *idA,
     if (!useCIDs) {
       cidToGIDMap = ff->getCIDToGIDMap(&nCIDs);
     }
-    ret = SplashFTFontFile::loadCIDFont(this, idA, splashFontOpenTypeCFF,
+    ret = SplashFTFontFile::loadCIDFont(this, idA,
 					tmpFileName->getCString(), gTrue,
 					cidToGIDMap, nCIDs);
     if (ret) {
@@ -307,7 +300,7 @@ SplashFontFile *SplashFTFontEngine::loadOpenTypeCFFFont(SplashFontFileID *idA,
     if (!codeToGID && !useCIDs && ff->isOpenTypeCFF()) {
       cidToGIDMap = ff->getCIDToGIDMap(&nCIDs);
     }
-    ret = SplashFTFontFile::loadCIDFont(this, idA, splashFontOpenTypeCFF,
+    ret = SplashFTFontFile::loadCIDFont(this, idA,
 #if LOAD_FONTS_FROM_MEM
 					fontBuf,
 #else
@@ -363,7 +356,7 @@ SplashFontFile *SplashFTFontEngine::loadTrueTypeFont(SplashFontFileID *idA,
   fclose(tmpFile);
 #endif
   delete ff;
-  ret = SplashFTFontFile::loadTrueTypeFont(this, idA, splashFontTrueType,
+  ret = SplashFTFontFile::loadTrueTypeFont(this, idA,
 #if LOAD_FONTS_FROM_MEM
 					   fontBuf2,
 #else
@@ -389,4 +382,4 @@ SplashFontFile *SplashFTFontEngine::loadTrueTypeFont(SplashFontFileID *idA,
   return ret;
 }
 
-#endif // HAVE_FREETYPE_H
+#endif // HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H

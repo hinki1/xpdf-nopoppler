@@ -21,7 +21,6 @@
 #include <math.h>
 #include <limits.h>
 #include "gmem.h"
-#include "gmempp.h"
 #include "GString.h"
 
 //------------------------------------------------------------------------
@@ -756,9 +755,8 @@ GString *GString::upperCase() {
   int i;
 
   for (i = 0; i < length; ++i) {
-    if (islower(s[i] & 0xff)) {
-      s[i] = toupper(s[i] & 0xff);
-    }
+    if (islower(s[i]))
+      s[i] = toupper(s[i]);
   }
   return this;
 }
@@ -767,9 +765,8 @@ GString *GString::lowerCase() {
   int i;
 
   for (i = 0; i < length; ++i) {
-    if (isupper(s[i] & 0xff)) {
-      s[i] = tolower(s[i] & 0xff);
-    }
+    if (isupper(s[i]))
+      s[i] = tolower(s[i]);
   }
   return this;
 }
@@ -781,7 +778,7 @@ int GString::cmp(GString *str) {
   n1 = length;
   n2 = str->length;
   for (i = 0, p1 = s, p2 = str->s; i < n1 && i < n2; ++i, ++p1, ++p2) {
-    x = (*p1 & 0xff) - (*p2 & 0xff);
+    x = *p1 - *p2;
     if (x != 0) {
       return x;
     }
@@ -798,7 +795,7 @@ int GString::cmpN(GString *str, int n) {
   for (i = 0, p1 = s, p2 = str->s;
        i < n1 && i < n2 && i < n;
        ++i, ++p1, ++p2) {
-    x = (*p1 & 0xff) - (*p2 & 0xff);
+    x = *p1 - *p2;
     if (x != 0) {
       return x;
     }
@@ -815,7 +812,7 @@ int GString::cmp(const char *sA) {
 
   n1 = length;
   for (i = 0, p1 = s, p2 = sA; i < n1 && *p2; ++i, ++p1, ++p2) {
-    x = (*p1 & 0xff) - (*p2 & 0xff);
+    x = *p1 - *p2;
     if (x != 0) {
       return x;
     }
@@ -835,7 +832,7 @@ int GString::cmpN(const char *sA, int n) {
 
   n1 = length;
   for (i = 0, p1 = s, p2 = sA; i < n1 && *p2 && i < n; ++i, ++p1, ++p2) {
-    x = (*p1 & 0xff) - (*p2 & 0xff);
+    x = *p1 - *p2;
     if (x != 0) {
       return x;
     }

@@ -12,7 +12,6 @@
 #pragma implementation
 #endif
 
-#include "gmempp.h"
 #include "Object.h"
 #include "Stream.h"
 #include "JArithmeticDecoder.h"

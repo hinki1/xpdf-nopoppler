@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <limits.h>
 #include "gmem.h"
-#include "gmempp.h"
 #include "SplashErrorCodes.h"
 #include "SplashBitmap.h"
 
@@ -155,18 +154,7 @@ SplashError SplashBitmap::writePNMFile(FILE *f) {
 
 #if SPLASH_CMYK
   case splashModeCMYK8:
-    fprintf(f, "P7\n");
-    fprintf(f, "WIDTH %d\n", width);
-    fprintf(f, "HEIGHT %d\n", height);
-    fprintf(f, "DEPTH 4\n");
-    fprintf(f, "MAXVAL 255\n");
-    fprintf(f, "TUPLTYPE CMYK\n");
-    fprintf(f, "ENDHDR\n");
-    row = data;
-    for (y = 0; y < height; ++y) {
-      fwrite(row, 1, 4 * width, f);
-      row += rowSize;
-    }
+    // PNM doesn't support CMYK
     break;
 #endif
 

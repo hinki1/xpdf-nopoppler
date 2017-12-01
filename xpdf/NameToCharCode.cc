@@ -14,7 +14,6 @@
 
 #include <string.h>
 #include "gmem.h"
-#include "gmempp.h"
 #include "NameToCharCode.h"
 
 //------------------------------------------------------------------------

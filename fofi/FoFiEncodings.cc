@@ -13,7 +13,6 @@
 #endif
 
 #include <stdlib.h>
-#include "gmempp.h"
 #include "FoFiEncodings.h"
 
 //------------------------------------------------------------------------

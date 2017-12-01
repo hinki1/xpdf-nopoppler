@@ -11,10 +11,9 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-#include "gmem.h"
-#include "gmempp.h"
 #include "parseargs.h"
 #include "GString.h"
+#include "gmem.h"
 #include "GlobalParams.h"
 #include "Object.h"
 #include "Stream.h"
@@ -31,8 +30,6 @@
 static int firstPage = 1;
 static int lastPage = 0;
 static GBool dumpJPEG = gFalse;
-static GBool dumpRaw = gFalse;
-static GBool list = gFalse;
 static char ownerPassword[33] = "\001";
 static char userPassword[33] = "\001";
 static GBool quiet = gFalse;
@@ -47,10 +44,6 @@ static ArgDesc argDesc[] = {
    "last page to convert"},
   {"-j",      argFlag,     &dumpJPEG,      0,
    "write JPEG images as JPEG files"},
-  {"-raw",    argFlag,     &dumpRaw,       0,
-   "write raw data in PDF-native formats"},
-  {"-list",   argFlag,     &list,          0,
-   "write information to stdout for each image"},
   {"-opw",    argString,   ownerPassword,  sizeof(ownerPassword),
    "owner password (for encrypted files)"},
   {"-upw",    argString,   userPassword,   sizeof(userPassword),
@@ -140,7 +133,7 @@ int main(int argc, char *argv[]) {
     lastPage = doc->getNumPages();
 
   // write image files
-  imgOut = new ImageOutputDev(imgRoot, dumpJPEG, dumpRaw, list);
+  imgOut = new ImageOutputDev(imgRoot, dumpJPEG);
   if (imgOut->isOk()) {
     doc->displayPages(imgOut, firstPage, lastPage, 72, 72, 0,
 		      gFalse, gTrue, gFalse);

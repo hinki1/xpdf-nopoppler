@@ -36,11 +36,7 @@ extern "C" {
  * Same as malloc, but prints error message and exits if malloc()
  * returns NULL.
  */
-#ifdef DEBUG_MEM
-extern void *gmalloc(int size, int ignore = 0) GMEM_EXCEP;
-#else
 extern void *gmalloc(int size) GMEM_EXCEP;
-#endif
 
 /*
  * Same as realloc, but prints error message and exits if realloc()

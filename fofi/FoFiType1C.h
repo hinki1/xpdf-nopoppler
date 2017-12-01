@@ -105,34 +105,18 @@ struct Type1CPrivateDict {
   int initialRandomSeed;
   int subrsOffset;
   double defaultWidthX;
-  GBool defaultWidthXInt;
+  GBool defaultWidthXFP;
   double nominalWidthX;
-  GBool nominalWidthXInt;
+  GBool nominalWidthXFP;
 };
 
-// operand kind
-enum Type1COpKind {
-  type1COpOperator,
-  type1COpInteger,
-  type1COpFloat,
-  type1COpRational
-};
-
-// operand
 struct Type1COp {
-  Type1COpKind kind;
+  GBool isNum;			// true -> number, false -> operator
+  GBool isFP;			// true -> floating point number, false -> int
   union {
-    int op;			// type1COpOperator
-    int intgr;			// type1COpInteger
-    double flt;			// type1COpFloat
-    struct {
-      int num, den;		// type1COpRational
-    } rat;
+    double num;			// if num is true
+    int op;			// if num is false
   };
-  GBool isZero();
-  GBool isNegative();
-  int toInt();
-  double toFloat();
 };
 
 struct Type1CEexecBuf {
@@ -220,7 +204,7 @@ private:
 		GBool top);
   void cvtGlyphWidth(GBool useOp, GString *charBuf,
 		     Type1CPrivateDict *pDict);
-  void cvtNum(Type1COp op, GString *charBuf);
+  void cvtNum(double x, GBool isFP, GString *charBuf);
   void eexecWrite(Type1CEexecBuf *eb, const char *s);
   void eexecWriteCharstring(Type1CEexecBuf *eb, Guchar *s, int n);
   void writePSString(char *s, FoFiOutputFunc outputFunc, void *outputStream);

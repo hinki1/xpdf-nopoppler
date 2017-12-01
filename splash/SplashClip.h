@@ -57,9 +57,7 @@ public:
 
   // Interesect the clip with <path>.
   SplashError clipToPath(SplashPath *path, SplashCoord *matrix,
-			 SplashCoord flatness, GBool eoA,
-			 GBool enablePathSimplification,
-			 SplashStrokeAdjustMode strokeAdjust);
+			 SplashCoord flatness, GBool eoA);
 
   // Tests a rectangle against the clipping region.  Returns one of:
   //   - splashClipAllInside if the entire rectangle is inside the
@@ -72,18 +70,18 @@ public:
   //     outside the clipping region
   SplashClipResult testRect(int rectXMin, int rectYMin,
 			    int rectXMax, int rectYMax,
-			    SplashStrokeAdjustMode strokeAdjust);
+			    GBool strokeAdjust);
 
   // Clip a scan line.  Modifies line[] by multiplying with clipping
   // shape values for one scan line: ([x0, x1], y).
   void clipSpan(Guchar *line, int y, int x0, int x1,
-		SplashStrokeAdjustMode strokeAdjust);
+		GBool strokeAdjust);
 
   // Like clipSpan(), but uses the values 0 and 255 only.
   // Returns true if there are any non-zero values in the result
   // (i.e., returns false if the entire line is clipped out).
   GBool clipSpanBinary(Guchar *line, int y, int x0, int x1,
-		       SplashStrokeAdjustMode strokeAdjust);
+		       GBool strokeAdjust);
 
   // Get the rectangle part of the clip region.
   SplashCoord getXMin() { return xMin; }
@@ -92,19 +90,19 @@ public:
   SplashCoord getYMax() { return yMax; }
 
   // Get the rectangle part of the clip region, in integer coordinates.
-  int getXMinI(SplashStrokeAdjustMode strokeAdjust);
-  int getXMaxI(SplashStrokeAdjustMode strokeAdjust);
-  int getYMinI(SplashStrokeAdjustMode strokeAdjust);
-  int getYMaxI(SplashStrokeAdjustMode strokeAdjust);
+  int getXMinI(GBool strokeAdjust);
+  int getXMaxI(GBool strokeAdjust);
+  int getYMinI(GBool strokeAdjust);
+  int getYMaxI(GBool strokeAdjust);
 
   // Get the number of arbitrary paths used by the clip region.
-  int getNumPaths();
+  int getNumPaths() { return length; }
 
 private:
 
   SplashClip(SplashClip *clip);
   void grow(int nPaths);
-  void updateIntBounds(SplashStrokeAdjustMode strokeAdjust);
+  void updateIntBounds(GBool strokeAdjust);
 
   int hardXMin, hardYMin,	// coordinates cannot fall outside of
       hardXMax, hardYMax;	//   [hardXMin, hardXMax), [hardYMin, hardYMax)
@@ -122,8 +120,6 @@ private:
   Guchar *eo;
   SplashXPathScanner **scanners;
   int length, size;
-  GBool isSimple;
-  SplashClip *prev;
   Guchar *buf;
 };
 

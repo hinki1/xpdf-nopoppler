@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <limits.h>
 #include "gmem.h"
-#include "gmempp.h"
 #include "FoFiBase.h"
 
 //------------------------------------------------------------------------

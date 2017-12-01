@@ -78,9 +78,8 @@ public:
 
 private:
 
-  GBool parseCMap1(int (*getCharFunc)(void *), void *data, int nBits);
+  void parseCMap1(int (*getCharFunc)(void *), void *data, int nBits);
   void addMapping(CharCode code, char *uStr, int n, int offset);
-  void addMappingInt(CharCode code, Unicode u);
   CharCodeToUnicode();
   CharCodeToUnicode(GString *tagA);
   CharCodeToUnicode(GString *tagA, Unicode *mapA,
@@ -93,10 +92,9 @@ private:
   CharCode mapLen;
   CharCodeToUnicodeString *sMap;
   int sMapLen, sMapSize;
-#if MULTITHREADED
-  GAtomicCounter refCnt;
-#else
   int refCnt;
+#if MULTITHREADED
+  GMutex mutex;
 #endif
 };
 
