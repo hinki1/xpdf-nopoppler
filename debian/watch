@@ -1,0 +1,3 @@
+version=3
+opts="pgpsigurlmangle=s/$/.sig/" \
+https://www.xpdfreader.com/download.html dl/xpdf-(\d[\d.-]+)\.tar\.gz

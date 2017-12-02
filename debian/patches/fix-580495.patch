@@ -1,0 +1,249 @@
+description: add additional zoom features
+ This merges 2 different feature patches into one working one.
+ http://bugs.debian.org/424178 hight patch
+ http://bugs.debian.org/578892 bug fix to hight patch
+ http://bugs.debian.org/580495 high mag zoom
+author: Rogério Brito, Josh Triplett, Emmanuel Thomé, Jörg-Volker Peetz
+debian-bug: http://bugs.debian.org/580495
+
+--- a/xpdf/XPDFViewer.cc
++++ b/xpdf/XPDFViewer.cc
+@@ -140,7 +140,11 @@ struct ZoomMenuInfo {
+   double zoom;
+ };
+ 
+-static ZoomMenuInfo zoomMenuInfo[nZoomMenuItems] = {
++static ZoomMenuInfo zoomMenuInfo[] = {
++  { "1600%",    1600 },
++  { "1200%",    1200 },
++  { "800%",      800 },
++  { "600%",      600 },
+   { "400%",      400 },
+   { "200%",      200 },
+   { "150%",      150 },
+@@ -150,14 +154,22 @@ static ZoomMenuInfo zoomMenuInfo[nZoomMe
+   { "25%",        25 },
+   { "12.5%",      12.5 },
+   { "fit page",  zoomPage },
+-  { "fit width", zoomWidth }
++  { "fit width", zoomWidth },
++  { "fit height", zoomHeight }
+ };
+ 
++#define nZoomMenuItems (sizeof(zoomMenuInfo)/sizeof(struct ZoomMenuInfo))
++
++#ifndef USE_COMBO_BOX
++  Widget zoomMenuBtns[nZoomMenuItems];
++#endif
++
+ #define maxZoomIdx   0
+-#define defZoomIdx   3
+-#define minZoomIdx   7
+-#define zoomPageIdx  8
+-#define zoomWidthIdx 9
++#define defZoomIdx   7
++#define minZoomIdx   nZoomMenuItems - 4
++#define zoomPageIdx  nZoomMenuItems - 3
++#define zoomWidthIdx nZoomMenuItems - 2
++#define zoomHeightIdx nZoomMenuItems -1
+ 
+ //------------------------------------------------------------------------
+ 
+@@ -233,6 +245,7 @@ XPDFViewerCmd XPDFViewer::cmdTab[] = {
+   { "toggleFullScreenMode",    0, gFalse, gFalse, &XPDFViewer::cmdToggleFullScreenMode },
+   { "toggleOutline",           0, gFalse, gFalse, &XPDFViewer::cmdToggleOutline },
+   { "windowMode",              0, gFalse, gFalse, &XPDFViewer::cmdWindowMode },
++  { "zoomFitHeight",           0, gFalse, gFalse, &XPDFViewer::cmdZoomFitHeight },
+   { "zoomFitPage",             0, gFalse, gFalse, &XPDFViewer::cmdZoomFitPage },
+   { "zoomFitWidth",            0, gFalse, gFalse, &XPDFViewer::cmdZoomFitWidth },
+   { "zoomIn",                  0, gFalse, gFalse, &XPDFViewer::cmdZoomIn },
+@@ -1430,6 +1443,15 @@ void XPDFViewer::cmdZoomFitWidth(GString
+ 		core->getRotate(), gTrue, gFalse);
+   }
+ }
++
++void XPDFViewer::cmdZoomFitHeight(GString *args[], int nArgs,
++				  XEvent *event) {
++  if (core->getZoom() != zoomHeight) {
++    setZoomIdx(zoomHeightIdx);
++    displayPage(core->getPageNum(), zoomHeight,
++		core->getRotate(), gTrue, gFalse);
++  }
++}
+ 
+ void XPDFViewer::cmdZoomIn(GString *args[], int nArgs,
+ 			   XEvent *event) {
+--- a/xpdf/XPDFViewer.h
++++ b/xpdf/XPDFViewer.h
+@@ -40,11 +40,6 @@ class XPDFViewer;
+ 
+ //------------------------------------------------------------------------
+ 
+-// NB: this must match the defn of zoomMenuBtnInfo in XPDFViewer.cc
+-#define nZoomMenuItems 10
+-
+-//------------------------------------------------------------------------
+-
+ struct XPDFViewerCmd {
+   const char *name;
+   int nArgs;
+@@ -54,6 +49,8 @@ struct XPDFViewerCmd {
+ };
+ 
+ //------------------------------------------------------------------------
++
++//------------------------------------------------------------------------
+ // XPDFViewer
+ //------------------------------------------------------------------------
+ 
+@@ -171,6 +168,7 @@ private:
+   void cmdWindowMode(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomFitPage(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomFitWidth(GString *args[], int nArgs, XEvent *event);
++  void cmdZoomFitHeight(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomIn(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomOut(GString *args[], int nArgs, XEvent *event);
+   void cmdZoomPercent(GString *args[], int nArgs, XEvent *event);
+@@ -331,7 +329,6 @@ private:
+   Widget zoomComboBox;
+ #else
+   Widget zoomMenu;
+-  Widget zoomMenuBtns[nZoomMenuItems];
+ #endif
+   Widget zoomWidget;
+   Widget findBtn;
+--- a/doc/xpdf.1
++++ b/doc/xpdf.1
+@@ -100,7 +100,7 @@ Xpdf.fullScreenMatteColor, for full-scre
+ Set the initial zoom factor.  A number specifies a zoom percentage,
+ where 100 means 72 dpi.  You may also specify \'page', to fit the page
+ to the window size, or \'width', to fit the page width to the window
+-width.
++width, or \'height', to fit the page height to the window height
+ .RB "[config file: " initialZoom "; or X resource: " Xpdf.initialZoom ]
+ .TP
+ .B \-cont
+@@ -434,6 +434,9 @@ Set the zoom factor to 'page' (fit page
+ .B w
+ Set the zoom factor to 'width' (fit page width to window).
+ .TP
++.B h
++Set the zoom factor to 'height' (fit page height to window).
++.TP
+ .B alt-F
+ Toggle full-screen mode.
+ .TP
+@@ -586,6 +589,9 @@ Set the zoom factor to fit-page.
+ .B zoomFitWidth
+ Set the zoom factor to fit-width.
+ .TP
++.B zoomFitHeight
++Set the zoom factor to fit-height.
++.TP
+ .B zoomIn
+ Zoom in - go to the next higher zoom factor.
+ .TP
+@@ -819,6 +825,7 @@ The default key bindings are as follows:
+     bind -              any         zoomOut
+     bind z              any         zoomFitPage
+     bind w              any         zoomFitWidth
++    bind h              any         zoomFitHeight
+     bind alt-f          any         toggleFullScreenMode
+     bind ctrl-l         any         redraw
+     bind ctrl-w         any         closeWindowOrQuit
+--- a/doc/xpdfrc.5
++++ b/doc/xpdfrc.5
+@@ -388,11 +388,11 @@ times for PDF files that use special fon
+ cross-hatching.  This defaults to "yes".
+ .SH MISCELLANEOUS SETTINGS
+ .TP
+-.BR initialZoom " \fIpercentage\fR | page | width"
++.BR initialZoom " \fIpercentage\fR | page | width | height"
+ Sets the initial zoom factor.  A number specifies a zoom percentage,
+ where 100 means 72 dpi.  You may also specify \'page', to fit the page
+-to the window size, or \'width', to fit the page width to the window
+-width.
++to the window size, \'width', to fit the page width to the window width,
++or \'height', to fit the page height to the window height.
+ .TP
+ .BR continuousView " yes | no"
+ If set to "yes", xpdf will start in continuous view mode, i.e., with
+--- a/xpdf/PDFCore.cc
++++ b/xpdf/PDFCore.cc
+@@ -468,6 +468,12 @@ void PDFCore::update(int topPageA, int s
+     dpiA = (hDPI < vDPI) ? hDPI : vDPI;
+   } else if (zoomA == zoomWidth) {
+     dpiA = (drawAreaWidth / uw) * 72;
++  } else if (zoomA == zoomHeight) {
++    if (continuousMode) {
++      dpiA = ((drawAreaHeight - continuousModePageSpacing) / uh) * 72;
++    } else {
++      dpiA = (drawAreaHeight / uh) * 72;
++    }
+   } else {
+     dpiA = 0.01 * zoomA * 72;
+   }
+@@ -1273,6 +1279,24 @@ void PDFCore::zoomCentered(double zoomA)
+     dpi1 = 72.0 * (double)drawAreaWidth / pageW;
+     sx = 0;
+ 
++  } else if (zoomA == zoomHeight) {
++    if (continuousMode) {
++      pageH = (rotate == 90 || rotate == 270) ? maxUnscaledPageW
++	                                      : maxUnscaledPageH;
++      dpi1 = 72.0 * (double)(drawAreaHeight - continuousModePageSpacing) / pageH;
++    } else {
++      rot = rotate + doc->getPageRotate(topPage);
++      if (rot >= 360) {
++	rot -= 360;
++      } else if (rot < 0) {
++	rot += 360;
++      }
++      pageH = (rot == 90 || rot == 270) ? doc->getPageCropWidth(topPage)
++	                                : doc->getPageCropHeight(topPage);
++      dpi1 = 72.0 * (double)drawAreaHeight / pageH;
++    }
++    sx = 0;
++
+   } else if (zoomA <= 0) {
+     return;
+ 
+--- a/xpdf/PDFCore.h
++++ b/xpdf/PDFCore.h
+@@ -39,6 +39,7 @@ class PDFCore;
+ 
+ #define zoomPage  -1
+ #define zoomWidth -2
++#define zoomHeight -3
+ #define defZoom   125
+ 
+ //------------------------------------------------------------------------
+--- a/xpdf/XPDFCore.cc
++++ b/xpdf/XPDFCore.cc
+@@ -120,6 +120,8 @@ XPDFCore::XPDFCore(Widget shellA, Widget
+       zoom = zoomPage;
+     } else if (!initialZoom->cmp("width")) {
+       zoom = zoomWidth;
++    } else if (!initialZoom->cmp("height")) {
++      zoom = zoomHeight;
+     } else {
+       zoom = atoi(initialZoom->getCString());
+       if (zoom <= 0) {
+@@ -248,7 +250,7 @@ void XPDFCore::resizeToPage(int pg) {
+       width1 = doc->getPageCropWidth(pg);
+       height1 = doc->getPageCropHeight(pg);
+     }
+-    if (zoom == zoomPage || zoom == zoomWidth) {
++    if (zoom == zoomPage || zoom == zoomWidth || zoom == zoomHeight) {
+       width = (Dimension)(width1 * 0.01 * defZoom + 0.5);
+       height = (Dimension)(height1 * 0.01 * defZoom + 0.5);
+     } else {
+@@ -1055,7 +1057,7 @@ void XPDFCore::resizeCbk(Widget widget,
+   XtGetValues(core->drawArea, args, n);
+   core->drawAreaWidth = (int)w;
+   core->drawAreaHeight = (int)h;
+-  if (core->zoom == zoomPage || core->zoom == zoomWidth) {
++  if (core->zoom == zoomPage || core->zoom == zoomWidth || core->zoom == zoomHeight) {
+     sx = sy = -1;
+   } else {
+     sx = core->scrollX;

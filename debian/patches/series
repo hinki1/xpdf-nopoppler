@@ -1,0 +1,15 @@
+01-manpage.patch
+
+# various bug fies
+fix-512381.patch
+fix-580495.patch
+
+# fixes for build-hardening compiler warnings
+hardening-invalid-conversions.patch
+hardening-system-calls.patch
+hardening-pointer-casting.patch
+
+# misc fixes
+fix-737989.patch
+fix-757053.patch
+fix-868498.patch

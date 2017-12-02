@@ -1,0 +1,33 @@
+Source: xpdf
+Section: text
+Priority: optional
+Maintainer: Debian QA Group <packages@qa.debian.org>
+Standards-Version: 4.1.1
+Build-Depends:
+ debhelper (>= 9),
+ pkg-config,
+ libpaper-dev,
+ libxt-dev,
+ libx11-dev,
+ libmotif-dev,
+ libpng-dev,
+ libfreetype6-dev,
+ zlib1g-dev,
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/xpdf.git
+Vcs-Git: https://anonscm.debian.org/git/collab-maint/xpdf.git
+Homepage: https://www.xpdfreader.com/
+
+Package: xpdf
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Recommends:
+ gsfonts-x11,
+ cups-bsd,
+Provides:
+ pdf-viewer,
+ poppler-utils,
+Description: Portable Document Format (PDF) reader
+ xpdf is a light-weight open source viewer for Portable Document Format (PDF)
+ files (also called 'Adobe Acrobat' or 'Acrobat' files).

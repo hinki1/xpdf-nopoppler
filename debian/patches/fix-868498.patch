@@ -1,0 +1,38 @@
+Description: add search command usable through xpdf's remote feature
+Author: Stefan Petrea <stefan.petrea@gmail.com>
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=868498
+
+--- a/xpdf/XPDFViewer.cc
++++ b/xpdf/XPDFViewer.cc
+@@ -239,6 +239,7 @@
+   { "scrollToTopLeft",         0, gTrue,  gFalse, &XPDFViewer::cmdScrollToTopLeft },
+   { "scrollUp",                1, gTrue,  gFalse, &XPDFViewer::cmdScrollUp },
+   { "scrollUpPrevPage",        1, gTrue,  gFalse, &XPDFViewer::cmdScrollUpPrevPage },
++  { "search",                  1, gTrue,  gFalse, &XPDFViewer::cmdSearch },
+   { "setSelection",            5, gTrue,  gFalse, &XPDFViewer::cmdSetSelection },
+   { "singlePageMode",          0, gFalse, gFalse, &XPDFViewer::cmdSinglePageMode },
+   { "startPan",                0, gTrue,  gTrue,  &XPDFViewer::cmdStartPan },
+@@ -3848,3 +3849,13 @@
+ 
+   return fontList;
+ }
++
++void XPDFViewer::cmdSearch(GString *args[], int nArgs, XEvent *event) {
++  char *searchText = args[0]->getCString();
++  core->find(searchText,
++    gFalse,
++    gFalse,
++    gFalse,
++    gFalse,
++    gFalse);
++}
+--- a/xpdf/XPDFViewer.h
++++ b/xpdf/XPDFViewer.h
+@@ -158,6 +158,7 @@
+   void cmdScrollToTopLeft(GString *args[], int nArgs, XEvent *event);
+   void cmdScrollUp(GString *args[], int nArgs, XEvent *event);
+   void cmdScrollUpPrevPage(GString *args[], int nArgs, XEvent *event);
++  void cmdSearch(GString *args[], int nArgs,XEvent *event);
+   void cmdSetSelection(GString *args[], int nArgs, XEvent *event);
+   void cmdSinglePageMode(GString *args[], int nArgs, XEvent *event);
+   void cmdStartPan(GString *args[], int nArgs, XEvent *event);
