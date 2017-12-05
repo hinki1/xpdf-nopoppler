@@ -1,0 +1,6 @@
+/.debhelper/
+/debhelper-build-stamp
+/files
+/xpdf.debhelper.log
+/xpdf.substvars
+/xpdf/

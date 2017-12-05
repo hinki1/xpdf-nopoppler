@@ -1,0 +1,17 @@
+/Makefile
+/*.o
+
+# binaries
+/pdfdetach
+/pdffonts
+/pdfimages
+/pdfinfo
+/pdftohtml
+/pdftopng
+/pdftoppm
+/pdftops
+/pdftotext
+/xpdf
+
+# debian
+/xpdf.real
