@@ -235,6 +235,7 @@ XPDFViewerCmd XPDFViewer::cmdTab[] = {
   { "scrollToTopLeft",         0, gTrue,  gFalse, &XPDFViewer::cmdScrollToTopLeft },
   { "scrollUp",                1, gTrue,  gFalse, &XPDFViewer::cmdScrollUp },
   { "scrollUpPrevPage",        1, gTrue,  gFalse, &XPDFViewer::cmdScrollUpPrevPage },
+  { "search",                  1, gTrue,  gFalse, &XPDFViewer::cmdSearch },
   { "setSelection",            5, gTrue,  gFalse, &XPDFViewer::cmdSetSelection },
   { "singlePageMode",          0, gFalse, gFalse, &XPDFViewer::cmdSinglePageMode },
   { "startPan",                0, gTrue,  gTrue,  &XPDFViewer::cmdStartPan },
@@ -3609,4 +3610,14 @@ XmFontList XPDFViewer::createFontList(char *xlfd) {
 #endif
 
   return fontList;
+}
+
+void XPDFViewer::cmdSearch(GString *args[], int nArgs, XEvent *event) {
+  char *searchText = args[0]->getCString();
+  core->find(searchText,
+    gFalse,
+    gFalse,
+    gFalse,
+    gFalse,
+    gFalse);
 }

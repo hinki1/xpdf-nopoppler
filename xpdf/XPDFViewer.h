@@ -158,6 +158,7 @@ private:
   void cmdScrollToTopLeft(GString *args[], int nArgs, XEvent *event);
   void cmdScrollUp(GString *args[], int nArgs, XEvent *event);
   void cmdScrollUpPrevPage(GString *args[], int nArgs, XEvent *event);
+  void cmdSearch(GString *args[], int nArgs,XEvent *event);
   void cmdSetSelection(GString *args[], int nArgs, XEvent *event);
   void cmdSinglePageMode(GString *args[], int nArgs, XEvent *event);
   void cmdStartPan(GString *args[], int nArgs, XEvent *event);
