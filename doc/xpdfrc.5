@@ -7,7 +7,7 @@ All of the Xpdf tools read a single configuration file.  If you have a
 .I .xpdfrc
 file in your home directory, it will be read.  Otherwise, a
 system-wide configuration file will be read from
-.IR /usr/local/etc/xpdfrc ,
+.IR /etc/xpdf/xpdfrc ,
 if it exists.  (This is its default location; depending on build
 options, it may be placed elsewhere.)  On Win32 systems, the
 .I xpdfrc
@@ -22,6 +22,9 @@ file names that contain spaces.
 .PP
 The following sections list all of the configuration options, sorted
 into functional groups.  There is an examples section at the end.
+.PP
+Note that all settings are case-sensitive; in particular, boolean options
+are "yes" and "no" (rather than "Yes" or "No").
 .SH INCLUDE FILES
 .TP
 .BI include " config\-file"
@@ -349,7 +352,7 @@ unset, which tells xpdf to generate a name of the form <file>.ps for a
 PDF file <file>.pdf.
 .TP
 .BI fontDir " dir"
-See the description above, in the DISPLAY FONTS section.
+See the description above, in the GENERAL FONT CONFIGURATION section.
 .SH TEXT CONTROL
 .TP
 .BI textEncoding " encoding\-name"
@@ -395,12 +398,6 @@ width.
 If set to "yes", xpdf will start in continuous view mode, i.e., with
 one vertical screoll bar for the whole document.  This defaults to
 "no".
-.TP
-.BR enableFreeType " yes | no"
-Enables or disables use of FreeType (a TrueType / Type 1 font
-rasterizer).  This is only relevant if the Xpdf tools were built with
-FreeType support.  ("enableFreeType" replaces the old
-"freetypeControl" option.)  This option defaults to "yes".
 .TP
 .BR enableFreeType " yes | no"
 Enables or disables use of FreeType (a TrueType / Type 1 font
@@ -484,7 +481,7 @@ OP/op/OPM settings in the PDF file.  Ignored for non-CMYK output.  The
 default value is "no".
 .TP
 .BI launchCommand " command"
-Sets the command executed when you click on a "launch"-type link.  The
+Sets the command executed when you click on a "launch"\-type link.  The
 intent is for the command to be a program/script which determines the
 file type and runs the appropriate viewer.  The command line will
 consist of the file to be launched, followed by any parameters
@@ -672,7 +669,7 @@ urlCommand      "netscape \-remote 'openURL(%s)'"
 .fi
 .SH FILES
 .TP
-.B /usr/local/etc/xpdfrc
+.B /etc/xpdf/xpdfrc
 This is the default location for the system-wide configuration file.
 Depending on build options, it may be placed elsewhere.
 .TP
