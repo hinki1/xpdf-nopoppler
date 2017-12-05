@@ -1839,7 +1839,7 @@ void XPDFViewer::initToolbar(Widget parent) {
     n = 0;
     s = XmStringCreateLocalized((char *)zoomMenuInfo[i].label);
     XtSetArg(args[n], XmNlabelString, s); ++n;
-    XtSetArg(args[n], XmNuserData, (XtPointer)i); ++n;
+    XtSetArg(args[n], XmNuserData, i); ++n;
     sprintf(buf, "zoom%d", i);
     btn = XmCreatePushButton(menuPane, buf, args, n);
     XmStringFree(s);
