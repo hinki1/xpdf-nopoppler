@@ -8,7 +8,7 @@ includes=$(strip $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --cflags freetype2))
 
 CXX=$(DEB_HOST_GNU_TYPE)-g++
 LIBS+=-lXm -lpaper $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --libs png --libs xt --libs x11 --libs freetype2) -pthread
-CPPFLAGS+=$(includes) $(includes)/goo $(includes)/splash
+#CPPFLAGS+=$(includes) $(includes)/goo $(includes)/splash
 CPPFLAGS+=-Wno-write-strings -Wno-format-extra-args -Wfatal-errors
 CPPFLAGS+=-DHAVE_DIRENT_H -DHAVE_PAPER_H -DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
 
@@ -19,7 +19,7 @@ override_dh_auto_configure:
 	dh_auto_configure -- --with-x --with-freetype2-includes=/usr/include/freetype2
 
 override_dh_auto_build:
-	make xpdf
+	make all
 	cp xpdf/xpdf xpdf/xpdf.real
 
 %:
