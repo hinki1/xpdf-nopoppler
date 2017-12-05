@@ -599,6 +599,10 @@ void XPDFViewer::keyPressCbk(void *data, KeySym key, Guint modifiers,
     keyCode = xpdfKeyCodeDown;
   } else if (key >= XK_F1 && key <= XK_F35) {
     keyCode = xpdfKeyCodeF1 + (key - XK_F1);
+  } else if (key == XK_KP_Add) {
+    keyCode = '+';
+  } else if (key == XK_KP_Subtract) {
+    keyCode = '-';
   } else {
     return;
   }
