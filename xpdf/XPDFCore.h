@@ -223,6 +223,9 @@ private:
   static GString *currentSelection;  // selected text
   static XPDFCore *currentSelectionOwner;
   static Atom targetsAtom;
+  static Atom textAtom;
+  static Atom compoundtextAtom;
+  static Atom utf8stringAtom;
 
   GBool panning;
   int panMX, panMY;

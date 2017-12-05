@@ -53,6 +53,9 @@ static inline Guchar div255(int x) {
 GString *XPDFCore::currentSelection = NULL;
 XPDFCore *XPDFCore::currentSelectionOwner = NULL;
 Atom XPDFCore::targetsAtom;
+Atom XPDFCore::textAtom;
+Atom XPDFCore::compoundtextAtom;
+Atom XPDFCore::utf8stringAtom;
 
 //------------------------------------------------------------------------
 // XPDFCoreTile
@@ -96,6 +99,9 @@ XPDFCore::XPDFCore(Widget shellA, Widget parentWidgetA,
   display = XtDisplay(parentWidget);
   screenNum = XScreenNumberOfScreen(XtScreen(parentWidget));
   targetsAtom = XInternAtom(display, "TARGETS", False);
+  textAtom         = XInternAtom(display, "TEXT",          False);
+  compoundtextAtom = XInternAtom(display, "COMPOUND_TEXT", False);
+  utf8stringAtom   = XInternAtom(display, "UTF8_STRING",   False);
 
   paperPixel = paperPixelA;
   mattePixel = mattePixelA;
@@ -433,7 +439,7 @@ Boolean XPDFCore::convertSelectionCbk(Widget widget, Atom *selection,
 
   // send back a list of supported conversion targets
   if (*target == targetsAtom) {
-    if (!(array = (Atom *)XtMalloc(sizeof(Atom)))) {
+    if (!(array = (Atom *)XtMalloc(4 * sizeof(Atom)))) {
       return False;
     }
     array[0] = XA_STRING;
@@ -441,6 +447,54 @@ Boolean XPDFCore::convertSelectionCbk(Widget widget, Atom *selection,
     *type = XA_ATOM;
     *format = 32;
     *length = 1;
+
+    if (!globalParams->getTextEncodingName()->cmp("UTF-8")) {
+      array[1] = textAtom;
+      array[2] = compoundtextAtom;
+      array[3] = utf8stringAtom;
+      *length = 4;
+    }
+    return True;
+
+    // ENHANCE-ME: If currentSelection could be made always UTF-8 then we
+    // could use this UTF-8 code always, not just when the user chooses
+    // UTF-8 in textEncoding / -enc.  Can TextOutputDev be asked nicely to
+    // give us UTF-8 in copySelection()?
+    //
+  } else if (!globalParams->getTextEncodingName()->cmp("UTF-8")
+             && (*target == XA_STRING
+                 || *target == textAtom
+                 || *target == compoundtextAtom)) {
+    char *str = currentSelection->getCString();
+    XICCEncodingStyle style
+      = (*target == XA_STRING  ? XStringStyle
+         : *target == textAtom ? XStdICCTextStyle
+         :                       XCompoundTextStyle);
+    XTextProperty t;
+    int ret = Xutf8TextListToTextProperty(XtDisplay(widget),
+                                          &str,1, style, &t);
+    if (ret < 0) {
+      error(errInternal, -1 , "cannot form text property, error {0:d}", ret);
+      return False;
+    }
+    *value = t.value;
+    *type = t.encoding;
+    *format = t.format;
+    *length = t.nitems;
+    return True;
+
+    // UTF8_STRING case could be handled by Xutf8TextListToTextProperty()
+    // above with XUTF8StringStyle if desired.  But there's no conversion in
+    // that case and XUTF8StringStyle is an XFree86 extension which might
+    // not be present in older Xlib.  A plain direct send lets us support
+    // UTF8_STRING always.
+    //
+  } else if (!globalParams->getTextEncodingName()->cmp("UTF-8")
+             && *target == utf8stringAtom) {
+    *value = XtNewString(currentSelection->getCString());
+    *length = strlen((char*) *value);
+    *type = utf8stringAtom;
+    *format = 8; // 8-bit elements
     return True;
 
   // send the selected text
