@@ -471,6 +471,7 @@ void XPDFCore::doAction(LinkAction *action) {
   Object movieAnnot, obj1, obj2;
   GString *msg;
   int i;
+  int errcode;
 
   switch (kind = action->getKind()) {
 
@@ -560,12 +561,18 @@ void XPDFCore::doAction(LinkAction *action) {
       if (globalParams->getLaunchCommand()) {
 	fileName->insert(0, ' ');
 	fileName->insert(0, globalParams->getLaunchCommand());
-	system(fileName->getCString());
+	errcode = system(fileName->getCString());
+        if (errcode != 0) {
+          error(errInternal, -1 , "non-zero error code returned by system call");
+        }
       } else {
 	msg = new GString("About to execute the command:\n");
 	msg->append(fileName);
 	if (doQuestionDialog("Launching external application", msg)) {
-	  system(fileName->getCString());
+	  errcode = system(fileName->getCString());
+          if (errcode != 0) {
+            error(errInternal, -1 , "non-zero error code returned by system call");
+          }
 	}
 	delete msg;
       }
@@ -681,6 +688,7 @@ void XPDFCore::doAction(LinkAction *action) {
 void XPDFCore::runCommand(GString *cmdFmt, GString *arg) {
   GString *cmd;
   char *s;
+  int errcode;
 
   if ((s = strstr(cmdFmt->getCString(), "%s"))) {
     cmd = mungeURL(arg);
@@ -697,7 +705,10 @@ void XPDFCore::runCommand(GString *cmdFmt, GString *arg) {
 #else
   cmd->append(" &");
 #endif
-  system(cmd->getCString());
+  errcode = system(cmd->getCString());
+  if (errcode != 0) {
+      error(errInternal, -1 , "non-zero error code returned by system call");
+  }
   delete cmd;
 }
 

@@ -1132,6 +1132,7 @@ void XPDFViewer::cmdRun(GString *args[], int nArgs,
   char *p;
   char c0, c1;
   int i;
+  int errcode;
 
   cmd = new GString();
   fmt = args[0];
@@ -1228,7 +1229,10 @@ void XPDFViewer::cmdRun(GString *args[], int nArgs,
 #else
   cmd->append(" &");
 #endif
-  system(cmd->getCString());
+  errcode = system(cmd->getCString());
+  if (errcode != 0) {
+      error(errInternal, -1, "non-zero error code return by system call");
+  }
   delete cmd;
 }
 
