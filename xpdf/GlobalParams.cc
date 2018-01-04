@@ -753,7 +753,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   antialias = gTrue;
   vectorAntialias = gTrue;
   antialiasPrinting = gFalse;
-  strokeAdjust = gTrue;
+  strokeAdjust = strokeAdjustNormal;
   screenType = screenUnset;
   screenSize = -1;
   screenDotRadius = -1;
@@ -1137,7 +1137,7 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
       parseYesNo("antialiasPrinting", &antialiasPrinting,
 		 tokens, fileName, line);
     } else if (!cmd->cmp("strokeAdjust")) {
-      parseYesNo("strokeAdjust", &strokeAdjust, tokens, fileName, line);
+      parseStrokeAdjust(tokens, fileName, line);
     } else if (!cmd->cmp("screenType")) {
       parseScreenType(tokens, fileName, line);
     } else if (!cmd->cmp("screenSize")) {
@@ -1546,6 +1546,30 @@ void GlobalParams::parseInitialZoom(GList *tokens,
   }
   delete initialZoom;
   initialZoom = ((GString *)tokens->get(1))->copy();
+}
+
+void GlobalParams::parseStrokeAdjust(GList *tokens, GString *fileName,
+				     int line) {
+  GString *tok;
+
+  if (tokens->getLength() != 2) {
+    error(errConfig, -1,
+	  "Bad 'strokeAdjust' config file command ({0:t}:{1:d})",
+	  fileName, line);
+    return;
+  }
+  tok = (GString *)tokens->get(1);
+  if (!tok->cmp("no")) {
+    strokeAdjust = strokeAdjustOff;
+  } else if (!tok->cmp("yes")) {
+    strokeAdjust = strokeAdjustNormal;
+  } else if (!tok->cmp("cad")) {
+    strokeAdjust = strokeAdjustCAD;
+  } else {
+    error(errConfig, -1,
+	  "Bad 'strokeAdjust' config file command ({0:t}:{1:d})",
+	  fileName, line);
+  }
 }
 
 void GlobalParams::parseScreenType(GList *tokens, GString *fileName,
@@ -2720,13 +2744,13 @@ GBool GlobalParams::getAntialiasPrinting() {
   return f;
 }
 
-GBool GlobalParams::getStrokeAdjust() {
-  GBool f;
+StrokeAdjustMode GlobalParams::getStrokeAdjust() {
+  StrokeAdjustMode mode;
 
   lockGlobalParams;
-  f = strokeAdjust;
+  mode = strokeAdjust;
   unlockGlobalParams;
-  return f;
+  return mode;
 }
 
 ScreenType GlobalParams::getScreenType() {

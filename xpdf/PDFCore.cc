@@ -1654,7 +1654,7 @@ void PDFCore::xorRectangle(int pg, int x0, int y0, int x1, int y1,
 	path->lineTo(xx1, yy1);
 	path->lineTo(xx0, yy1);
 	path->close();
-	splash->xorFill(path, gTrue);
+	//splash->xorFill(path, gTrue);
 	delete path;
 	delete splash;
 	xi = x0 - tile->xMin;
