@@ -83,7 +83,7 @@ void SplashFont::initCache() {
   cacheAssoc = splashFontCacheAssoc;
   for (cacheSets = splashFontCacheMaxSets;
        cacheSets > 1 &&
-	 cacheSets * cacheAssoc * glyphSize > splashFontCacheSize;
+	 glyphSize > splashFontCacheSize / (cacheSets * cacheAssoc);
        cacheSets >>= 1) ;
   cache = (Guchar *)gmallocn(cacheSets * cacheAssoc, glyphSize);
   cacheTags = (SplashFontCacheTag *)gmallocn(cacheSets * cacheAssoc,
