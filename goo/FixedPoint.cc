@@ -16,6 +16,7 @@
 #pragma implementation
 #endif
 
+#include "gmempp.h"
 #include "FixedPoint.h"
 
 #define ln2 ((FixedPoint)0.69314718)

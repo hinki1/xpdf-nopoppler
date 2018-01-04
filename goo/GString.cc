@@ -21,6 +21,7 @@
 #include <math.h>
 #include <limits.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "GString.h"
 
 //------------------------------------------------------------------------
