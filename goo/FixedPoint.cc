@@ -114,7 +114,7 @@ GBool FixedPoint::divCheck(FixedPoint x, FixedPoint y, FixedPoint *result) {
       z >= ((FixPtInt64)1 << 31) || z < -((FixPtInt64)1 << 31)) {
     return gFalse;
   }
-  result->val = z;
+  result->val = (int)z;
   return gTrue;
 }
 
