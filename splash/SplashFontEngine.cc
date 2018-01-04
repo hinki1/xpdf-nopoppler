@@ -18,6 +18,7 @@
 #  include <unistd.h>
 #endif
 #include "gmem.h"
+#include "gmempp.h"
 #include "GString.h"
 #include "SplashMath.h"
 #include "SplashFTFontEngine.h"
