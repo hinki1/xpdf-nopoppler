@@ -29,6 +29,7 @@
 #    include <unixlib.h>
 #  endif
 #endif // _WIN32
+#include "gmempp.h"
 #include "GString.h"
 #include "gfile.h"
 
