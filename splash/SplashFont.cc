@@ -14,6 +14,7 @@
 
 #include <string.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "SplashMath.h"
 #include "SplashGlyphBitmap.h"
 #include "SplashFontFile.h"
