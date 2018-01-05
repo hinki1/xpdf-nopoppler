@@ -342,7 +342,7 @@ smr_CHECK_LIB(freetype2, freetype, [FreeType2 font rasterizer - version 2.0.5+],
 AC_SUBST(freetype2_LIBS)
 AC_SUBST(freetype2_CFLAGS)
 if test "x$smr_have_freetype2_library" = xyes; then
-  AC_DEFINE(HAVE_FREETYPE_FREETYPE_H)
+  AC_DEFINE(HAVE_FREETYPE_H)
   AC_DEFINE(HAVE_SPLASH)
 fi
 
