@@ -1,7 +1,7 @@
 Source: xpdf
 Section: text
 Priority: optional
-Maintainer: Debian QA Group <packages@qa.debian.org>
+Maintainer: Matthias Hinkfoth <hinki@abwesend.de>
 Standards-Version: 4.1.1
 Build-Depends:
  debhelper (>= 9),
@@ -17,7 +17,7 @@ Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/xpdf.git
 Vcs-Git: https://anonscm.debian.org/git/collab-maint/xpdf.git
 Homepage: https://www.xpdfreader.com/
 
-Package: xpdf
+Package: xpdf-nopoppler
 Architecture: any
 Depends:
  ${misc:Depends},
@@ -28,6 +28,8 @@ Recommends:
 Provides:
  pdf-viewer,
  poppler-utils,
+Breaks:
+ xpdf,
 Description: Portable Document Format (PDF) reader
  xpdf is a light-weight open source viewer for Portable Document Format (PDF)
- files (also called 'Adobe Acrobat' or 'Acrobat' files).
+ files. This version is based on the upstream source version 3.04.
