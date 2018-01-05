@@ -29,7 +29,7 @@ class SplashFont;
 
 #define splashFontCacheSize 16
 
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
 #define splashFTNoHinting (1 << 0)
 #endif
 
@@ -42,7 +42,7 @@ public:
 
   // Create a font engine.
   SplashFontEngine(
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
 		   GBool enableFreeType,
 		   Guint freeTypeFlags,
 #endif
@@ -115,7 +115,7 @@ private:
 
   SplashFont *fontCache[splashFontCacheSize];
 
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   SplashFTFontEngine *ftEngine;
 #endif
 };

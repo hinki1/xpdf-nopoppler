@@ -38,7 +38,7 @@ extern "C" int unlink(char *filename);
 //------------------------------------------------------------------------
 
 SplashFontEngine::SplashFontEngine(
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
 				   GBool enableFreeType,
 				   Guint freeTypeFlags,
 #endif
@@ -49,7 +49,7 @@ SplashFontEngine::SplashFontEngine(
     fontCache[i] = NULL;
   }
 
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   if (enableFreeType) {
     ftEngine = SplashFTFontEngine::init(aa, freeTypeFlags);
   } else {
@@ -67,7 +67,7 @@ SplashFontEngine::~SplashFontEngine() {
     }
   }
 
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   if (ftEngine) {
     delete ftEngine;
   }
@@ -100,7 +100,7 @@ SplashFontFile *SplashFontEngine::loadType1Font(SplashFontFileID *idA,
   SplashFontFile *fontFile;
 
   fontFile = NULL;
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   if (!fontFile && ftEngine) {
     fontFile = ftEngine->loadType1Font(idA,
 #if LOAD_FONTS_FROM_MEM
@@ -136,7 +136,7 @@ SplashFontFile *SplashFontEngine::loadType1CFont(SplashFontFileID *idA,
   SplashFontFile *fontFile;
 
   fontFile = NULL;
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   if (!fontFile && ftEngine) {
     fontFile = ftEngine->loadType1CFont(idA,
 #if LOAD_FONTS_FROM_MEM
@@ -172,7 +172,7 @@ SplashFontFile *SplashFontEngine::loadOpenTypeT1CFont(SplashFontFileID *idA,
   SplashFontFile *fontFile;
 
   fontFile = NULL;
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   if (!fontFile && ftEngine) {
     fontFile = ftEngine->loadOpenTypeT1CFont(idA,
 #if LOAD_FONTS_FROM_MEM
@@ -209,7 +209,7 @@ SplashFontFile *SplashFontEngine::loadCIDFont(SplashFontFileID *idA,
   SplashFontFile *fontFile;
 
   fontFile = NULL;
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   if (!fontFile && ftEngine) {
     fontFile = ftEngine->loadCIDFont(idA,
 #if LOAD_FONTS_FROM_MEM
@@ -246,7 +246,7 @@ SplashFontFile *SplashFontEngine::loadOpenTypeCFFFont(SplashFontFileID *idA,
   SplashFontFile *fontFile;
 
   fontFile = NULL;
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   if (!fontFile && ftEngine) {
     fontFile = ftEngine->loadOpenTypeCFFFont(idA,
 #if LOAD_FONTS_FROM_MEM
@@ -285,7 +285,7 @@ SplashFontFile *SplashFontEngine::loadTrueTypeFont(SplashFontFileID *idA,
   SplashFontFile *fontFile;
 
   fontFile = NULL;
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
   if (!fontFile && ftEngine) {
     fontFile = ftEngine->loadTrueTypeFont(idA,
 #if LOAD_FONTS_FROM_MEM

@@ -8,7 +8,7 @@
 
 #include <aconf.h>
 
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
 
 #ifdef USE_GCC_PRAGMAS
 #pragma implementation
@@ -168,4 +168,4 @@ SplashFont *SplashFTFontFile::makeFont(SplashCoord *mat,
   return font;
 }
 
-#endif // HAVE_FREETYPE_H
+#endif // HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H

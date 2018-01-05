@@ -8,7 +8,7 @@
 
 #include <aconf.h>
 
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
 
 #ifdef USE_GCC_PRAGMAS
 #pragma implementation
@@ -446,4 +446,4 @@ static int glyphPathCubicTo(const FT_Vector *ctrl1, const FT_Vector *ctrl2,
   return 0;
 }
 
-#endif // HAVE_FREETYPE_H
+#endif // HAVE_FREETYPE_FREETYPE_H || HAVE_FREETYPE_H
