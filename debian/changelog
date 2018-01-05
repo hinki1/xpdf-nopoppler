@@ -1,4 +1,4 @@
-xpdf (3.50-5.1) stretch; urgency=medium
+xpdf (3.51-1) stretch; urgency=medium
 
   * Non-maintainer upload.
   * heavy patching for xpdf4
