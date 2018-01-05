@@ -1373,6 +1373,7 @@ void SplashOutputDev::doUpdateFont(GfxState *state) {
 			   fileName->getCString(),
 			   fileName == tmpFileName
 #endif
+			, NULL, 0
 			))) {
 
 	error(errSyntaxError, -1, "Couldn't create a font for '{0:s}'",
@@ -1774,7 +1775,7 @@ void SplashOutputDev::clipToStrokePath(GfxState *state) {
   SplashPath *path, *path2;
 
   path = convertPath(state, state->getPath(), gFalse);
-  path2 = splash->makeStrokePath(path, state->getLineWidth());
+  path2 = splash->makeStrokePath( path, state->getLineWidth(), 0, 0 );
   delete path;
   splash->clipToPath(path2, gFalse);
   delete path2;
@@ -1872,6 +1873,8 @@ void SplashOutputDev::drawChar(GfxState *state, double x, double y,
   if (doStroke) {
     strokeAdjust = splash->getStrokeAdjust();
     splash->setStrokeAdjust(splashStrokeAdjustOff);
+    splash->setStrokeAdjust(
+		 mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
   }
 
   // fill and stroke
@@ -1917,7 +1920,8 @@ void SplashOutputDev::drawChar(GfxState *state, double x, double y,
   }
 
   if (doStroke) {
-    splash->setStrokeAdjust(strokeAdjust);
+    splash->setStrokeAdjust(
+		 mapStrokeAdjustMode[strokeAdjust]);
   }
 
   if (path) {
