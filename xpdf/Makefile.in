@@ -59,6 +59,7 @@ CXX_SRC = \
 	$(srcdir)/Catalog.cc \
 	$(srcdir)/CharCodeToUnicode.cc \
 	$(srcdir)/CoreOutputDev.cc \
+	$(srcdir)/DisplayState.cc \
 	$(srcdir)/Decrypt.cc \
 	$(srcdir)/Dict.cc \
 	$(srcdir)/Error.cc \
@@ -94,8 +95,12 @@ CXX_SRC = \
 	$(srcdir)/Stream.cc \
 	$(srcdir)/TextOutputDev.cc \
 	$(srcdir)/TextString.cc \
+	$(srcdir)/TileCache.cc \
+	$(srcdir)/TileCompositor.cc \
+	$(srcdir)/TileMap.cc \
 	$(srcdir)/UnicodeMap.cc \
 	$(srcdir)/UnicodeTypeTable.cc \
+	$(srcdir)/UTF8.cc \
 	$(srcdir)/XFAForm.cc \
 	$(srcdir)/XPDFApp.cc \
 	$(srcdir)/XPDFCore.cc \

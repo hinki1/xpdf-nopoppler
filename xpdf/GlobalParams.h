@@ -16,6 +16,9 @@
 #endif
 
 #include <stdio.h>
+#ifdef _WIN32
+#  include <windows.h>
+#endif
 #include "gtypes.h"
 #include "CharTypes.h"
 
@@ -73,9 +76,11 @@ enum PSLevel {
   psLevel1,
   psLevel1Sep,
   psLevel2,
+  psLevel2Gray,
   psLevel2Sep,
   psLevel3,
-  psLevel3Sep
+  psLevel3Gray,
+  psLevel3Sep,
 };
 
 //------------------------------------------------------------------------
@@ -128,16 +133,17 @@ public:
 #define xpdfKeyCodeReturn         0x1001
 #define xpdfKeyCodeEnter          0x1002
 #define xpdfKeyCodeBackspace      0x1003
-#define xpdfKeyCodeInsert         0x1004
-#define xpdfKeyCodeDelete         0x1005
-#define xpdfKeyCodeHome           0x1006
-#define xpdfKeyCodeEnd            0x1007
-#define xpdfKeyCodePgUp           0x1008
-#define xpdfKeyCodePgDn           0x1009
-#define xpdfKeyCodeLeft           0x100a
-#define xpdfKeyCodeRight          0x100b
-#define xpdfKeyCodeUp             0x100c
-#define xpdfKeyCodeDown           0x100d
+#define xpdfKeyCodeEsc            0x1004
+#define xpdfKeyCodeInsert         0x1005
+#define xpdfKeyCodeDelete         0x1006
+#define xpdfKeyCodeHome           0x1007
+#define xpdfKeyCodeEnd            0x1008
+#define xpdfKeyCodePgUp           0x1009
+#define xpdfKeyCodePgDn           0x100a
+#define xpdfKeyCodeLeft           0x100b
+#define xpdfKeyCodeRight          0x100c
+#define xpdfKeyCodeUp             0x100d
+#define xpdfKeyCodeDown           0x100e
 #define xpdfKeyCodeF1             0x1100
 #define xpdfKeyCodeF35            0x1122
 #define xpdfKeyCodeMousePress1    0x2001
@@ -158,6 +164,15 @@ public:
 #define xpdfKeyCodeMouseRelease7  0x2107
 // ...
 #define xpdfKeyCodeMouseRelease32 0x2120
+#define xpdfKeyCodeMouseClick1    0x2201
+#define xpdfKeyCodeMouseClick2    0x2202
+#define xpdfKeyCodeMouseClick3    0x2203
+#define xpdfKeyCodeMouseClick4    0x2204
+#define xpdfKeyCodeMouseClick5    0x2205
+#define xpdfKeyCodeMouseClick6    0x2206
+#define xpdfKeyCodeMouseClick7    0x2207
+// ...
+#define xpdfKeyCodeMouseClick32   0x2220
 #define xpdfKeyModNone            0
 #define xpdfKeyModShift           (1 << 0)
 #define xpdfKeyModCtrl            (1 << 1)
@@ -176,6 +191,27 @@ public:
 
 //------------------------------------------------------------------------
 
+class PopupMenuCmd {
+public:
+
+  GString *label;		// label for display in the menu
+  GList *cmds;			// list of commands [GString]
+
+  PopupMenuCmd(GString *labelA, GList *cmdsA);
+  ~PopupMenuCmd();
+};
+
+//------------------------------------------------------------------------
+
+#ifdef _WIN32
+struct XpdfWin32ErrorInfo {
+  const char *func;		// last Win32 API function call to fail
+  DWORD code;			// error code returned by that function
+};
+#endif
+
+//------------------------------------------------------------------------
+
 class GlobalParams {
 public:
 
@@ -185,8 +221,8 @@ public:
 
   ~GlobalParams();
 
-  void setBaseDir(char *dir);
-  void setupBaseFonts(char *dir);
+  void setBaseDir(const char *dir);
+  void setupBaseFonts(const char *dir);
 
   void parseLine(char *buf, GString *fileName, int line);
 
@@ -236,12 +272,18 @@ public:
   GBool getPSRasterMono();
   int getPSRasterSliceSize();
   GBool getPSAlwaysRasterize();
+  GBool getPSNeverRasterize();
   GString *getTextEncodingName();
   EndOfLineKind getTextEOL();
   GBool getTextPageBreaks();
   GBool getTextKeepTinyChars();
   GString *getInitialZoom();
-  GBool getContinuousView();
+  int getDefaultFitZoom();
+  GBool getInitialSidebarState();
+  int getMaxTileWidth();
+  int getMaxTileHeight();
+  int getTileCacheSize();
+  int getWorkerThreads();
   GBool getEnableFreeType();
   GBool getDisableFreeTypeHinting();
   GBool getAntialias();
@@ -255,16 +297,22 @@ public:
   double getScreenBlackThreshold();
   double getScreenWhiteThreshold();
   double getMinLineWidth();
+  GBool getEnablePathSimplification();
   GBool getDrawAnnotations();
+  GBool getDrawFormFields();
   GBool getOverprintPreview() { return overprintPreview; }
+  GString *getPaperColor();
+  GString *getMatteColor();
+  GString *getFullScreenMatteColor();
   GString *getLaunchCommand() { return launchCommand; }
-  GString *getURLCommand() { return urlCommand; }
   GString *getMovieCommand() { return movieCommand; }
   GBool getMapNumericCharNames();
   GBool getMapUnknownCharNames();
   GBool getMapExtTrueTypeFontsViaUnicode();
   GBool getEnableXFA();
   GList *getKeyBinding(int code, int mods, int context);
+  int getNumPopupMenuCmds();
+  PopupMenuCmd *getPopupMenuCmd(int idx);
   GBool getPrintCommands();
   GBool getErrQuiet();
 
@@ -302,7 +350,6 @@ public:
   void setTextPageBreaks(GBool pageBreaks);
   void setTextKeepTinyChars(GBool keep);
   void setInitialZoom(char *s);
-  void setContinuousView(GBool cont);
   GBool setEnableFreeType(char *s);
   GBool setAntialias(char *s);
   GBool setVectorAntialias(char *s);
@@ -312,6 +359,8 @@ public:
   void setScreenGamma(double gamma);
   void setScreenBlackThreshold(double thresh);
   void setScreenWhiteThreshold(double thresh);
+  void setDrawFormFields(GBool draw);
+  void setOverprintPreview(GBool preview);
   void setMapNumericCharNames(GBool map);
   void setMapUnknownCharNames(GBool map);
   void setMapExtTrueTypeFontsViaUnicode(GBool map);
@@ -319,10 +368,10 @@ public:
   void setPrintCommands(GBool printCommandsA);
   void setErrQuiet(GBool errQuietA);
 
-  //----- security handlers
-
-  void addSecurityHandler(XpdfSecurityHandler *handler);
-  XpdfSecurityHandler *getSecurityHandler(char *name);
+#ifdef _WIN32
+  void setWin32ErrorInfo(const char *func, DWORD code);
+  XpdfWin32ErrorInfo *getWin32ErrorInfo();
+#endif
 
 private:
 
@@ -356,19 +405,19 @@ private:
 		 int *code, int *mods, int *context,
 		 const char *cmdName,
 		 GList *tokens, GString *fileName, int line);
+  void parsePopupMenuCmd(GList *tokens, GString *fileName, int line);
   void parseCommand(const char *cmdName, GString **val,
 		    GList *tokens, GString *fileName, int line);
   void parseYesNo(const char *cmdName, GBool *flag,
 		  GList *tokens, GString *fileName, int line);
   GBool parseYesNo2(char *token, GBool *flag);
+  void parseColor(const char *cmdName, GString **val,
+		  GList *tokens, GString *fileName, int line);
   void parseInteger(const char *cmdName, int *val,
 		    GList *tokens, GString *fileName, int line);
   void parseFloat(const char *cmdName, double *val,
 		  GList *tokens, GString *fileName, int line);
   UnicodeMap *getUnicodeMap2(GString *encodingName);
-#ifdef ENABLE_PLUGINS
-  GBool loadPlugin(char *type, char *name);
-#endif
 
   //----- static tables
 
@@ -442,6 +491,7 @@ private:
   int psRasterSliceSize;	// maximum size (pixels) of PostScript
 				//   rasterization slice
   GBool psAlwaysRasterize;	// force PostScript rasterization
+  GBool psNeverRasterize;	// prevent PostScript rasterization
   GString *textEncoding;	// encoding (unicodeMap) to use for text
 				//   output
   EndOfLineKind textEOL;	// type of EOL marker to use for text
@@ -449,7 +499,14 @@ private:
   GBool textPageBreaks;		// insert end-of-page markers?
   GBool textKeepTinyChars;	// keep all characters in text output
   GString *initialZoom;		// initial zoom level
-  GBool continuousView;		// continuous view mode
+  int defaultFitZoom;		// default zoom factor if initialZoom is
+				//   'page' or 'width'.
+  GBool initialSidebarState;	// initial sidebar state - open (true)
+				//   or closed (false)
+  int maxTileWidth;		// maximum rasterization tile width
+  int maxTileHeight;		// maximum rasterization tile height
+  int tileCacheSize;		// number of rasterization tiles in cache
+  int workerThreads;		// number of rasterization worker threads
   GBool enableFreeType;		// FreeType enable flag
   GBool disableFreeTypeHinting;	// FreeType hinting disable flag
   GBool antialias;		// font anti-aliasing enable flag
@@ -463,10 +520,15 @@ private:
   double screenBlackThreshold;	// screen black clamping threshold
   double screenWhiteThreshold;	// screen white clamping threshold
   double minLineWidth;		// minimum line width
+  GBool				// enable path simplification
+    enablePathSimplification;
   GBool drawAnnotations;	// draw annotations or not
+  GBool drawFormFields;		// draw form fields or not
   GBool overprintPreview;	// enable overprint preview
+  GString *paperColor;		// paper (page background) color
+  GString *matteColor;		// matte (background outside of page) color
+  GString *fullScreenMatteColor; // matte color in full-screen mode
   GString *launchCommand;	// command executed for 'launch' links
-  GString *urlCommand;		// command executed for URL links
   GString *movieCommand;	// command executed for movie annotations
   GBool mapNumericCharNames;	// map numeric char names (from font subsets)?
   GBool mapUnknownCharNames;	// map unknown char names?
@@ -474,6 +536,7 @@ private:
 				        //   for external TrueType fonts?
   GBool enableXFA;		// enable XFA form rendering
   GList *keyBindings;		// key & mouse button bindings [KeyBinding]
+  GList *popupMenuCmds;		// popup menu commands [PopupMenuCmd]
   GBool printCommands;		// print the drawing commands
   GBool errQuiet;		// suppress error messages?
 
@@ -482,16 +545,13 @@ private:
   UnicodeMapCache *unicodeMapCache;
   CMapCache *cMapCache;
 
-#ifdef ENABLE_PLUGINS
-  GList *plugins;		// list of plugins [Plugin]
-  GList *securityHandlers;	// list of loaded security handlers
-				//   [XpdfSecurityHandler]
-#endif
-
 #if MULTITHREADED
   GMutex mutex;
   GMutex unicodeMapCacheMutex;
   GMutex cMapCacheMutex;
+#endif
+#ifdef _WIN32
+  DWORD tlsWin32ErrorInfo;	// TLS index for error info
 #endif
 };
 
