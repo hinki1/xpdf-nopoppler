@@ -29,6 +29,7 @@
 #include "TextOutputDev.h"
 #include "SplashBitmap.h"
 #include "SplashPattern.h"
+#include "TileMap.h"
 #include "XPDFApp.h"
 #include "XPDFCore.h"
 
@@ -624,13 +625,9 @@ GBool XPDFCore::doAction(LinkAction *action) {
     } else if (!actionName->cmp("PrevPage")) {
       gotoPrevPage(1, gTrue, gFalse);
     } else if (!actionName->cmp("FirstPage")) {
-      if (topPage != 1) {
-	displayPage(1, zoomPercent, rotate, gTrue, gTrue);
-      }
+      displayPage(1, gTrue, gFalse, gTrue);
     } else if (!actionName->cmp("LastPage")) {
-      if (topPage != doc->getNumPages()) {
-	displayPage(doc->getNumPages(), zoomPercent, rotate, gTrue, gTrue);
-      }
+      displayPage(doc->getNumPages(), gTrue, gFalse, gTrue);
     } else if (!actionName->cmp("GoBack")) {
       goBackward();
     } else if (!actionName->cmp("GoForward")) {
@@ -658,7 +655,7 @@ GBool XPDFCore::doAction(LinkAction *action) {
 			    &movieAnnot);
     } else {
       //~ need to use the correct page num here
-      doc->getCatalog()->getPage(topPage)->getAnnots(&obj1);
+      doc->getCatalog()->getPage(tileMap->getFirstPage())->getAnnots(&obj1);
       if (obj1.isArray()) {
 	for (i = 0; i < obj1.arrayGetLength(); ++i) {
 	  if (obj1.arrayGet(i, &movieAnnot)->isDict()) {
@@ -1026,6 +1023,7 @@ void XPDFCore::hScrollChangeCbk(Widget widget, XtPointer ptr,
   XPDFCore *core = (XPDFCore *)ptr;
   XmScrollBarCallbackStruct *data = (XmScrollBarCallbackStruct *)callData;
 
+// siehe PDFCore.cc:308ff
   core->scrollTo(data->value, core->scrollY);
 }
 
@@ -1095,8 +1093,9 @@ void XPDFCore::resizeCbk(Widget widget, XtPointer ptr, XtPointer callData) {
     sx = core->scrollX;
     sy = core->scrollY;
   }
-  core->update(core->topPage, sx, sy, core->zoom, core->rotate, gTrue, gFalse,
-	       gFalse);
+//  core->update(core->topPage, sx, sy, core->zoom, core->rotate, gTrue, gFalse,
+//	       gFalse);
+    core->update(core->tile->Map->getFirstPage(), sx, sy, core->zoom, core->rotate, gTrue, gFalse, gFalse);
 }
 
 void XPDFCore::redrawCbk(Widget widget, XtPointer ptr, XtPointer callData) {
