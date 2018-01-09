@@ -21,7 +21,6 @@
 // command line options
 //------------------------------------------------------------------------
 
-static GBool contView = gFalse;
 static char enableFreeTypeStr[16] = "";
 static char antialiasStr[16] = "";
 static char vectorAntialiasStr[16] = "";
@@ -63,8 +62,6 @@ static ArgDesc argDesc[] = {
    "color of paper background"},
   {"-z",          argStringDummy, NULL,           0,
    "initial zoom level (percent, 'page', 'width')"},
-  {"-cont",       argFlag,        &contView,      0,
-   "start in continuous view mode" },
 #if HAVE_FREETYPE_FREETYPE_H | HAVE_FREETYPE_H
   {"-freetype",   argString,      enableFreeTypeStr, sizeof(enableFreeTypeStr),
    "enable FreeType font rasterizer: yes, no"},
@@ -151,9 +148,6 @@ int main(int argc, char *argv[]) {
   // read config file
   globalParams = new GlobalParams(cfgFileName);
   globalParams->setupBaseFonts(NULL);
-  if (contView) {
-    globalParams->setContinuousView(contView);
-  }
   if (psFileArg[0]) {
     globalParams->setPSFile(psFileArg);
   }
