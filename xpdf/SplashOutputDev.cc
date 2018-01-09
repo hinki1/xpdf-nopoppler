@@ -703,7 +703,7 @@ void SplashOutputDev::startDoc(XRef *xrefA) {
     delete fontEngine;
   }
   fontEngine = new SplashFontEngine(
-#if HAVE_FREETYPE_H
+#if HAVE_FREETYPE_FREETYPE_H | HAVE_FREETYPE_H
 				    globalParams->getEnableFreeType(),
 				    globalParams->getDisableFreeTypeHinting()
 				      ? splashFTNoHinting : 0,
