@@ -176,6 +176,7 @@ XPDF_OBJS = \
 	TextString.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
+	UTF8.o \
 	XFAForm.o \
 	XPDFApp.o \
 	XPDFCore.o \
@@ -234,6 +235,7 @@ PDFTOPS_OBJS = \
 	Stream.o \
 	TextString.o \
 	UnicodeMap.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
@@ -288,6 +290,7 @@ PDFTOTEXT_OBJS = \
 	TextString.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
@@ -343,6 +346,7 @@ PDFTOHTML_OBJS = \
 	TextString.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
@@ -395,6 +399,7 @@ PDFINFO_OBJS = \
 	Stream.o \
 	TextString.o \
 	UnicodeMap.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
@@ -446,6 +451,7 @@ PDFFONTS_OBJS = \
 	Stream.o \
 	TextString.o \
 	UnicodeMap.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
@@ -497,6 +503,7 @@ PDFDETACH_OBJS = \
 	Stream.o \
 	TextString.o \
 	UnicodeMap.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
@@ -551,6 +558,7 @@ PDFTOPPM_OBJS = \
 	TextString.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
@@ -606,6 +614,7 @@ PDFTOPNG_OBJS = \
 	TextString.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
@@ -659,6 +668,7 @@ PDFIMAGES_OBJS = \
 	Stream.o \
 	TextString.o \
 	UnicodeMap.o \
+	UTF8.o \
 	XFAForm.o \
 	XpdfPluginAPI.o \
 	XRef.o \
