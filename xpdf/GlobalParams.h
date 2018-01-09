@@ -305,6 +305,7 @@ public:
   GString *getMatteColor();
   GString *getFullScreenMatteColor();
   GString *getLaunchCommand() { return launchCommand; }
+  GString *getURLCommand() { return urlCommand; }
   GString *getMovieCommand() { return movieCommand; }
   GBool getMapNumericCharNames();
   GBool getMapUnknownCharNames();
@@ -529,6 +530,7 @@ private:
   GString *matteColor;		// matte (background outside of page) color
   GString *fullScreenMatteColor; // matte color in full-screen mode
   GString *launchCommand;	// command executed for 'launch' links
+  GString *urlCommand;		// command executed for URL links
   GString *movieCommand;	// command executed for movie annotations
   GBool mapNumericCharNames;	// map numeric char names (from font subsets)?
   GBool mapUnknownCharNames;	// map unknown char names?

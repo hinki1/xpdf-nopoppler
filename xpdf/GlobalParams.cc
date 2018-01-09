@@ -634,6 +634,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   matteColor = new GString("#808080");
   fullScreenMatteColor = new GString("#000000");
   launchCommand = NULL;
+  urlCommand = NULL;
   movieCommand = NULL;
   mapNumericCharNames = gTrue;
   mapUnknownCharNames = gFalse;
@@ -1072,6 +1073,8 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
 		 tokens, fileName, line);
     } else if (!cmd->cmp("launchCommand")) {
       parseCommand("launchCommand", &launchCommand, tokens, fileName, line);
+    } else if (!cmd->cmp("urlCommand")) {
+      parseCommand("urlCommand", &urlCommand, tokens, fileName, line);
     } else if (!cmd->cmp("movieCommand")) {
       parseCommand("movieCommand", &movieCommand, tokens, fileName, line);
     } else if (!cmd->cmp("mapNumericCharNames")) {
@@ -1882,6 +1885,9 @@ GlobalParams::~GlobalParams() {
   }
   if (launchCommand) {
     delete launchCommand;
+  }
+  if (urlCommand) {
+    delete urlCommand;
   }
   if (movieCommand) {
     delete movieCommand;
