@@ -58,31 +58,6 @@ Atom XPDFCore::compoundtextAtom;
 Atom XPDFCore::utf8stringAtom;
 
 //------------------------------------------------------------------------
-// XPDFCoreTile
-//------------------------------------------------------------------------
-
-class XPDFCoreTile: public PDFCoreTile {
-public:
-  XPDFCoreTile(int xDestA, int yDestA);
-  virtual ~XPDFCoreTile();
-  XImage *image;
-};
-
-XPDFCoreTile::XPDFCoreTile(int xDestA, int yDestA):
-  PDFCoreTile(xDestA, yDestA)
-{
-  image = NULL;
-}
-
-XPDFCoreTile::~XPDFCoreTile() {
-  if (image) {
-    gfree(image->data);
-    image->data = NULL;
-    XDestroyImage(image);
-  }
-}
-
-//------------------------------------------------------------------------
 // XPDFCore
 //------------------------------------------------------------------------
 
@@ -90,9 +65,12 @@ XPDFCore::XPDFCore(Widget shellA, Widget parentWidgetA,
 		   SplashColorPtr paperColorA, Gulong paperPixelA,
 		   Gulong mattePixelA, GBool fullScreenA, GBool reverseVideoA,
 		   GBool installCmap, int rgbCubeSizeA):
-  PDFCore(splashModeRGB8, 4, reverseVideoA, paperColorA, !fullScreenA)
+  PDFCore(splashModeRGB8, 4, reverseVideoA, paperColorA)
 {
   GString *initialZoom;
+
+  int displayDpi = 120;
+  double zoomPercent;
 
   shell = shellA;
   parentWidget = parentWidgetA;
@@ -117,19 +95,22 @@ XPDFCore::XPDFCore(Widget shellA, Widget parentWidgetA,
 
   // get the initial zoom value
   if (fullScreen) {
-    zoom = zoomPage;
+    zoomPercent = zoomPage;
   } else {
     initialZoom = globalParams->getInitialZoom();
     if (!initialZoom->cmp("page")) {
-      zoom = zoomPage;
+      zoomPercent = zoomPage;
     } else if (!initialZoom->cmp("width")) {
-      zoom = zoomWidth;
+      zoomPercent = zoomWidth;
     } else if (!initialZoom->cmp("height")) {
-      zoom = zoomHeight;
+      zoomPercent = zoomHeight;
     } else {
-      zoom = atoi(initialZoom->getCString());
-      if (zoom <= 0) {
-	zoom = defZoom;
+      zoomPercent = atoi(initialZoom->getCString());
+      if (zoomPercent <= 0) {
+        zoomPercent = (int)((100 * displayDpi) / 72.0 + 0.5);
+        if (zoomPercent < 100) {
+          zoomPercent = 100;
+        }
       }
     }
     delete initialZoom;
@@ -237,6 +218,8 @@ void XPDFCore::resizeToPage(int pg) {
   Dimension topW, topH, topBorder, daW, daH;
   Dimension displayW, displayH;
 
+  double zoomPercent;
+
   displayW = DisplayWidth(display, screenNum);
   displayH = DisplayHeight(display, screenNum);
   if (fullScreen) {
@@ -244,8 +227,9 @@ void XPDFCore::resizeToPage(int pg) {
     height = displayH;
   } else {
     if (!doc || pg <= 0 || pg > doc->getNumPages()) {
-      width1 = 612;
-      height1 = 792;
+      width = 612;
+      height = 792;
+      goto setXtSize;
     } else if (doc->getPageRotate(pg) == 90 ||
 	       doc->getPageRotate(pg) == 270) {
       width1 = doc->getPageCropHeight(pg);
@@ -254,15 +238,12 @@ void XPDFCore::resizeToPage(int pg) {
       width1 = doc->getPageCropWidth(pg);
       height1 = doc->getPageCropHeight(pg);
     }
-    if (zoom == zoomPage || zoom == zoomWidth || zoom == zoomHeight) {
-      width = (Dimension)(width1 * 0.01 * defZoom + 0.5);
-      height = (Dimension)(height1 * 0.01 * defZoom + 0.5);
+    if (zoomPercent == zoomPage || zoomPercent == zoomWidth || zoomPercent == zoomHeight) {
+      width = (Dimension)(width1 * 0.01 * 100 + 0.5);
+      height = (Dimension)(height1 * 0.01 * 100 + 0.5);
     } else {
-      width = (Dimension)(width1 * 0.01 * zoom + 0.5);
-      height = (Dimension)(height1 * 0.01 * zoom + 0.5);
-    }
-    if (continuousMode) {
-      height += continuousModePageSpacing;
+      width = (Dimension)(width1 * 0.01 * zoomPercent + 0.5);
+      height = (Dimension)(height1 * 0.01 * zoomPercent + 0.5);
     }
     if (width > displayW - 100) {
       width = displayW - 100;
@@ -272,6 +253,7 @@ void XPDFCore::resizeToPage(int pg) {
     }
   }
 
+setXtSize:
   if (XtIsRealized(shell)) {
     XtVaGetValues(shell, XmNwidth, &topW, XmNheight, &topH,
 		  XmNborderWidth, &topBorder, NULL);
@@ -286,17 +268,19 @@ void XPDFCore::resizeToPage(int pg) {
 void XPDFCore::update(int topPageA, int scrollXA, int scrollYA,
 		      double zoomA, int rotateA, GBool force,
 		      GBool addToHist, GBool adjustScrollX) {
-  int oldPage;
+  int firstPage;
 
-  oldPage = topPage;
-  PDFCore::update(topPageA, scrollXA, scrollYA, zoomA, rotateA,
-		  force, addToHist, adjustScrollX);
-  linkAction = NULL;
-  if (doc && topPage != oldPage) {
-    if (updateCbk) {
-      (*updateCbk)(updateCbkData, NULL, topPage, -1, "");
-    }
+  firstPage = getPageNum();
+//  PDFCore::update(topPageA, scrollXA, scrollYA, zoomA, rotateA,
+//		  force, addToHist, adjustScrollX);
+  GBool checkForChangedFile = false;
+  PDFCore::finishUpdate( addToHist, checkForChangedFile );
+  if (doc && firstPage != oldFirstPage && updateCbk) {
+    (*updateCbk)(updateCbkData, NULL, firstPage, -1, "");
   }
+  oldFirstPage = firstPage;
+  linkAction = NULL;
+  lastLinkAction = NULL;
 }
 
 GBool XPDFCore::checkForNewFile() {
@@ -366,15 +350,16 @@ void XPDFCore::startSelection(int wx, int wy) {
   int pg, x, y;
 
   takeFocus();
-  if (doc && doc->getNumPages() > 0) {
-    if (selectEnabled) {
-      if (cvtWindowToDev(wx, wy, &pg, &x, &y)) {
-	setSelection(pg, x, y, x, y);
-	setCursor(selectCursor);
-	dragging = gTrue;
-      }
-    }
+  if (!doc || doc->getNumPages() == 0 || !selectEnabled) {
+    return;
   }
+  if (!cvtWindowToDev(wx, wy, &pg, &x, &y)) {
+    return;
+  }
+//  setSelection(pg, x, y, x, y);
+  startSelectionDrag( pg, x, y );
+  setCursor(selectCursor);
+  dragging = gTrue;
 }
 
 void XPDFCore::endSelection(int wx, int wy) {
@@ -387,17 +372,12 @@ void XPDFCore::endSelection(int wx, int wy) {
       dragging = gFalse;
       setCursor(None);
       if (ok) {
-	moveSelection(pg, x, y);
+//	moveSelection(pg, x, y);
+	moveSelectionDrag(pg, x, y);
       }
 #ifndef NO_TEXT_SELECT
-      if (selectULX != selectLRX &&
-	  selectULY != selectLRY) {
-	if (doc->okToCopy()) {
-	  copySelection();
-	} else {
-	  error(errNotAllowed, -1,
-		"Copying of text from this document is not allowed.");
-	}
+      if (hasSelection()) {
+        copySelection();
       }
 #endif
     }
@@ -514,7 +494,7 @@ Boolean XPDFCore::convertSelectionCbk(Widget widget, Atom *selection,
 // hyperlinks
 //------------------------------------------------------------------------
 
-void XPDFCore::doAction(LinkAction *action) {
+GBool XPDFCore::doAction(LinkAction *action) {
   LinkActionKind kind;
   LinkDest *dest;
   GString *namedDest;
@@ -549,8 +529,7 @@ void XPDFCore::doAction(LinkAction *action) {
 	namedDest = namedDest->copy();
       }
       s = ((LinkGoToR *)action)->getFileName()->getCString();
-      //~ translate path name for VMS (deal with '/')
-      if (isAbsolutePath(s) || !doc->getFileName()) {
+      if (isAbsolutePath(s)) {
 	fileName = new GString(s);
       } else {
 	fileName = appendToPath(grabPath(doc->getFileName()->getCString()), s);
@@ -563,7 +542,7 @@ void XPDFCore::doAction(LinkAction *action) {
 	  delete namedDest;
 	}
 	delete fileName;
-	return;
+	return gFalse;
       }
       delete fileName;
     }
@@ -572,11 +551,12 @@ void XPDFCore::doAction(LinkAction *action) {
       delete namedDest;
     }
     if (dest) {
-      displayDest(dest, zoom, rotate, gTrue);
+//      displayDest(dest, zoomPercent, rotate, gTrue);
+      displayDest(dest);
       delete dest;
     } else {
       if (kind == actionGoToR) {
-	displayPage(1, zoom, 0, gFalse, gTrue);
+	displayPage(1, gFalse, gFalse, gTrue);
       }
     }
     break;
@@ -595,23 +575,16 @@ void XPDFCore::doAction(LinkAction *action) {
       }
       if (loadFile(fileName) != errNone) {
 	delete fileName;
-	return;
+	return gFalse;
       }
       delete fileName;
-      displayPage(1, zoom, rotate, gFalse, gTrue);
+      displayPage(1, gFalse, gFalse, gTrue);
     } else {
       fileName = fileName->copy();
       if (((LinkLaunch *)action)->getParams()) {
 	fileName->append(' ');
 	fileName->append(((LinkLaunch *)action)->getParams());
       }
-#ifdef VMS
-      fileName->insert(0, "spawn/nowait ");
-#elif defined(__EMX__)
-      fileName->insert(0, "start /min /n ");
-#else
-      fileName->append(" &");
-#endif
       if (globalParams->getLaunchCommand()) {
 	fileName->insert(0, ' ');
 	fileName->insert(0, globalParams->getLaunchCommand());
@@ -652,11 +625,11 @@ void XPDFCore::doAction(LinkAction *action) {
       gotoPrevPage(1, gTrue, gFalse);
     } else if (!actionName->cmp("FirstPage")) {
       if (topPage != 1) {
-	displayPage(1, zoom, rotate, gTrue, gTrue);
+	displayPage(1, zoomPercent, rotate, gTrue, gTrue);
       }
     } else if (!actionName->cmp("LastPage")) {
       if (topPage != doc->getNumPages()) {
-	displayPage(doc->getNumPages(), zoom, rotate, gTrue, gTrue);
+	displayPage(doc->getNumPages(), zoomPercent, rotate, gTrue, gTrue);
       }
     } else if (!actionName->cmp("GoBack")) {
       goBackward();
@@ -669,6 +642,7 @@ void XPDFCore::doAction(LinkAction *action) {
     } else {
       error(errSyntaxError, -1,
 	    "Unknown named action: '{0:t}'", actionName);
+      return gFalse;
     }
     break;
 
@@ -676,7 +650,7 @@ void XPDFCore::doAction(LinkAction *action) {
   case actionMovie:
     if (!(cmd = globalParams->getMovieCommand())) {
       error(errConfig, -1, "No movieCommand defined in config file");
-      break;
+      return gFalse;
     }
     if (((LinkMovie *)action)->hasAnnotRef()) {
       doc->getXRef()->fetch(((LinkMovie *)action)->getAnnotRef()->num,
@@ -726,15 +700,16 @@ void XPDFCore::doAction(LinkAction *action) {
   case actionJavaScript:
   case actionSubmitForm:
   case actionHide:
-    error(errSyntaxError, -1, "Unsupported link action type");
-    break;
+    return gFalse;
 
   // unknown action type
   case actionUnknown:
     error(errSyntaxError, -1, "Unknown link action type: '{0:t}'",
 	  ((LinkUnknown *)action)->getAction());
-    break;
+    return gFalse;
   }
+
+  return gTrue;
 }
 
 // Run a command, given a <cmdFmt> string with one '%s' in it, and an

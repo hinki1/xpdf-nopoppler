@@ -101,7 +101,7 @@ public:
 
   //----- hyperlinks
 
-  void doAction(LinkAction *action);
+  GBool doAction(LinkAction *action);
   LinkAction *getLinkAction() { return linkAction; }
   GString *mungeURL(GString *url);
 
@@ -170,12 +170,6 @@ private:
   static void resizeCbk(Widget widget, XtPointer ptr, XtPointer callData);
   static void redrawCbk(Widget widget, XtPointer ptr, XtPointer callData);
   static void inputCbk(Widget widget, XtPointer ptr, XtPointer callData);
-  virtual PDFCoreTile *newTile(int xDestA, int yDestA);
-  virtual void updateTileData(PDFCoreTile *tileA, int xSrc, int ySrc,
-			      int width, int height, GBool composited);
-  virtual void redrawRect(PDFCoreTile *tileA, int xSrc, int ySrc,
-			  int xDest, int yDest, int width, int height,
-			  GBool composited);
   virtual void updateScrollbars();
   void setCursor(Cursor cursor);
   GBool doDialog(int type, GBool hasCancel,
@@ -227,12 +221,20 @@ private:
   static Atom compoundtextAtom;
   static Atom utf8stringAtom;
 
+  GBool dragging;
+
   GBool panning;
   int panMX, panMY;
+
+  int oldFirstPage;
+  int oldMidPage;
 
   time_t modTime;		// last modification time of PDF file
 
   LinkAction *linkAction;	// mouse cursor is over this link
+
+  LinkAction *lastLinkAction;	// getLinkInfo() caches an action
+  GString *lastLinkActionInfo;	// instead of QString
 
   XPDFUpdateCbk updateCbk;
   void *updateCbkData;
