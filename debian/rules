@@ -10,7 +10,7 @@ CXX=$(DEB_HOST_GNU_TYPE)-g++
 LIBS+=-lXm -lpaper $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --libs png --libs xt --libs x11 --libs freetype2) -pthread
 #CPPFLAGS+=$(includes) $(includes)/goo $(includes)/splash
 CPPFLAGS+=-Wno-write-strings -Wno-format-extra-args -Wfatal-errors
-CPPFLAGS+=-DHAVE_DIRENT_H -DHAVE_PAPER_H -DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
+CPPFLAGS+=-DHAVE_DIRENT_H -DHAVE_PAPER_H #-DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
 
 sources=$(sort $(shell for file in $(files); do echo $$file.*; done))
 objects=$(sort $(shell for file in $(files); do echo build/$$(basename $$file).o; done))
