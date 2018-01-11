@@ -1,3 +1,18 @@
+xpdf (3.53) UNRELEASED; urgency=medium
+
+  * rename binary package to xpdf-nopoppler
+  * folder xpdf from xpdf4
+  * fix: add HAVE_FREETYPE_FREETYPE_H
+  * remove continous view
+  * started patching XPDFCore
+  * fix: add UTF8.o to link stage
+  * reintroduce urlCommand to GlobalParams
+  * replace topPage
+  * call autoconf on debian/rules-build
+  * set system xpdfrc to /etc/xpdf/xpdfrc
+
+ -- Matthias Hinkfoth <hinki@abwesend.de>  Thu, 11 Jan 2018 20:14:30 +0100
+
 xpdf (3.52) stretch; urgency=medium
 
   * renamed binary package to xpdf-nopoppler
