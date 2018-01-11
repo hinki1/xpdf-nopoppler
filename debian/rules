@@ -16,6 +16,7 @@ sources=$(sort $(shell for file in $(files); do echo $$file.*; done))
 objects=$(sort $(shell for file in $(files); do echo build/$$(basename $$file).o; done))
 
 override_dh_auto_configure:
+	autoconf
 	dh_auto_configure -- --with-x --with-freetype2-includes=/usr/include/freetype2
 
 override_dh_auto_build:

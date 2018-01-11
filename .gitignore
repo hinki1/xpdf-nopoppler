@@ -1,4 +1,6 @@
-/Makefile
+/autom4te.cache/
+/configure
 /aconf.h
-config.log
-config.status
+/config.log
+/config.status
+/Makefile
