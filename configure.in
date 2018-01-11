@@ -61,12 +61,12 @@ dnl This ugly kludge to get the sysconfdir path is needed because
 dnl autoconf doesn't actually set the prefix variable until later.
 if test "$sysconfdir" = '${prefix}/etc'; then
   if test "x$prefix" = xNONE; then
-    system_xpdfrc="$ac_default_prefix/etc/xpdfrc"
+    system_xpdfrc="$ac_default_prefix/etc/xpdf/xpdfrc"
   else
-    system_xpdfrc="$prefix/etc/xpdfrc"
+    system_xpdfrc="$prefix/etc/xpdf/xpdfrc"
   fi
 else
-  system_xpdfrc="$sysconfdir/xpdfrc"
+  system_xpdfrc="$sysconfdir/xpdf/xpdfrc"
 fi
 AC_DEFINE_UNQUOTED(SYSTEM_XPDFRC, "$system_xpdfrc")
 
