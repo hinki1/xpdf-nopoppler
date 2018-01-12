@@ -2477,7 +2477,7 @@ void XPDFViewer::zoomComboBoxCbk(Widget widget, XtPointer ptr,
     if (XmStringGetNextSegment(context, &s, &charSet, &dir, &sep)) {
       z = atof(s);
       if (z <= 1) {
-	z = defZoom;
+	z = 100;
       }
       XtFree(charSet);
       XtFree(s);
@@ -2588,7 +2588,8 @@ void XPDFViewer::continuousModeToggleCbk(Widget widget, XtPointer ptr,
   XmToggleButtonCallbackStruct *data =
       (XmToggleButtonCallbackStruct *)callData;
 
-  viewer->core->setContinuousMode(data->set == XmSET);
+//  viewer->core->setContinuousMode(data->set == XmSET);
+  viewer->core->displayMode(displaySingle);
 }
 
 void XPDFViewer::fullScreenToggleCbk(Widget widget, XtPointer ptr,
