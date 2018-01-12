@@ -1023,8 +1023,8 @@ void XPDFCore::hScrollChangeCbk(Widget widget, XtPointer ptr,
   XPDFCore *core = (XPDFCore *)ptr;
   XmScrollBarCallbackStruct *data = (XmScrollBarCallbackStruct *)callData;
 
-// siehe PDFCore.cc:308ff
-  core->scrollTo(data->value, core->scrollY);
+// siehe QtPDFCore.cc:933 und PDFCore.cc:611
+  core->scrollTo(data->value, core->state->getScrollY());
 }
 
 void XPDFCore::hScrollDragCbk(Widget widget, XtPointer ptr,
@@ -1032,7 +1032,7 @@ void XPDFCore::hScrollDragCbk(Widget widget, XtPointer ptr,
   XPDFCore *core = (XPDFCore *)ptr;
   XmScrollBarCallbackStruct *data = (XmScrollBarCallbackStruct *)callData;
 
-  core->scrollTo(data->value, core->scrollY);
+  core->scrollTo(data->value, core->state->getScrollY());
 }
 
 void XPDFCore::vScrollChangeCbk(Widget widget, XtPointer ptr,
@@ -1040,7 +1040,7 @@ void XPDFCore::vScrollChangeCbk(Widget widget, XtPointer ptr,
   XPDFCore *core = (XPDFCore *)ptr;
   XmScrollBarCallbackStruct *data = (XmScrollBarCallbackStruct *)callData;
 
-  core->scrollTo(core->scrollX, data->value);
+  core->scrollTo(core->state->getScrollX(), data->value);
 }
 
 void XPDFCore::vScrollDragCbk(Widget widget, XtPointer ptr,
@@ -1048,7 +1048,7 @@ void XPDFCore::vScrollDragCbk(Widget widget, XtPointer ptr,
   XPDFCore *core = (XPDFCore *)ptr;
   XmScrollBarCallbackStruct *data = (XmScrollBarCallbackStruct *)callData;
 
-  core->scrollTo(core->scrollX, data->value);
+  core->scrollTo(core->state->getScrollX(), data->value);
 }
 
 void XPDFCore::resizeCbk(Widget widget, XtPointer ptr, XtPointer callData) {
@@ -1085,17 +1085,18 @@ void XPDFCore::resizeCbk(Widget widget, XtPointer ptr, XtPointer callData) {
   XtSetArg(args[n], XmNwidth, &w); ++n;
   XtSetArg(args[n], XmNheight, &h); ++n;
   XtGetValues(core->drawArea, args, n);
-  core->drawAreaWidth = (int)w;
-  core->drawAreaHeight = (int)h;
-  if (core->zoom == zoomPage || core->zoom == zoomWidth || core->zoom == zoomHeight) {
+  core->state->setWindowSize( (int)w, (int)h );
+  if (core->state->getZoom() == zoomPage ||
+	core->state->getZoom() == zoomWidth ||
+	core->state->getZoom() == zoomHeight) {
     sx = sy = -1;
   } else {
-    sx = core->scrollX;
-    sy = core->scrollY;
+    sx = core->state->getScrollX();
+    sy = core->state->getScrollY();
   }
 //  core->update(core->topPage, sx, sy, core->zoom, core->rotate, gTrue, gFalse,
 //	       gFalse);
-    core->update(core->tile->Map->getFirstPage(), sx, sy, core->zoom, core->rotate, gTrue, gFalse, gFalse);
+    core->update(core->tileMap->getFirstPage(), sx, sy, core->state->getZoom(), core->state->getRotate(), gTrue, gFalse, gFalse);
 }
 
 void XPDFCore::redrawCbk(Widget widget, XtPointer ptr, XtPointer callData) {
@@ -1111,10 +1112,11 @@ void XPDFCore::redrawCbk(Widget widget, XtPointer ptr, XtPointer callData) {
   } else {
     x = 0;
     y = 0;
-    w = core->drawAreaWidth;
-    h = core->drawAreaHeight;
+    w = core->state->getWinW();
+    h = core->state->getWinH();
   }
-  core->redrawWindow(x, y, w, h, gFalse);
+//  core->redrawWindow(x, y, w, h, gFalse);
+	core->state->forceRedraw();
 }
 
 void XPDFCore::inputCbk(Widget widget, XtPointer ptr, XtPointer callData) {
@@ -1144,7 +1146,9 @@ void XPDFCore::inputCbk(Widget widget, XtPointer ptr, XtPointer callData) {
 				&pg, &x, &y);
       if (core->dragging) {
 	if (ok) {
-	  core->moveSelection(pg, x, y);
+//	  core->moveSelection(pg, x, y);
+		// ist das richtig?
+		core->state->optionalContentChanged();
 	}
       } else if (core->hyperlinksEnabled) {
 	core->cvtDevToUser(pg, x, y, &xu, &yu);
@@ -1195,8 +1199,8 @@ void XPDFCore::inputCbk(Widget widget, XtPointer ptr, XtPointer callData) {
       }
     }
     if (core->panning) {
-      core->scrollTo(core->scrollX - (data->event->xmotion.x - core->panMX),
-		     core->scrollY - (data->event->xmotion.y - core->panMY));
+      core->scrollTo(core->state->getScrollX() - (data->event->xmotion.x - core->panMX),
+		     core->state->getScrollY() - (data->event->xmotion.y - core->panMY));
       core->panMX = data->event->xmotion.x;
       core->panMY = data->event->xmotion.y;
     }
@@ -1211,7 +1215,7 @@ void XPDFCore::inputCbk(Widget widget, XtPointer ptr, XtPointer callData) {
     break;
   }
 }
-
+/*
 PDFCoreTile *XPDFCore::newTile(int xDestA, int yDestA) {
   return new XPDFCoreTile(xDestA, yDestA);
 }
@@ -1383,11 +1387,22 @@ void XPDFCore::updateTileData(PDFCoreTile *tileA, int xSrc, int ySrc,
     gfree(errDownB);
   }
 }
+*/
 
-void XPDFCore::redrawRect(PDFCoreTile *tileA, int xSrc, int ySrc,
+// vgl: QtPDFCore::paintEvent
+/*void XPDFCore::redrawRect(PDFCoreTile *tileA, int xSrc, int ySrc,
+			  int xDest, int yDest, int width, int height,
+			  GBool composited) {*/
+/*void XPDFCore::redrawRect( int xSrc, int ySrc,
 			  int xDest, int yDest, int width, int height,
 			  GBool composited) {
-  XPDFCoreTile *tile = (XPDFCoreTile *)tileA;
+//  XPDFCoreTile *tile = (XPDFCoreTile *)tileA;
+	SplashBitmap *bitmap;
+	GBool wholeWindow;
+	wholeWindow = xDest == 0 && yDest == 0 &&
+			width == core->state->getWinW() &&
+			height == core->state->getWinH();
+	bitmap = getWindowBitmap(wholeWindow);
   Window drawAreaWin;
   XGCValues gcValues;
 
@@ -1399,8 +1414,10 @@ void XPDFCore::redrawRect(PDFCoreTile *tileA, int xSrc, int ySrc,
   }
 
   // draw the document
-  if (tile && tile->image) {
-    XPutImage(display, drawAreaWin, drawAreaGC, tile->image,
+//  if (tile && tile->image) {
+//    XPutImage(display, drawAreaWin, drawAreaGC, tile->image,
+	if (bitmap) {
+    XPutImage(display, drawAreaWin, drawAreaGC, bitmap,
 	      xSrc, ySrc, xDest, yDest, width, height);
 
   // draw the background
@@ -1410,14 +1427,18 @@ void XPDFCore::redrawRect(PDFCoreTile *tileA, int xSrc, int ySrc,
   }
 
   XFlush(display);
-}
+}*/
 
 void XPDFCore::updateScrollbars() {
   Arg args[20];
   int n;
   int maxPos;
 
-  if (pages->getLength() > 0) {
+	int winW = state->getWinW();
+	int winH = state->getWinH();
+	int horizLimit, vertLimit;
+	tileMap->getScrollLimits(&horizLimit, &vertLimit);
+/*  if (pages->getLength() > 0) {
     if (continuousMode) {
       maxPos = maxPageW;
     } else {
@@ -1425,19 +1446,20 @@ void XPDFCore::updateScrollbars() {
     }
   } else {
     maxPos = 1;
-  }
-  if (maxPos < drawAreaWidth) {
-    maxPos = drawAreaWidth;
+  }*/
+	maxPos = vertLimit;
+  if (maxPos < winW) {
+    maxPos = winW;
   }
   n = 0;
-  XtSetArg(args[n], XmNvalue, scrollX); ++n;
+  XtSetArg(args[n], XmNvalue, state->getScrollX()); ++n;
   XtSetArg(args[n], XmNmaximum, maxPos); ++n;
-  XtSetArg(args[n], XmNsliderSize, drawAreaWidth); ++n;
+  XtSetArg(args[n], XmNsliderSize, winW); ++n;
   XtSetArg(args[n], XmNincrement, 16); ++n;
-  XtSetArg(args[n], XmNpageIncrement, drawAreaWidth); ++n;
+  XtSetArg(args[n], XmNpageIncrement, winW); ++n;
   XtSetValues(hScrollBar, args, n);
 
-  if (pages->getLength() > 0) {
+/*  if (pages->getLength() > 0) {
     if (continuousMode) {
       maxPos = totalDocH;
     } else {
@@ -1445,16 +1467,17 @@ void XPDFCore::updateScrollbars() {
     }
   } else {
     maxPos = 1;
-  }
-  if (maxPos < drawAreaHeight) {
-    maxPos = drawAreaHeight;
+  }*/
+	maxPos = horizLimit;
+  if (maxPos < winH) {
+    maxPos = winH;
   }
   n = 0;
-  XtSetArg(args[n], XmNvalue, scrollY); ++n;
+  XtSetArg(args[n], XmNvalue, state->getScrollY()); ++n;
   XtSetArg(args[n], XmNmaximum, maxPos); ++n;
-  XtSetArg(args[n], XmNsliderSize, drawAreaHeight); ++n;
+  XtSetArg(args[n], XmNsliderSize, winH); ++n;
   XtSetArg(args[n], XmNincrement, 16); ++n;
-  XtSetArg(args[n], XmNpageIncrement, drawAreaHeight); ++n;
+  XtSetArg(args[n], XmNpageIncrement, winH); ++n;
   XtSetValues(vScrollBar, args, n);
 }
 
@@ -1514,6 +1537,7 @@ GBool XPDFCore::doDialog(int type, GBool hasCancel,
   } else {
     n = 0;
     XtSetArg(args[n], XmNscrollingPolicy, XmAUTOMATIC); ++n;
+	int drawAreaWidth = state->getWinW();
     if (drawAreaWidth > 300) {
       XtSetArg(args[n], XmNwidth, drawAreaWidth - 100); ++n;
     }
