@@ -83,6 +83,7 @@ public:
   virtual void update(int topPageA, int scrollXA, int scrollYA,
 		      double zoomA, int rotateA, GBool force,
 		      GBool addToHist, GBool adjustScrollX);
+	void invalidate(int,int,int,int);
 
   //----- page/position changes
 

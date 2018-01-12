@@ -1389,20 +1389,13 @@ void XPDFCore::updateTileData(PDFCoreTile *tileA, int xSrc, int ySrc,
 }
 */
 
-// vgl: QtPDFCore::paintEvent
-/*void XPDFCore::redrawRect(PDFCoreTile *tileA, int xSrc, int ySrc,
-			  int xDest, int yDest, int width, int height,
-			  GBool composited) {*/
-/*void XPDFCore::redrawRect( int xSrc, int ySrc,
+//void XPDFCore::invalidate( int xDest, int yDest, int width, int height )
+
+// vgl: QtPDFCore::paintEvent und ::invalidate
+void XPDFCore::redrawRect(PDFCoreTile *tileA, int xSrc, int ySrc,
 			  int xDest, int yDest, int width, int height,
 			  GBool composited) {
-//  XPDFCoreTile *tile = (XPDFCoreTile *)tileA;
-	SplashBitmap *bitmap;
-	GBool wholeWindow;
-	wholeWindow = xDest == 0 && yDest == 0 &&
-			width == core->state->getWinW() &&
-			height == core->state->getWinH();
-	bitmap = getWindowBitmap(wholeWindow);
+  XPDFCoreTile *tile = (XPDFCoreTile *)tileA;
   Window drawAreaWin;
   XGCValues gcValues;
 
@@ -1414,12 +1407,9 @@ void XPDFCore::updateTileData(PDFCoreTile *tileA, int xSrc, int ySrc,
   }
 
   // draw the document
-//  if (tile && tile->image) {
-//    XPutImage(display, drawAreaWin, drawAreaGC, tile->image,
-	if (bitmap) {
-    XPutImage(display, drawAreaWin, drawAreaGC, bitmap,
+  if (tile && tile->image) {
+    XPutImage(display, drawAreaWin, drawAreaGC, tile->image,
 	      xSrc, ySrc, xDest, yDest, width, height);
-
   // draw the background
   } else {
     XFillRectangle(display, drawAreaWin, drawAreaGC,
@@ -1427,7 +1417,7 @@ void XPDFCore::updateTileData(PDFCoreTile *tileA, int xSrc, int ySrc,
   }
 
   XFlush(display);
-}*/
+}
 
 void XPDFCore::updateScrollbars() {
   Arg args[20];
