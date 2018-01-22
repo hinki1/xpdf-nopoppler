@@ -1,0 +1,9 @@
+markieren:
+
+863ae geht
+1949d baut nicht
+c5f7b baut nicht
+2b32f geht nicht
+
+1949 integriert den kompletten splash-Ordner von xpdf4.
+Das war übertrieben.
