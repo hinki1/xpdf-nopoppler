@@ -1,3 +1,40 @@
+xpdf (3.60) stretch; urgency=low
+
+  * fix: build in debian/rules
+  * gitignore
+  * apply debian patch 01-manpage.patch
+  * apply debian patch fix-512381.patch
+  * enable zoom to height (debian fix-580495.patch)
+  * apply debian patch hardening-invalid-conversions.patch
+  * hardening-system-calls.patch
+  * hardening-pointer-casting.patch
+  * encoding mess (debian fix-737989.patch)
+  * keypad +- for zoom (debian fix-757053.patch)
+  * search command (debian fix-868498.patch)
+  * remove debian patches dir
+  * install only xpdf
+  * add gmempp.h
+  * some gmempp.h includes
+  * change return type of fixedpoint operators
+  * apply 8 bit bound to GString operations
+  * small change to argument parsing
+  * add atomic increment/decrement
+  * remote GDir and some MACOS ifdefs
+  * one more gmempp.h use
+  * enhance gmem.cc
+  * use enhanced gmalloc in case of debug
+  * pnm supports cmyk
+  * additional gmempp.h use
+  * glyph size check
+  * reorder font cache size calculation
+  * use gmempp.h
+  * bug im xpdf3-branch.
+  * Splash.cc kleine Neuerungen
+  * SplashFTFont.cc kleine Änderungen
+  * neuer Typ SplashStrokeAdjustMode. noch unbenutzt
+
+ -- Matthias Hinkfoth <hinki@abwesend.de>  Tue, 23 Jan 2018 08:19:45 +0100
+
 xpdf (3.04-5) unstable; urgency=medium
 
   * QA upload.
