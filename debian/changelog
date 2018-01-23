@@ -1,3 +1,11 @@
+xpdf (3.61) stretch; urgency=low
+
+  * rename binary package to xpdf-nopoppler
+  * call autoconf on debian/rules-build
+  * set system xpdfrc to /etc/xpdf/xpdfrc
+
+ -- Matthias Hinkfoth <hinki@abwesend.de>  Tue, 23 Jan 2018 20:40:14 +0100
+
 xpdf (3.60) stretch; urgency=low
 
   * fix: build in debian/rules
