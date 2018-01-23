@@ -15,7 +15,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <math.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "SplashErrorCodes.h"
 #include "SplashMath.h"
 #include "SplashBitmap.h"
@@ -29,7 +31,10 @@
 #include "SplashGlyphBitmap.h"
 #include "Splash.h"
 
-//------------------------------------------------------------------------
+// the MSVC math.h doesn't define this
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 #define splashAAGamma 0.67
 
@@ -6535,6 +6540,15 @@ void Splash::dumpPath(SplashPath *path) {
 	   (path->flags[i] & splashPathLast) ? " last" : "",
 	   (path->flags[i] & splashPathClosed) ? " closed" : "",
 	   (path->flags[i] & splashPathCurve) ? " curve" : "");
+  }
+  if (path->hintsLength == 0) {
+    printf("  no hints\n");
+  } else {
+    for (i = 0; i < path->hintsLength; ++i) {
+      printf("  hint %3d: ctrl0=%d ctrl1=%d pts=%d..%d\n",
+	     i, path->hints[i].ctrl0, path->hints[i].ctrl1,
+	     path->hints[i].firstPt, path->hints[i].lastPt);
+    }
   }
 }
 

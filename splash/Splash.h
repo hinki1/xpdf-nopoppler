@@ -133,6 +133,7 @@ public:
 			      GBool nonIsolated, GBool knockout);
   void setTransfer(Guchar *red, Guchar *green, Guchar *blue, Guchar *gray);
   void setOverprintMask(Guint overprintMask);
+  void setEnablePathSimplification(GBool en);
 
   //----- state save/restore
 
@@ -213,6 +214,12 @@ public:
   SplashError blitTransparent(SplashBitmap *src, int xSrc, int ySrc,
 			      int xDest, int yDest, int w, int h);
 
+  // Copy a rectangular region from the bitmap belonging to this
+  // Splash object to <dest>.  The alpha values are corrected for a
+  // non-isolated group.
+  SplashError blitCorrectedAlpha(SplashBitmap *dest, int xSrc, int ySrc,
+				 int xDest, int yDest, int w, int h);
+
   //----- misc
 
   // Construct a path for a stroke, given the path to be stroked and
@@ -221,6 +228,12 @@ public:
   // first flatten the path and handle the linedash.
   SplashPath *makeStrokePath(SplashPath *path, SplashCoord w,
 			     GBool flatten = gTrue);
+
+  // Reduce the size of a rectangle as much as possible by moving any
+  // edges that are completely outside the clip region.  Returns the
+  // clipping status of the resulting rectangle.
+  SplashClipResult limitRectToClipRect(int *xMin, int *yMin,
+				       int *xMax, int *yMax);
 
   // Return the associated bitmap.
   SplashBitmap *getBitmap() { return bitmap; }
