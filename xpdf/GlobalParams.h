@@ -88,6 +88,14 @@ enum EndOfLineKind {
 
 //------------------------------------------------------------------------
 
+enum StrokeAdjustMode {
+  strokeAdjustOff,
+  strokeAdjustNormal,
+  strokeAdjustCAD
+};
+
+//------------------------------------------------------------------------
+
 enum ScreenType {
   screenUnset,
   screenDispersed,
@@ -340,6 +348,7 @@ private:
   void parseTextEncoding(GList *tokens, GString *fileName, int line);
   void parseTextEOL(GList *tokens, GString *fileName, int line);
   void parseInitialZoom(GList *tokens, GString *fileName, int line);
+  void parseStrokeAdjust(GList *tokens, GString *fileName, int line);
   void parseScreenType(GList *tokens, GString *fileName, int line);
   void parseBind(GList *tokens, GString *fileName, int line);
   void parseUnbind(GList *tokens, GString *fileName, int line);

@@ -62,6 +62,14 @@ static inline Guchar div255(int x) {
   return (Guchar)((x + (x >> 8) + 0x80) >> 8);
 }
 
+// Map StrokeAdjustMode (from GlobalParams) to SplashStrokeAdjustMode
+// (for Splash).
+static SplashStrokeAdjustMode mapStrokeAdjustMode[3] = {
+  splashStrokeAdjustOff,
+  splashStrokeAdjustNormal,
+  splashStrokeAdjustCAD
+};
+
 //------------------------------------------------------------------------
 // Blend functions
 //------------------------------------------------------------------------

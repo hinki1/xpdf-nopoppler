@@ -8,5 +8,8 @@ c5f7b baut nicht
 1949 integriert den kompletten splash-Ordner von xpdf4.
 Das war übertrieben.
 
-splash/SplashClip.* ändert den Typ von SplashStrokeAdjustMode
-splash/SplashFTFont.h entfernt nur HAVE_FREETYPE_FREETYPE_H
+splash/SplashClip.* ändert den Typ von SplashStrokeAdjustMode.
+splash/SplashFTFont.h entfernt nur HAVE_FREETYPE_FREETYPE_H.
+xpdf/GlobalParams.cc ändert den Typ von StrokeAdjustMode.
+xpdf/PDFCore.cc kommentiert eine fehlende Methode aus. Das könnte ein Fehler sein.
+xpdf/SplashOutputDev.cc ändert den Typ von SplashStrokeAdjustMode.
