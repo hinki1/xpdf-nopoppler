@@ -13,3 +13,5 @@ splash/SplashFTFont.h entfernt nur HAVE_FREETYPE_FREETYPE_H.
 xpdf/GlobalParams.cc ändert den Typ von StrokeAdjustMode.
 xpdf/PDFCore.cc kommentiert eine fehlende Methode aus. Das könnte ein Fehler sein.
 xpdf/SplashOutputDev.cc ändert den Typ von SplashStrokeAdjustMode.
+
+xpdf/Object.cc hängt von xpdf/Stream.cc ab.
