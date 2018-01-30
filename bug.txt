@@ -17,3 +17,4 @@ xpdf/SplashOutputDev.cc ändert den Typ von SplashStrokeAdjustMode.
 xpdf/Object.cc hängt von xpdf/Stream.cc ab.
 xpdf/Parser.cc hängt von xpdf/Stream.cc ab.
 xpdf/Form.cc hängt von xpdf/Catalog.cc ab.
+Page.cc hängt von Gfx.cc und GlobalParams.cc ab.
