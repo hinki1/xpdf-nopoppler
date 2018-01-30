@@ -15,9 +15,10 @@
 #  include <fenv.h>
 #  include <fpu_control.h>
 #endif
+#include "gmem.h"
+#include "gmempp.h"
 #include "parseargs.h"
 #include "GString.h"
-#include "gmem.h"
 #include "GlobalParams.h"
 #include "Object.h"
 #include "Stream.h"

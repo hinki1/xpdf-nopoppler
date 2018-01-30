@@ -10,8 +10,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <png.h>
-#include "parseargs.h"
+#ifdef _WIN32
+#  include <io.h>
+#  include <fcntl.h>
+#endif
 #include "gmem.h"
+#include "gmempp.h"
+#include "parseargs.h"
 #include "GString.h"
 #include "GlobalParams.h"
 #include "Object.h"

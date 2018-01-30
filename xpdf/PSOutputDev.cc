@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include <signal.h>
 #include <math.h>
+#include "gmempp.h"
 #include "GString.h"
 #include "GList.h"
 #include "GHash.h"

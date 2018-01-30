@@ -16,6 +16,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
+#include "gmempp.h"
 #include "Lexer.h"
 #include "Error.h"
 

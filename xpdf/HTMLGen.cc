@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <png.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "GString.h"
 #include "GList.h"
 #include "SplashBitmap.h"

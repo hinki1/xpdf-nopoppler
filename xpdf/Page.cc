@@ -13,6 +13,7 @@
 #endif
 
 #include <stddef.h>
+#include "gmempp.h"
 #include "GlobalParams.h"
 #include "Object.h"
 #include "Array.h"

@@ -16,6 +16,7 @@
 #include <stddef.h>
 #include <limits.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "gfile.h"
 #include "GList.h"
 #include "Object.h"

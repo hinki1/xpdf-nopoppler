@@ -2,7 +2,7 @@
 //
 // PDFCore.cc
 //
-// Copyright 2004-2013 Glyph & Cog, LLC
+// Copyright 2004-2014 Glyph & Cog, LLC
 //
 //========================================================================
 
@@ -13,6 +13,7 @@
 #endif
 
 #include <math.h>
+#include "gmempp.h"
 #include "GString.h"
 #include "GList.h"
 #include "GlobalParams.h"

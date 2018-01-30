@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 #include <limits.h>
+#include "gmempp.h"
 #include "GList.h"
 #include "Error.h"
 #include "JArithmeticDecoder.h"

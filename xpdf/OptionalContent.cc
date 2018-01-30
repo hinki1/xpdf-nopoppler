@@ -12,6 +12,7 @@
 #pragma implementation
 #endif
 
+#include "gmempp.h"
 #include "GString.h"
 #include "GList.h"
 #include "Error.h"
@@ -69,7 +70,7 @@ OptionalContent::OptionalContent(PDFDoc *doc) {
       //----- read the default viewing OCCD
       if (ocProps->dictLookup("D", &defView)->isDict()) {
 
-	//----- initial state
+	//----- initial state from OCCD
 	if (defView.dictLookup("OFF", &obj1)->isArray()) {
 	  for (i = 0; i < obj1.arrayGetLength(); ++i) {
 	    if (obj1.arrayGetNF(i, &obj2)->isRef()) {

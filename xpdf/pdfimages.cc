@@ -11,9 +11,10 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include "gmem.h"
+#include "gmempp.h"
 #include "parseargs.h"
 #include "GString.h"
-#include "gmem.h"
 #include "GlobalParams.h"
 #include "Object.h"
 #include "Stream.h"

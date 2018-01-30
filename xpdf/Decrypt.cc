@@ -14,6 +14,7 @@
 
 #include <string.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "Decrypt.h"
 
 static void aes256KeyExpansion(DecryptAES256State *s,

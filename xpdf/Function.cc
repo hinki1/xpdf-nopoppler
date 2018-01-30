@@ -17,6 +17,7 @@
 #include <ctype.h>
 #include <math.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "GList.h"
 #include "Object.h"
 #include "Dict.h"

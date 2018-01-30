@@ -2,7 +2,7 @@
 //
 // GfxState.cc
 //
-// Copyright 1996-2003 Glyph & Cog, LLC
+// Copyright 1996-2016 Glyph & Cog, LLC
 //
 //========================================================================
 
@@ -16,7 +16,9 @@
 #include <math.h>
 #include <string.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "Error.h"
+#include "GlobalParams.h"
 #include "Object.h"
 #include "Array.h"
 #include "Page.h"
@@ -28,6 +30,7 @@
 // Max depth of nested color spaces.  This is used to catch infinite
 // loops in the color space object structure.
 #define colorSpaceRecursionLimit 8
+
 
 //------------------------------------------------------------------------
 
@@ -88,6 +91,7 @@ static const char *gfxColorSpaceModeNames[] = {
 };
 
 #define nGfxColorSpaceModes ((sizeof(gfxColorSpaceModeNames) / sizeof(char *)))
+
 
 
 //------------------------------------------------------------------------

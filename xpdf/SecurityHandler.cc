@@ -12,6 +12,7 @@
 #pragma implementation
 #endif
 
+#include "gmempp.h"
 #include "GString.h"
 #include "PDFDoc.h"
 #include "Decrypt.h"
@@ -139,6 +140,7 @@ StandardSecurityHandler::StandardSecurityHandler(PDFDoc *docA,
   userEnc = NULL;
   fileKeyLength = 0;
 
+  //--- get the main parameters
   encryptDictA->dictLookup("V", &versionObj);
   encryptDictA->dictLookup("R", &revisionObj);
   encryptDictA->dictLookup("Length", &lengthObj);

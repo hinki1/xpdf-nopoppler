@@ -22,6 +22,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "gfile.h"
 #include "config.h"
 #include "Error.h"

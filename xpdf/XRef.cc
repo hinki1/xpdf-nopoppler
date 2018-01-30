@@ -18,6 +18,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "gfile.h"
 #include "Object.h"
 #include "Stream.h"

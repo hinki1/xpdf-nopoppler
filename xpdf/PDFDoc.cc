@@ -19,6 +19,7 @@
 #ifdef _WIN32
 #  include <windows.h>
 #endif
+#include "gmempp.h"
 #include "GString.h"
 #include "config.h"
 #include "GlobalParams.h"
@@ -204,6 +205,7 @@ PDFDoc::PDFDoc(BaseStream *strA, GString *ownerPassword,
 }
 
 GBool PDFDoc::setup(GString *ownerPassword, GString *userPassword) {
+
   str->reset();
 
   // check header

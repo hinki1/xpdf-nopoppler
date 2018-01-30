@@ -13,9 +13,10 @@
 #include <string.h>
 #include <math.h>
 #include <limits.h>
+#include "gmem.h"
+#include "gmempp.h"
 #include "parseargs.h"
 #include "GString.h"
-#include "gmem.h"
 #include "GlobalParams.h"
 #include "Error.h"
 #include "Object.h"

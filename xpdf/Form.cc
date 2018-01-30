@@ -12,6 +12,7 @@
 #pragma implementation
 #endif
 
+#include "gmempp.h"
 #include "GlobalParams.h"
 #include "Error.h"
 #include "Object.h"

@@ -2,7 +2,7 @@
 //
 // Gfx.cc
 //
-// Copyright 1996-2013 Glyph & Cog, LLC
+// Copyright 1996-2016 Glyph & Cog, LLC
 //
 //========================================================================
 
@@ -18,6 +18,7 @@
 #include <string.h>
 #include <math.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "GString.h"
 #include "GList.h"
 #include "GlobalParams.h"

@@ -13,6 +13,7 @@
 #endif
 
 #include <math.h>
+#include "gmempp.h"
 #include "GlobalParams.h"
 #include "Page.h"
 #include "Gfx.h"

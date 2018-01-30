@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "gfile.h"
 #include "GString.h"
 #include "GList.h"

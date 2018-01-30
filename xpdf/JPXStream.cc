@@ -14,6 +14,7 @@
 
 #include <limits.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "Error.h"
 #include "JArithmeticDecoder.h"
 #include "JPXStream.h"
