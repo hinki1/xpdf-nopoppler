@@ -84,6 +84,8 @@ OutlineItem::OutlineItem(Object *itemRefA, Dict *dict,
     }
   }
   obj1.free();
+
+  pageNum = -1;
 }
 
 OutlineItem::~OutlineItem() {
