@@ -1,3 +1,29 @@
+xpdf (3.62) stretch; urgency=low
+
+  * UTF8.cc from xpdf4
+  * more uses of gmempp.h
+  * Error.cc from xpdf4
+  * one additional unicode map table entry
+  * updated AcroForm implemntation to xpdf4 version
+  * update Annotations to xpdf4 version
+  * more use of gmempp.h
+  * make Array multi-threaded
+  * update TextString
+  * update Lexer to xpdf4 version
+  * update Catalog to xpdf4 version
+  * make UnicodeMap multi-threaded
+  * small changes to Outline => xpdf4 version
+  * update PDFDoc to xpdf4-version
+  * update OptionalContent
+  * update GfxFont to xpdf4-version
+  * update Function.cc to xpdf4-version
+  * update CharCodeToUnicode to xpdf4-version
+  * update CMap to xpdf4-version
+  * make Dict.h multi-threaded (xpdf4)
+  * update Stream.cc and its dependencies
+
+ -- Matthias Hinkfoth <hinki@abwesend.de>  Wed, 31 Jan 2018 01:06:17 +0100
+
 xpdf (3.61) stretch; urgency=low
 
   * rename binary package to xpdf-nopoppler
