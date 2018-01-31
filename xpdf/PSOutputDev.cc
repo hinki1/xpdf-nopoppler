@@ -947,6 +947,7 @@ public:
   DeviceNRecoder(Stream *strA, int widthA, int heightA,
 		 GfxImageColorMap *colorMapA);
   virtual ~DeviceNRecoder();
+  virtual Stream *copy();
   virtual StreamKind getKind() { return strWeird; }
   virtual void reset();
   virtual int getChar()
@@ -993,6 +994,11 @@ DeviceNRecoder::~DeviceNRecoder() {
   if (str->isEncoder()) {
     delete str;
   }
+}
+
+Stream *DeviceNRecoder::copy() {
+  error(errInternal, -1, "Called copy() on DeviceNRecoder");
+  return NULL;
 }
 
 void DeviceNRecoder::reset() {
