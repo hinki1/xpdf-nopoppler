@@ -51,76 +51,32 @@ EXE = @EXE@
 
 #------------------------------------------------------------------------
 
-CXX_SRC = \
-	$(srcdir)/AcroForm.cc \
-	$(srcdir)/Annot.cc \
-	$(srcdir)/Array.cc \
-	$(srcdir)/BuiltinFont.cc \
-	$(srcdir)/BuiltinFontTables.cc \
-	$(srcdir)/CMap.cc \
-	$(srcdir)/Catalog.cc \
-	$(srcdir)/CharCodeToUnicode.cc \
-	$(srcdir)/CoreOutputDev.cc \
-	$(srcdir)/Decrypt.cc \
-	$(srcdir)/Dict.cc \
-	$(srcdir)/DisplayState.cc \
-	$(srcdir)/Error.cc \
-	$(srcdir)/FontEncodingTables.cc \
-	$(srcdir)/Form.cc \
-	$(srcdir)/Function.cc \
-	$(srcdir)/Gfx.cc \
-	$(srcdir)/GfxFont.cc \
-	$(srcdir)/GfxState.cc \
-	$(srcdir)/GlobalParams.cc \
-	$(srcdir)/HTMLGen.cc \
-	$(srcdir)/ImageOutputDev.cc \
-	$(srcdir)/JArithmeticDecoder.cc \
-	$(srcdir)/JBIG2Stream.cc \
-	$(srcdir)/JPXStream.cc \
-	$(srcdir)/Lexer.cc \
-	$(srcdir)/Link.cc \
-	$(srcdir)/NameToCharCode.cc \
-	$(srcdir)/Object.cc \
-	$(srcdir)/OptionalContent.cc \
-	$(srcdir)/Outline.cc \
-	$(srcdir)/OutputDev.cc \
-	$(srcdir)/PDFCore.cc \
-	$(srcdir)/PDFDoc.cc \
-	$(srcdir)/PDFDocEncoding.cc \
-	$(srcdir)/PSOutputDev.cc \
-	$(srcdir)/PSTokenizer.cc \
-	$(srcdir)/Page.cc \
-	$(srcdir)/Parser.cc \
-	$(srcdir)/PreScanOutputDev.cc \
-	$(srcdir)/SecurityHandler.cc \
-	$(srcdir)/SplashOutputDev.cc \
-	$(srcdir)/Stream.cc \
-	$(srcdir)/TextOutputDev.cc \
-	$(srcdir)/TextString.cc \
-	$(srcdir)/TileCache.cc \
-	$(srcdir)/TileCompositor.cc \
-	$(srcdir)/TileMap.cc \
-	$(srcdir)/UnicodeMap.cc \
-	$(srcdir)/UnicodeTypeTable.cc \
-	$(srcdir)/UTF8.cc \
-	$(srcdir)/XFAForm.cc \
-	$(srcdir)/XPDFApp.cc \
-	$(srcdir)/XPDFCore.cc \
-	$(srcdir)/XPDFTree.cc \
-	$(srcdir)/XPDFViewer.cc \
-	$(srcdir)/XpdfPluginAPI.cc \
-	$(srcdir)/XRef.cc \
-	$(srcdir)/Zoox.cc \
-	$(srcdir)/pdftops.cc \
-	$(srcdir)/pdftotext.cc \
-	$(srcdir)/pdftohtml.cc \
-	$(srcdir)/pdfinfo.cc \
-	$(srcdir)/pdffonts.cc \
-	$(srcdir)/pdfdetach.cc \
-	$(srcdir)/pdftoppm.cc \
-	$(srcdir)/pdftopng.cc \
-	$(srcdir)/pdfimages.cc \
-	$(srcdir)/xpdf.cc
+cc-files := AcroForm Annot Array
+cc-files += BuiltinFont BuiltinFontTables
+cc-files += Catalog CharCodeToUnicode CMap CoreOutputDev
+cc-files += Decrypt Dict DisplayState
+cc-files += Error
+cc-files += FontEncodingTables Form Function
+cc-files += Gfx GfxFont GfxState GlobalParams
+cc-files += HTMLGen
+cc-files += ImageOutputDev
+cc-files += JArithmeticDecoder JBIG2Stream JPXStream
+cc-files += Lexer Link
+cc-files += NameToCharCode
+cc-files += Object OptionalContent Outline OutputDev
+cc-files += Page Parser PDFCore PDFDoc PDFDocEncoding 
+cc-files += PreScanOutputDev PSOutputDev PSTokenizer
+cc-files += SecurityHandler SplashOutputDev Stream
+cc-files += TextOutputDev TextString TileCache TileCompositor TileMap
+cc-files += UnicodeMap UnicodeTypeTable UTF8
+cc-files += XFAForm XPDFApp XPDFCore XPDFTree XPDFViewer
+cc-files += XpdfPluginAPI XRef
+cc-files += Zoox
+cc-files += pdftops pdftotext pdftohtml pdfinfo pdffonts pdfdetach
+cc-files += pdftoppm pdftopng pdfimages
+cc-files += xpdf
+
+CXX_SRC := $(cc-files:%=$(srcdir)/%.cc)
 
 #------------------------------------------------------------------------
 
@@ -133,65 +89,29 @@ all-no-x: pdftops$(EXE) pdftotext$(EXE) pdftohtml$(EXE) pdfinfo$(EXE) \
 
 #------------------------------------------------------------------------
 
-XPDF_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	CoreOutputDev.o \
-	Decrypt.o \
-	Dict.o \
-	DisplayState.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFCore.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PreScanOutputDev.o \
-	PSOutputDev.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	SplashOutputDev.o \
-	Stream.o \
-	TextOutputDev.o \
-	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
-	UnicodeMap.o \
-	UnicodeTypeTable.o \
-	UTF8.o \
-	XFAForm.o \
-	XPDFApp.o \
-	XPDFCore.o \
-	XPDFTree.o \
-	XPDFViewer.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	xpdf.o
+xpdf-files := AcroForm Annot Array
+xpdf-files += BuiltinFont BuiltinFontTables
+xpdf-files += Catalog CharCodeToUnicode CMap CoreOutputDev
+xpdf-files += Decrypt Dict DisplayState
+xpdf-files += Error
+xpdf-files += FontEncodingTables Form Function
+xpdf-files += Gfx GfxFont GfxState GlobalParams
+xpdf-files += JArithmeticDecoder JBIG2Stream JPXStream
+xpdf-files += Lexer Link
+xpdf-files += NameToCharCode
+xpdf-files += Object OptionalContent Outline OutputDev
+xpdf-files += Page Parser PDFCore PDFDoc PDFDocEncoding 
+xpdf-files += PreScanOutputDev PSOutputDev PSTokenizer
+xpdf-files += SecurityHandler SplashOutputDev Stream
+xpdf-files += TextOutputDev TextString TileCache TileCompositor TileMap
+xpdf-files += UnicodeMap UnicodeTypeTable UTF8
+xpdf-files += XFAForm XPDFApp XPDFCore XPDFTree XPDFViewer
+xpdf-files += XpdfPluginAPI XRef
+xpdf-files += Zoox
+xpdf-files += xpdf
+
+XPDF_OBJS := $(xpdf-files:%=%.o)
+
 XPDF_LIBS = -L$(GOOLIBDIR) -lGoo $(SPLASHLIBS) $(FTLIBS) \
 	$(XLIBS) $(OTHERLIBS) -lm
 
@@ -271,7 +191,6 @@ PDFTOTEXT_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
-	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -299,9 +218,6 @@ PDFTOTEXT_OBJS = \
 	Stream.o \
 	TextOutputDev.o \
 	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
 	UTF8.o \
@@ -390,7 +306,6 @@ PDFINFO_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
-	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -417,9 +332,6 @@ PDFINFO_OBJS = \
 	SecurityHandler.o \
 	Stream.o \
 	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \
@@ -446,7 +358,6 @@ PDFFONTS_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
-	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -473,9 +384,6 @@ PDFFONTS_OBJS = \
 	SecurityHandler.o \
 	Stream.o \
 	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \
@@ -502,7 +410,6 @@ PDFDETACH_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
-	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -529,9 +436,6 @@ PDFDETACH_OBJS = \
 	SecurityHandler.o \
 	Stream.o \
 	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \
@@ -678,7 +582,6 @@ PDFIMAGES_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
-	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -706,9 +609,6 @@ PDFIMAGES_OBJS = \
 	SecurityHandler.o \
 	Stream.o \
 	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \
