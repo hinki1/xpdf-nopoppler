@@ -51,27 +51,40 @@ EXE = @EXE@
 
 #------------------------------------------------------------------------
 
-cc-files := AcroForm Annot Array
-cc-files += BuiltinFont BuiltinFontTables
-cc-files += Catalog CharCodeToUnicode CMap CoreOutputDev
-cc-files += Decrypt Dict DisplayState
-cc-files += Error
-cc-files += FontEncodingTables Form Function
-cc-files += Gfx GfxFont GfxState GlobalParams
+common-files := AcroForm Annot Array
+common-files += BuiltinFont BuiltinFontTables
+common-files += Catalog CharCodeToUnicode CMap
+common-files += Decrypt Dict
+common-files += Error
+common-files += FontEncodingTables Form Function
+common-files += Gfx GfxFont GfxState GlobalParams
+common-files += JArithmeticDecoder JBIG2Stream JPXStream
+common-files += Lexer Link
+common-files += NameToCharCode
+common-files += Object OptionalContent Outline OutputDev
+common-files += Page Parser PDFDoc PDFDocEncoding PSTokenizer
+common-files += SecurityHandler Stream
+common-files += TextString
+common-files += UnicodeMap
+common-files += UTF8
+common-files += XFAForm
+common-files += XpdfPluginAPI XRef
+common-files += Zoox
+
+common-output-files := DisplayState SplashOutputDev
+common-output-files += TileCache TileCompositor TileMap
+common-ps-files := PreScanOutputDev PSOutputDev
+common-unicode-files := TextOutputDev UnicodeTypeTable
+
+cc-files := $(common-files)
+cc-files += $(common-output-files)
+cc-files += $(common-ps-files)
+cc-files += $(common-unicode-files)
+cc-files += CoreOutputDev
 cc-files += HTMLGen
 cc-files += ImageOutputDev
-cc-files += JArithmeticDecoder JBIG2Stream JPXStream
-cc-files += Lexer Link
-cc-files += NameToCharCode
-cc-files += Object OptionalContent Outline OutputDev
-cc-files += Page Parser PDFCore PDFDoc PDFDocEncoding 
-cc-files += PreScanOutputDev PSOutputDev PSTokenizer
-cc-files += SecurityHandler SplashOutputDev Stream
-cc-files += TextOutputDev TextString TileCache TileCompositor TileMap
-cc-files += UnicodeMap UnicodeTypeTable UTF8
-cc-files += XFAForm XPDFApp XPDFCore XPDFTree XPDFViewer
-cc-files += XpdfPluginAPI XRef
-cc-files += Zoox
+cc-files += PDFCore
+cc-files += XPDFApp XPDFCore XPDFTree XPDFViewer
 cc-files += pdftops pdftotext pdftohtml pdfinfo pdffonts pdfdetach
 cc-files += pdftoppm pdftopng pdfimages
 cc-files += xpdf
@@ -89,25 +102,13 @@ all-no-x: pdftops$(EXE) pdftotext$(EXE) pdftohtml$(EXE) pdfinfo$(EXE) \
 
 #------------------------------------------------------------------------
 
-xpdf-files := AcroForm Annot Array
-xpdf-files += BuiltinFont BuiltinFontTables
-xpdf-files += Catalog CharCodeToUnicode CMap CoreOutputDev
-xpdf-files += Decrypt Dict DisplayState
-xpdf-files += Error
-xpdf-files += FontEncodingTables Form Function
-xpdf-files += Gfx GfxFont GfxState GlobalParams
-xpdf-files += JArithmeticDecoder JBIG2Stream JPXStream
-xpdf-files += Lexer Link
-xpdf-files += NameToCharCode
-xpdf-files += Object OptionalContent Outline OutputDev
-xpdf-files += Page Parser PDFCore PDFDoc PDFDocEncoding 
-xpdf-files += PreScanOutputDev PSOutputDev PSTokenizer
-xpdf-files += SecurityHandler SplashOutputDev Stream
-xpdf-files += TextOutputDev TextString TileCache TileCompositor TileMap
-xpdf-files += UnicodeMap UnicodeTypeTable UTF8
-xpdf-files += XFAForm XPDFApp XPDFCore XPDFTree XPDFViewer
-xpdf-files += XpdfPluginAPI XRef
-xpdf-files += Zoox
+xpdf-files := $(common-files)
+xpdf-files += $(common-output-files)
+xpdf-files += $(common-ps-files)
+xpdf-files += $(common-unicode-files)
+xpdf-files += CoreOutputDev
+xpdf-files += PDFCore
+xpdf-files += XPDFApp XPDFCore XPDFTree XPDFViewer
 xpdf-files += xpdf
 
 XPDF_OBJS := $(xpdf-files:%=%.o)
@@ -120,57 +121,13 @@ xpdf$(EXE): $(XPDF_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 
 #------------------------------------------------------------------------
 
-PDFTOPS_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	DisplayState.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	OptionalContent.o \
-	Outline.o \
-	Object.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PreScanOutputDev.o \
-	PSOutputDev.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	SplashOutputDev.o \
-	Stream.o \
-	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
-	UnicodeMap.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdftops.o
+pdftops-files := $(common-files)
+pdftops-files += $(common-output-files)
+pdftops-files += $(common-ps-files)
+pdftops-files += pdftops
+
+PDFTOPS_OBJS = $(pdftops-files:%=%.o)
+
 PDFTOPS_LIBS = -L$(GOOLIBDIR) -lGoo $(SPLASHLIBS) $(FTLIBS) \
 	$(OTHERLIBS) -lm
 
@@ -180,52 +137,12 @@ pdftops$(EXE): $(PDFTOPS_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 
 #------------------------------------------------------------------------
 
-PDFTOTEXT_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	Stream.o \
-	TextOutputDev.o \
-	TextString.o \
-	UnicodeMap.o \
-	UnicodeTypeTable.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdftotext.o
+pdftotext-files := $(common-files)
+pdftotext-files += $(common-unicode-files)
+pdftotext-files += pdftotext
+
+PDFTOTEXT_OBJS := $(pdftotext-files:%=%.o)
+
 PDFTOTEXT_LIBS = -L$(GOOLIBDIR) -lGoo $(OTHERLIBS) -lm
 
 pdftotext$(EXE): $(PDFTOTEXT_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
@@ -233,59 +150,14 @@ pdftotext$(EXE): $(PDFTOTEXT_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 		$(PDFTOTEXT_LIBS)
 
 #------------------------------------------------------------------------
+pdftohtml-files := $(common-files)
+pdftohtml-files += $(common-output-files)
+pdftohtml-files += $(common-unicode-files)
+pdftohtml-files += HTMLGen
+pdftohtml-files += pdftohtml
 
-PDFTOHTML_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	DisplayState.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	HTMLGen.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	SplashOutputDev.o \
-	Stream.o \
-	TextOutputDev.o \
-	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
-	UnicodeMap.o \
-	UnicodeTypeTable.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdftohtml.o
+PDFTOHTML_OBJS := $(pdftohtml-files:%=%.o)
+
 PDFTOHTML_LIBS = -L$(GOOLIBDIR) -lGoo $(SPLASHLIBS) $(FTLIBS) \
 	$(OTHERLIBS) $(PNGLIBS) -lm
 
@@ -294,51 +166,11 @@ pdftohtml$(EXE): $(PDFTOHTML_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 		$(PDFTOHTML_LIBS)
 
 #------------------------------------------------------------------------
+pdfinfo-files := $(common-files)
+pdfinfo-files += pdfinfo
 
-PDFINFO_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	Stream.o \
-	TextString.o \
-	UnicodeMap.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdfinfo.o
+PDFINFO_OBJS := $(pdfinfo-files:%=%.o)
+
 PDFINFO_LIBS = -L$(GOOLIBDIR) -lGoo $(OTHERLIBS) -lm
 
 pdfinfo$(EXE): $(PDFINFO_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
@@ -346,51 +178,11 @@ pdfinfo$(EXE): $(PDFINFO_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 		$(PDFINFO_LIBS)
 
 #------------------------------------------------------------------------
+pdffonts-files := $(common-files)
+pdffonts-files += pdffonts
 
-PDFFONTS_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	Stream.o \
-	TextString.o \
-	UnicodeMap.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdffonts.o
+PDFFONTS_OBJS := $(pdffonts-files:%=%.o)
+
 PDFFONTS_LIBS = -L$(GOOLIBDIR) -lGoo $(OTHERLIBS) -lm
 
 pdffonts$(EXE): $(PDFFONTS_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
@@ -398,51 +190,11 @@ pdffonts$(EXE): $(PDFFONTS_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 		$(PDFFONTS_LIBS)
 
 #------------------------------------------------------------------------
+pdfdetach-files := $(common-files)
+pdfdetach-files += pdfdetach
 
-PDFDETACH_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	Stream.o \
-	TextString.o \
-	UnicodeMap.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdfdetach.o
+PDFDETACH_OBJS := $(pdfdetach-files:%=%.o)
+
 PDFDETACH_LIBS = -L$(GOOLIBDIR) -lGoo $(OTHERLIBS) -lm
 
 pdfdetach$(EXE): $(PDFDETACH_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
@@ -450,58 +202,13 @@ pdfdetach$(EXE): $(PDFDETACH_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 		$(PDFDETACH_LIBS)
 
 #------------------------------------------------------------------------
+pdftoppm-files := $(common-files)
+pdftoppm-files += $(common-output-files)
+pdftoppm-files += $(common-unicode-files)
+pdftoppm-files += pdftoppm
 
-PDFTOPPM_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	DisplayState.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	SplashOutputDev.o \
-	Stream.o \
-	TextOutputDev.o \
-	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
-	UnicodeMap.o \
-	UnicodeTypeTable.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdftoppm.o
+PDFTOPPM_OBJS := $(pdftoppm-files:%=%.o)
+
 PDFTOPPM_LIBS = -L$(GOOLIBDIR) -lGoo $(SPLASHLIBS) $(FTLIBS) \
 	$(OTHERLIBS) -lm
 
@@ -510,58 +217,13 @@ pdftoppm$(EXE): $(PDFTOPPM_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 		$(PDFTOPPM_LIBS)
 
 #------------------------------------------------------------------------
+pdftopng-files := $(common-files)
+pdftopng-files += $(common-output-files)
+pdftopng-files += $(common-unicode-files)
+pdftopng-files += pdftopng
 
-PDFTOPNG_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	DisplayState.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	SplashOutputDev.o \
-	Stream.o \
-	TextOutputDev.o \
-	TextString.o \
-	TileCache.o \
-	TileCompositor.o \
-	TileMap.o \
-	UnicodeMap.o \
-	UnicodeTypeTable.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdftopng.o
+PDFTOPNG_OBJS := $(pdftopng-files:%=%.o)
+
 PDFTOPNG_LIBS = -L$(GOOLIBDIR) -lGoo $(SPLASHLIBS) $(FTLIBS) \
 	$(OTHERLIBS) $(PNGLIBS) -lm
 
@@ -570,52 +232,12 @@ pdftopng$(EXE): $(PDFTOPNG_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
 		$(PDFTOPNG_LIBS)
 
 #------------------------------------------------------------------------
+pdfimages-files := $(common-files)
+pdfimages-files += ImageOutputDev
+pdfimages-files += pdfimages
 
-PDFIMAGES_OBJS = \
-	AcroForm.o \
-	Annot.o \
-	Array.o \
-	BuiltinFont.o \
-	BuiltinFontTables.o \
-	Catalog.o \
-	CharCodeToUnicode.o \
-	CMap.o \
-	Decrypt.o \
-	Dict.o \
-	Error.o \
-	FontEncodingTables.o \
-	Form.o \
-	Function.o \
-	Gfx.o \
-	GfxFont.o \
-	GfxState.o \
-	GlobalParams.o \
-	ImageOutputDev.o \
-	JArithmeticDecoder.o \
-	JBIG2Stream.o \
-	JPXStream.o \
-	Lexer.o \
-	Link.o \
-	NameToCharCode.o \
-	Object.o \
-	OptionalContent.o \
-	Outline.o \
-	OutputDev.o \
-	Page.o \
-	Parser.o \
-	PDFDoc.o \
-	PDFDocEncoding.o \
-	PSTokenizer.o \
-	SecurityHandler.o \
-	Stream.o \
-	TextString.o \
-	UnicodeMap.o \
-	UTF8.o \
-	XFAForm.o \
-	XpdfPluginAPI.o \
-	XRef.o \
-	Zoox.o \
-	pdfimages.o
+PDFIMAGES_OBJS := $(pdfimages-files:%=%.o)
+
 PDFIMAGES_LIBS = -L$(GOOLIBDIR) -lGoo $(OTHERLIBS) -lm
 
 pdfimages$(EXE): $(PDFIMAGES_OBJS) $(GOOLIBDIR)/$(LIBPREFIX)Goo.a
