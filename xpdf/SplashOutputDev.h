@@ -68,6 +68,11 @@ public:
   // operations.
   virtual GBool useTilingPatternFill() { return gTrue; }
 
+  // Does this device use functionShadedFill(), axialShadedFill(), and
+  // radialShadedFill()?  If this returns false, these shaded fills
+  // will be reduced to a series of other drawing operations.
+  virtual GBool useShadedFills() { return gTrue; }
+
   // Does this device use beginType3Char/endType3Char?  Otherwise,
   // text in Type 3 fonts will be drawn with drawChar/drawString.
   virtual GBool interpretType3Chars() { return gTrue; }
@@ -176,6 +181,9 @@ public:
 
   // Called to indicate that a new PDF document has been loaded.
   void startDoc(XRef *xrefA);
+
+  void setStartPageCallback(void (*cbk)(void *data), void *data)
+    { startPageCbk = cbk; startPageCbkData = data; }
  
   void setPaperColor(SplashColorPtr paperColorA);
 
@@ -223,6 +231,9 @@ public:
 
   int getNestCount() { return nestCount; }
 
+
+  // Get the screen parameters.
+  SplashScreenParams *getScreenParams() { return &screenParams; }
 
 #if 1 //~tmp: turn off anti-aliasing temporarily
   virtual void setInShading(GBool sh);
@@ -289,6 +300,9 @@ private:
     transpGroupStack;
 
   int nestCount;
+
+  void (*startPageCbk)(void *data);
+  void *startPageCbkData;
 };
 
 #endif

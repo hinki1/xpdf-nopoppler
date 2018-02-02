@@ -23,6 +23,8 @@ CXXFLAGS = @CXXFLAGS@ @DEFS@ -I.. -I$(srcdir)/.. -I$(GOOSRCDIR) -I$(FOFISRCDIR) 
 
 LDFLAGS = @LDFLAGS@
 
+LDFLAGS += -lpthread
+
 FTLIBS = @freetype2_LIBS@ -lz
 
 XLIBS = @Sgm_LIBS@ @Xm_LIBS@ @Xt_LIBS@ @Xp_LIBS@ @Xext_LIBS@ @Xpm_LIBS@ @X_PRE_LIBS@ @X_LIBS@ -lX11 @X_EXTRA_LIBS@
@@ -61,6 +63,7 @@ CXX_SRC = \
 	$(srcdir)/CoreOutputDev.cc \
 	$(srcdir)/Decrypt.cc \
 	$(srcdir)/Dict.cc \
+	$(srcdir)/DisplayState.cc \
 	$(srcdir)/Error.cc \
 	$(srcdir)/FontEncodingTables.cc \
 	$(srcdir)/Form.cc \
@@ -94,6 +97,9 @@ CXX_SRC = \
 	$(srcdir)/Stream.cc \
 	$(srcdir)/TextOutputDev.cc \
 	$(srcdir)/TextString.cc \
+	$(srcdir)/TileCache.cc \
+	$(srcdir)/TileCompositor.cc \
+	$(srcdir)/TileMap.cc \
 	$(srcdir)/UnicodeMap.cc \
 	$(srcdir)/UnicodeTypeTable.cc \
 	$(srcdir)/UTF8.cc \
@@ -139,6 +145,7 @@ XPDF_OBJS = \
 	CoreOutputDev.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -170,6 +177,9 @@ XPDF_OBJS = \
 	Stream.o \
 	TextOutputDev.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
 	UTF8.o \
@@ -201,6 +211,7 @@ PDFTOPS_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -230,6 +241,9 @@ PDFTOPS_OBJS = \
 	SplashOutputDev.o \
 	Stream.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \
@@ -257,6 +271,7 @@ PDFTOTEXT_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -284,6 +299,9 @@ PDFTOTEXT_OBJS = \
 	Stream.o \
 	TextOutputDev.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
 	UTF8.o \
@@ -311,6 +329,7 @@ PDFTOHTML_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -340,6 +359,9 @@ PDFTOHTML_OBJS = \
 	Stream.o \
 	TextOutputDev.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
 	UTF8.o \
@@ -368,6 +390,7 @@ PDFINFO_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -394,6 +417,9 @@ PDFINFO_OBJS = \
 	SecurityHandler.o \
 	Stream.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \
@@ -420,6 +446,7 @@ PDFFONTS_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -446,6 +473,9 @@ PDFFONTS_OBJS = \
 	SecurityHandler.o \
 	Stream.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \
@@ -472,6 +502,7 @@ PDFDETACH_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -498,6 +529,9 @@ PDFDETACH_OBJS = \
 	SecurityHandler.o \
 	Stream.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \
@@ -524,6 +558,7 @@ PDFTOPPM_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -552,6 +587,9 @@ PDFTOPPM_OBJS = \
 	Stream.o \
 	TextOutputDev.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
 	UTF8.o \
@@ -580,6 +618,7 @@ PDFTOPNG_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -608,6 +647,9 @@ PDFTOPNG_OBJS = \
 	Stream.o \
 	TextOutputDev.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UnicodeTypeTable.o \
 	UTF8.o \
@@ -636,6 +678,7 @@ PDFIMAGES_OBJS = \
 	CMap.o \
 	Decrypt.o \
 	Dict.o \
+	DisplayState.o \
 	Error.o \
 	FontEncodingTables.o \
 	Form.o \
@@ -663,6 +706,9 @@ PDFIMAGES_OBJS = \
 	SecurityHandler.o \
 	Stream.o \
 	TextString.o \
+	TileCache.o \
+	TileCompositor.o \
+	TileMap.o \
 	UnicodeMap.o \
 	UTF8.o \
 	XFAForm.o \

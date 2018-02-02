@@ -648,6 +648,9 @@ SplashOutputDev::SplashOutputDev(SplashColorMode colorModeA,
   transpGroupStack = NULL;
 
   nestCount = 0;
+
+  startPageCbk = NULL;
+  startPageCbkData = NULL;
 }
 
 void SplashOutputDev::setupScreenParams(double hDPI, double vDPI) {
@@ -809,6 +812,9 @@ void SplashOutputDev::startPage(int pageNum, GfxState *state) {
   // apparently hardwires it to true
   splash->setStrokeAdjust(globalParams->getStrokeAdjust());
   splash->clear(paperColor, 0);
+  if (startPageCbk) {
+    (*startPageCbk)(startPageCbkData);
+  }
 }
 
 void SplashOutputDev::endPage() {
