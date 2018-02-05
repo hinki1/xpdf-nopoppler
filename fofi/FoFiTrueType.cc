@@ -120,7 +120,7 @@ struct TrueTypeLoca {
 #define os2Tag  0x4f532f32
 #define postTag 0x706f7374
 
-#ifdef HAVE_STD_SORT
+#if HAVE_STD_SORT
 
 struct cmpTrueTypeLocaOffsetFunctor {
   bool operator()(const TrueTypeLoca &loca1, const TrueTypeLoca &loca2) {
