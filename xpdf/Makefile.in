@@ -67,8 +67,7 @@ common-files += SecurityHandler Stream
 common-files += TextString
 common-files += UnicodeMap
 common-files += UTF8
-common-files += XFAForm
-common-files += XpdfPluginAPI XRef
+common-files += XFAForm XRef
 common-files += Zoox
 
 common-output-files := DisplayState SplashOutputDev
