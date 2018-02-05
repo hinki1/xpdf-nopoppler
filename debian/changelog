@@ -1,3 +1,25 @@
+xpdf (3.63) stretch; urgency=low
+
+  * update XRef.cc to xpdf4-version
+  * neue Klassen aus xpdf4
+  * fix xpdf/Makefile.in. baut wieder.
+  * xpdf/Makefile.in auf 266 Zeilen gekürzt
+  * use gmempp.h in fofi
+  * fix FofiType1.cc
+  * ifdef -> if
+  * remove some goto
+  * enhande writeTTF
+  * add tricky font handling
+  * rework cvtNum in FofiType1C
+  * update Form handling
+  * removed some ifdef ENABLE_PLUGINS
+  * removed XpdfPluginAPI
+  * removed setting of ENABLE_PLUGINS
+  * add some win32 code to globalparams
+  * fix: getKeyBinding
+
+ -- Matthias Hinkfoth <hinki@abwesend.de>  Mon, 05 Feb 2018 22:52:26 +0100
+
 xpdf (3.62) stretch; urgency=low
 
   * UTF8.cc from xpdf4
