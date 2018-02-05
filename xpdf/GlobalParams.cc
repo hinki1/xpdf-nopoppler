@@ -19,11 +19,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#ifdef ENABLE_PLUGINS
-#  ifndef _WIN32
-#    include <dlfcn.h>
-#  endif
-#endif
 #ifdef _WIN32
 #  include <shlobj.h>
 #endif
@@ -44,9 +39,6 @@
 #include "CMap.h"
 #include "BuiltinFontTables.h"
 #include "FontEncodingTables.h"
-#ifdef ENABLE_PLUGINS
-#  include "XpdfPluginAPI.h"
-#endif
 #include "GlobalParams.h"
 
 #ifdef _WIN32
@@ -73,12 +65,6 @@
 #include "NameToUnicodeTable.h"
 #include "UnicodeMapTables.h"
 #include "UTF8.h"
-
-#ifdef ENABLE_PLUGINS
-#  ifdef _WIN32
-extern XpdfPluginVecTable xpdfPluginVecTable;
-#  endif
-#endif
 
 //------------------------------------------------------------------------
 
@@ -505,146 +491,6 @@ KeyBinding::~KeyBinding() {
   deleteGList(cmds, GString);
 }
 
-#ifdef ENABLE_PLUGINS
-//------------------------------------------------------------------------
-// Plugin
-//------------------------------------------------------------------------
-
-class Plugin {
-public:
-
-  static Plugin *load(char *type, char *name);
-  ~Plugin();
-
-private:
-
-#ifdef _WIN32
-  Plugin(HMODULE libA);
-  HMODULE lib;
-#else
-  Plugin(void *dlA);
-  void *dl;
-#endif
-};
-
-Plugin *Plugin::load(char *type, char *name) {
-  GString *path;
-  Plugin *plugin;
-  XpdfPluginVecTable *vt;
-  XpdfBool (*xpdfInitPlugin)(void);
-#ifdef _WIN32
-  HMODULE libA;
-#else
-  void *dlA;
-#endif
-
-  path = globalParams->getBaseDir();
-  appendToPath(path, "plugins");
-  appendToPath(path, type);
-  appendToPath(path, name);
-
-#ifdef _WIN32
-  path->append(".dll");
-  if (!(libA = LoadLibraryA(path->getCString()))) {
-    error(errIO, -1, "Failed to load plugin '{0:t}'", path);
-    goto err1;
-  }
-  if (!(vt = (XpdfPluginVecTable *)
-	         GetProcAddress(libA, "xpdfPluginVecTable"))) {
-    error(errIO, -1, "Failed to find xpdfPluginVecTable in plugin '{0:t}'",
-	  path);
-    goto err2;
-  }
-#else
-  //~ need to deal with other extensions here
-  path->append(".so");
-  if (!(dlA = dlopen(path->getCString(), RTLD_NOW))) {
-    error(errIO, -1, "Failed to load plugin '{0:t}': {1:s}",
-	  path, dlerror());
-    goto err1;
-  }
-  if (!(vt = (XpdfPluginVecTable *)dlsym(dlA, "xpdfPluginVecTable"))) {
-    error(errIO, -1, "Failed to find xpdfPluginVecTable in plugin '{0:t}'",
-	  path);
-    goto err2;
-  }
-#endif
-
-  if (vt->version != xpdfPluginVecTable.version) {
-    error(errIO, -1, "Plugin '{0:t}' is wrong version", path);
-    goto err2;
-  }
-  memcpy(vt, &xpdfPluginVecTable, sizeof(xpdfPluginVecTable));
-
-#ifdef _WIN32
-  if (!(xpdfInitPlugin = (XpdfBool (*)(void))
-	                     GetProcAddress(libA, "xpdfInitPlugin"))) {
-    error(errIO, -1, "Failed to find xpdfInitPlugin in plugin '{0:t}'",
-	  path);
-    goto err2;
-  }
-#else
-  if (!(xpdfInitPlugin = (XpdfBool (*)(void))dlsym(dlA, "xpdfInitPlugin"))) {
-    error(errIO, -1, "Failed to find xpdfInitPlugin in plugin '{0:t}'",
-	  path);
-    goto err2;
-  }
-#endif
-
-  if (!(*xpdfInitPlugin)()) {
-    error(errIO, -1, "Initialization of plugin '{0:t}' failed", path);
-    goto err2;
-  }
-
-#ifdef _WIN32
-  plugin = new Plugin(libA);
-#else
-  plugin = new Plugin(dlA);
-#endif
-
-  delete path;
-  return plugin;
-
- err2:
-#ifdef _WIN32
-  FreeLibrary(libA);
-#else
-  dlclose(dlA);
-#endif
- err1:
-  delete path;
-  return NULL;
-}
-
-#ifdef _WIN32
-Plugin::Plugin(HMODULE libA) {
-  lib = libA;
-}
-#else
-Plugin::Plugin(void *dlA) {
-  dl = dlA;
-}
-#endif
-
-Plugin::~Plugin() {
-  void (*xpdfFreePlugin)(void);
-
-#ifdef _WIN32
-  if ((xpdfFreePlugin = (void (*)(void))
-                            GetProcAddress(lib, "xpdfFreePlugin"))) {
-    (*xpdfFreePlugin)();
-  }
-  FreeLibrary(lib);
-#else
-  if ((xpdfFreePlugin = (void (*)(void))dlsym(dl, "xpdfFreePlugin"))) {
-    (*xpdfFreePlugin)();
-  }
-  dlclose(dl);
-#endif
-}
-
-#endif // ENABLE_PLUGINS
-
 //------------------------------------------------------------------------
 // parsing
 //------------------------------------------------------------------------
@@ -780,11 +626,6 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
       new CharCodeToUnicodeCache(unicodeToUnicodeCacheSize);
   unicodeMapCache = new UnicodeMapCache();
   cMapCache = new CMapCache();
-
-#ifdef ENABLE_PLUGINS
-  plugins = new GList();
-  securityHandlers = new GList();
-#endif
 
   // set up the initial nameToUnicode table
   for (i = 0; nameToUnicodeTab[i].name; ++i) {
@@ -1919,11 +1760,6 @@ GlobalParams::~GlobalParams() {
   delete unicodeToUnicodeCache;
   delete unicodeMapCache;
   delete cMapCache;
-
-#ifdef ENABLE_PLUGINS
-  delete securityHandlers;
-  deleteGList(plugins, Plugin);
-#endif
 
 #if MULTITHREADED
   gDestroyMutex(&mutex);
@@ -3259,63 +3095,3 @@ void GlobalParams::setErrQuiet(GBool errQuietA) {
   errQuiet = errQuietA;
   unlockGlobalParams;
 }
-
-void GlobalParams::addSecurityHandler(XpdfSecurityHandler *handler) {
-#ifdef ENABLE_PLUGINS
-  lockGlobalParams;
-  securityHandlers->append(handler);
-  unlockGlobalParams;
-#endif
-}
-
-XpdfSecurityHandler *GlobalParams::getSecurityHandler(char *name) {
-#ifdef ENABLE_PLUGINS
-  XpdfSecurityHandler *hdlr;
-  int i;
-
-  lockGlobalParams;
-  for (i = 0; i < securityHandlers->getLength(); ++i) {
-    hdlr = (XpdfSecurityHandler *)securityHandlers->get(i);
-    if (!strcasecmp(hdlr->name, name)) {
-      unlockGlobalParams;
-      return hdlr;
-    }
-  }
-  unlockGlobalParams;
-
-  if (!loadPlugin("security", name)) {
-    return NULL;
-  }
-
-  lockGlobalParams;
-  for (i = 0; i < securityHandlers->getLength(); ++i) {
-    hdlr = (XpdfSecurityHandler *)securityHandlers->get(i);
-    if (!strcmp(hdlr->name, name)) {
-      unlockGlobalParams;
-      return hdlr;
-    }
-  }
-  unlockGlobalParams;
-#endif
-
-  return NULL;
-}
-
-#ifdef ENABLE_PLUGINS
-//------------------------------------------------------------------------
-// plugins
-//------------------------------------------------------------------------
-
-GBool GlobalParams::loadPlugin(char *type, char *name) {
-  Plugin *plugin;
-
-  if (!(plugin = Plugin::load(type, name))) {
-    return gFalse;
-  }
-  lockGlobalParams;
-  plugins->append(plugin);
-  unlockGlobalParams;
-  return gTrue;
-}
-
-#endif // ENABLE_PLUGINS

@@ -16,6 +16,9 @@
 #endif
 
 #include <stdio.h>
+#ifdef _WIN32
+#  include <windows.h>
+#endif
 #include "gtypes.h"
 #include "CharTypes.h"
 
@@ -319,10 +322,10 @@ public:
   void setPrintCommands(GBool printCommandsA);
   void setErrQuiet(GBool errQuietA);
 
-  //----- security handlers
-
-  void addSecurityHandler(XpdfSecurityHandler *handler);
-  XpdfSecurityHandler *getSecurityHandler(char *name);
+#ifdef _WIN32
+  void setWin32ErrorInfo(const char *func, DWORD code);
+  XpdfWin32ErrorInfo *getWin32ErrorInfo();
+#endif
 
 private:
 
@@ -366,9 +369,6 @@ private:
   void parseFloat(const char *cmdName, double *val,
 		  GList *tokens, GString *fileName, int line);
   UnicodeMap *getUnicodeMap2(GString *encodingName);
-#ifdef ENABLE_PLUGINS
-  GBool loadPlugin(char *type, char *name);
-#endif
 
   //----- static tables
 
@@ -481,12 +481,6 @@ private:
   CharCodeToUnicodeCache *unicodeToUnicodeCache;
   UnicodeMapCache *unicodeMapCache;
   CMapCache *cMapCache;
-
-#ifdef ENABLE_PLUGINS
-  GList *plugins;		// list of plugins [Plugin]
-  GList *securityHandlers;	// list of loaded security handlers
-				//   [XpdfSecurityHandler]
-#endif
 
 #if MULTITHREADED
   GMutex mutex;
