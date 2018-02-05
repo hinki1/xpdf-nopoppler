@@ -95,11 +95,6 @@
 #undef HAVE_PAPER_H
 
 /*
- * Enable support for loading plugins.
- */
-#undef ENABLE_PLUGINS
-
-/*
  * Defined if the Splash library is avaiable.
  */
 #define HAVE_SPLASH 1
