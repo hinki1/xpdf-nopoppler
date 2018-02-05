@@ -967,12 +967,18 @@ void FoFiTrueType::writeTTF(FoFiOutputFunc outputFunc,
   unsortedLoca = gFalse;
   i = seekTable("loca");
   pos = tables[i].offset;
+  glyfLen = tables[seekTable("glyf")].len;
   ok = gTrue;
   for (i = 0; i <= nGlyphs; ++i) {
     if (locaFmt) {
       locaTable[i].origOffset = (int)getU32BE(pos + i*4, &ok);
     } else {
       locaTable[i].origOffset = 2 * getU16BE(pos + i*2, &ok);
+    }
+    if (locaTable[i].origOffset < 0 ||
+	locaTable[i].origOffset > glyfLen) {
+      locaTable[i].origOffset = glyfLen;
+      unsortedLoca = gTrue;
     }
     if (i > 0 && locaTable[i].origOffset < locaTable[i-1].origOffset) {
       unsortedLoca = gTrue;
@@ -2120,16 +2126,6 @@ void FoFiTrueType::parse(int fontNum, GBool allowHeadlessCFF) {
     }
     if (tables[i].len < (nGlyphs + 1) * (locaFmt ? 4 : 2)) {
       nGlyphs = tables[i].len / (locaFmt ? 4 : 2) - 1;
-    }
-    for (j = 0; j <= nGlyphs; ++j) {
-      if (locaFmt) {
-	pos = (int)getU32BE(tables[i].offset + j*4, &parsedOk);
-      } else {
-	pos = getU16BE(tables[i].offset + j*2, &parsedOk);
-      }
-      if (pos < 0 || pos > len) {
-	parsedOk = gFalse;
-      }
     }
     if (!parsedOk) {
       return;
