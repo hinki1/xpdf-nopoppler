@@ -526,6 +526,119 @@ void FoFiTrueType::getFontMatrix(double *mat) {
   delete ff;
 }
 
+struct FoFiTrueTypeTrickyFont {
+  int cvtLen;
+  Guint cvtChecksum;
+  int fpgmLen;
+  Guint fpgmChecksum;
+  int prepLen;
+  Guint prepChecksum;
+};
+
+// This data was taken from the FreeType project.
+static FoFiTrueTypeTrickyFont trickyFonts[] = {
+  { 0x000002e4, 0x05bcf058,	// MingLiU 1995
+    0x000087c4, 0x28233bf1,
+    0x000001e1, 0xa344a1ea },
+  { 0x000002e4, 0x05bcf058,	// MingLiU 1996-
+    0x000087c4, 0x28233bf1,
+    0x000001e1, 0xa344a1eb },
+  { 0x00000350, 0x11e5ead4,	// DFKaiShu
+    0x00009063, 0x5a30ca3b,
+    0x0000007e, 0x13a42602 },
+  { 0x00000350, 0x11e5ead4,	// DFKaiShu2
+    0x00008998, 0xa6e78c01,
+    0x0000007e, 0x13a42602 },
+  { 0x00000008, 0xfffbfffc,	// HuaTianKaiTi
+    0x0000bea2, 0x9c9e48b8,
+    0x00000008, 0x70020112 },
+  { 0x00000008, 0xfffbfffc,	// HuaTianSongTi
+    0x00017c39, 0x0a5a0483,
+    0x00000008, 0x70020112 },
+  { 0x00000000, 0x00000000,	// NEC fadpop7.ttf
+    0x000000e5, 0x40c92555,
+    0x0000117c, 0xa39b58e3 },
+  { 0x00000000, 0x00000000,	// NEC fadrei5.ttf
+    0x000000e5, 0x33c41652,
+    0x00000f6a, 0x26d6c52a },
+  { 0x00000000, 0x00000000,	// NEC fangot7.ttf
+    0x0000019d, 0x6db1651d,
+    0x00002492, 0x6c6e4b03 },
+  { 0x00000000, 0x00000000,	// NEC fangyo5.ttf
+    0x000000e5, 0x40c92555,
+    0x0000117c, 0xde51fad0 },
+  { 0x00000000, 0x00000000,	// NEC fankyo5.ttf
+    0x000000e5, 0x85e47664,
+    0x00001caa, 0xa6c62831 },
+  { 0x00000000, 0x00000000,	// NEC fanrgo5.ttf
+    0x0000019d, 0x2d891cfd,
+    0x00001de8, 0xa0604633 },
+  { 0x00000000, 0x00000000,	// NEC fangot5.ttc
+    0x000001cb, 0x40aa774c,
+    0x00001f9a, 0x9b5caa96 },
+  { 0x00000000, 0x00000000,	// NEC fanmin3.ttc
+    0x00000141, 0x0d3de9cb,
+    0x00002280, 0xd4127766 },
+  { 0x00000000, 0x00000000,	// NEC FA-Gothic, 1996
+    0x000001f0, 0x4a692698,
+    0x00001fca, 0x340d4346 },
+  { 0x00000000, 0x00000000,	// NEC FA-Minchou, 1996
+    0x00000166, 0xcd34c604,
+    0x000022b0, 0x6cf31046 },
+  { 0x00000000, 0x00000000,	// NEC FA-RoundGothicB, 1996
+    0x0000019d, 0x5da75315,
+    0x000022e0, 0x40745a5f },
+  { 0x00000000, 0x00000000,	// NEC FA-RoundGothicM, 1996
+    0x000001c2, 0xf055fc48,
+    0x00001e18, 0x3900ded3 }
+};
+
+#define nTrickyFonts ((int)(sizeof(trickyFonts) / sizeof(FoFiTrueTypeTrickyFont)))
+
+// This looks at the length and checksum values for the cvt, fpgm, and
+// prep tables.  The theory is that those tables will be the same,
+// even if the font is renamed and/or subsetted.
+GBool FoFiTrueType::checkForTrickyCJK() {
+  int cvtIdx, fpgmIdx, prepIdx;
+  int cvtLen, fpgmLen, prepLen;
+  Guint cvtChecksum, fpgmChecksum, prepChecksum;
+  int i;
+
+  if ((cvtIdx = seekTable("cvt ")) >= 0) {
+    cvtLen = tables[cvtIdx].len;
+    cvtChecksum = tables[cvtIdx].checksum;
+  } else {
+    cvtLen = 0;
+    cvtChecksum = 0;
+  }
+  if ((fpgmIdx = seekTable("fpgm")) >= 0) {
+    fpgmLen = tables[fpgmIdx].len;
+    fpgmChecksum = tables[fpgmIdx].checksum;
+  } else {
+    fpgmLen = 0;
+    fpgmChecksum = 0;
+  }
+  if ((prepIdx = seekTable("prep")) >= 0) {
+    prepLen = tables[prepIdx].len;
+    prepChecksum = tables[prepIdx].checksum;
+  } else {
+    prepLen = 0;
+    prepChecksum = 0;
+  }
+
+  for (i = 0; i < nTrickyFonts; ++i) {
+    if (cvtLen == trickyFonts[i].cvtLen &&
+	cvtChecksum == trickyFonts[i].cvtChecksum &&
+	fpgmLen == trickyFonts[i].fpgmLen &&
+	fpgmChecksum == trickyFonts[i].fpgmChecksum &&
+	prepLen == trickyFonts[i].prepLen &&
+	prepChecksum == trickyFonts[i].prepChecksum) {
+      return gTrue;
+    }
+  }
+  return gFalse;
+}
+
 void FoFiTrueType::convertToType42(char *psName, char **encoding,
 				   int *codeToGID,
 				   FoFiOutputFunc outputFunc,
