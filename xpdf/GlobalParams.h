@@ -487,6 +487,9 @@ private:
   GMutex unicodeMapCacheMutex;
   GMutex cMapCacheMutex;
 #endif
+#ifdef _WIN32
+  DWORD tlsWin32ErrorInfo;	// TLS index for error info
+#endif
 };
 
 #endif

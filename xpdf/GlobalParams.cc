@@ -12,10 +12,6 @@
 #pragma implementation
 #endif
 
-#ifdef _WIN32
-#  define _WIN32_WINNT 0x0500 // for GetSystemWindowsDirectory
-#  include <windows.h>
-#endif
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -340,7 +336,7 @@ SysFontInfo *SysFontList::find(GString *name) {
 #ifdef _WIN32
 void SysFontList::scanWindowsFonts(char *winFontDir) {
   OSVERSIONINFO version;
-  char *path;
+  const char *path;
   DWORD idx, valNameLen, dataLen, type;
   HKEY regKey;
   char valName[1024], data[1024];
@@ -505,6 +501,10 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   gInitMutex(&mutex);
   gInitMutex(&unicodeMapCacheMutex);
   gInitMutex(&cMapCacheMutex);
+#endif
+
+#ifdef _WIN32
+  tlsWin32ErrorInfo = TlsAlloc();
 #endif
 
   initBuiltinFontTables();
@@ -3095,3 +3095,36 @@ void GlobalParams::setErrQuiet(GBool errQuietA) {
   errQuiet = errQuietA;
   unlockGlobalParams;
 }
+
+#ifdef _WIN32
+void GlobalParams::setWin32ErrorInfo(const char *func, DWORD code) {
+  XpdfWin32ErrorInfo *errorInfo;
+
+  if (tlsWin32ErrorInfo == TLS_OUT_OF_INDEXES) {
+    return;
+  }
+  errorInfo = (XpdfWin32ErrorInfo *)TlsGetValue(tlsWin32ErrorInfo);
+  if (!errorInfo) {
+    errorInfo = new XpdfWin32ErrorInfo();
+    TlsSetValue(tlsWin32ErrorInfo, errorInfo);
+  }
+  errorInfo->func = func;
+  errorInfo->code = code;
+}
+
+XpdfWin32ErrorInfo *GlobalParams::getWin32ErrorInfo() {
+  XpdfWin32ErrorInfo *errorInfo;
+
+  if (tlsWin32ErrorInfo == TLS_OUT_OF_INDEXES) {
+    return NULL;
+  }
+  errorInfo = (XpdfWin32ErrorInfo *)TlsGetValue(tlsWin32ErrorInfo);
+  if (!errorInfo) {
+    errorInfo = new XpdfWin32ErrorInfo();
+    TlsSetValue(tlsWin32ErrorInfo, errorInfo);
+    errorInfo->func = NULL;
+    errorInfo->code = 0;
+  }
+  return errorInfo;
+}
+#endif
