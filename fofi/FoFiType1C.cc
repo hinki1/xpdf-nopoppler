@@ -16,6 +16,7 @@
 #include <string.h>
 #include <math.h>
 #include "gmem.h"
+#include "gmempp.h"
 #include "GString.h"
 #include "FoFiEncodings.h"
 #include "FoFiType1C.h"
