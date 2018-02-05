@@ -1563,11 +1563,6 @@ void FoFiTrueType::cvtCharStrings(char **encoding,
   (*outputFunc)(outputStream, "/CharStrings 256 dict dup begin\n", 32);
   (*outputFunc)(outputStream, "/.notdef 0 def\n", 15);
 
-  // if there's no 'cmap' table, punt
-  if (nCmaps == 0) {
-    goto err;
-  }
-
   // map char name to glyph index:
   // 1. use encoding to map name to char code
   // 2. use codeToGID to map char code to glyph index
@@ -1598,7 +1593,6 @@ void FoFiTrueType::cvtCharStrings(char **encoding,
     }
   }
 
- err:
   (*outputFunc)(outputStream, "end readonly def\n", 17);
 }
 
@@ -2116,8 +2110,8 @@ void FoFiTrueType::parse(int fontNum, GBool allowHeadlessCFF) {
     return;
   }
 
-  // make sure the loca table is sane (correct length and entries are
-  // in bounds)
+  // make sure the loca table is sane (correct length)
+  // NB: out-of-bounds entries are handled in writeTTF()
   if (!openTypeCFF) {
     i = seekTable("loca");
     if (tables[i].len < 0) {
@@ -2246,6 +2240,7 @@ void FoFiTrueType::readPostTable() {
     stringIdx = 0;
     stringPos = tablePos + 34 + 2*n;
     for (i = 0; i < n; ++i) {
+      ok = gTrue;
       j = getU16BE(tablePos + 34 + 2*i, &ok);
       if (j < 258) {
 	nameToGID->removeInt(macGlyphNames[j]);
@@ -2257,12 +2252,12 @@ void FoFiTrueType::readPostTable() {
 	       stringIdx < j;
 	       ++stringIdx, stringPos += 1 + getU8(stringPos, &ok)) ;
 	  if (!ok) {
-	    goto err;
+	    continue;
 	  }
 	}
 	m = getU8(stringPos, &ok);
 	if (!ok || !checkRegion(stringPos + 1, m)) {
-	  goto err;
+	  continue;
 	}
 	name = new GString((char *)&file[stringPos + 1], m);
 	nameToGID->removeInt(name);
@@ -2276,7 +2271,7 @@ void FoFiTrueType::readPostTable() {
     for (i = 0; i < nGlyphs; ++i) {
       j = getU8(tablePos + 32 + i, &ok);
       if (!ok) {
-	goto err;
+	continue;
       }
       if (j < 258) {
 	nameToGID->removeInt(macGlyphNames[j]);
