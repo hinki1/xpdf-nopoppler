@@ -2684,7 +2684,7 @@ GList *GlobalParams::getKeyBinding(int code, int mods, int context) {
   lockGlobalParams;
   cmds = NULL;
   // for ASCII chars, ignore the shift modifier
-  modMask = code <= 0xff ? ~xpdfKeyModShift : ~0;
+  modMask = (code >= 0x21 && code <= 0xff) ? ~xpdfKeyModShift : ~0;
   for (i = 0; i < keyBindings->getLength(); ++i) {
     binding = (KeyBinding *)keyBindings->get(i);
     if (binding->code == code &&
