@@ -696,8 +696,12 @@ void GlobalParams::createDefaultKeyBindings() {
   keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress1, xpdfKeyModNone,
 				     xpdfKeyContextAny, "startSelection"));
   keyBindings->append(new KeyBinding(xpdfKeyCodeMouseRelease1, xpdfKeyModNone,
-				     xpdfKeyContextAny, "endSelection",
-				     "followLinkNoSel"));
+				     xpdfKeyContextAny, "endSelection"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodeMouseClick1, xpdfKeyModNone,
+				     xpdfKeyContextAny, "followLinkNoSel"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodeMouseClick2, xpdfKeyModNone,
+				     xpdfKeyContextOverLink,
+				     "followLinkInNewTab"));
   keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress2, xpdfKeyModNone,
 				     xpdfKeyContextAny, "startPan"));
   keyBindings->append(new KeyBinding(xpdfKeyCodeMouseRelease2, xpdfKeyModNone,
@@ -715,7 +719,52 @@ void GlobalParams::createDefaultKeyBindings() {
   keyBindings->append(new KeyBinding(xpdfKeyCodeMousePress7, xpdfKeyModNone,
 				     xpdfKeyContextAny, "scrollRight(16)"));
 
-  //----- keys
+  //----- control keys
+  keyBindings->append(new KeyBinding('o', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "open"));
+  keyBindings->append(new KeyBinding('r', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "reload"));
+  keyBindings->append(new KeyBinding('f', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "find"));
+  keyBindings->append(new KeyBinding('g', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "findNext"));
+  keyBindings->append(new KeyBinding('c', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "copy"));
+  keyBindings->append(new KeyBinding('p', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "print"));
+  keyBindings->append(new KeyBinding('0', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "zoomPercent(125)"));
+  keyBindings->append(new KeyBinding('+', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "zoomIn"));
+  keyBindings->append(new KeyBinding('=', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "zoomIn"));
+  keyBindings->append(new KeyBinding('-', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "zoomOut"));
+  keyBindings->append(new KeyBinding('s', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "saveAs"));
+  keyBindings->append(new KeyBinding('t', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "newTab"));
+  keyBindings->append(new KeyBinding('n', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "newWindow"));
+  keyBindings->append(new KeyBinding('w', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "closeTabOrQuit"));
+  keyBindings->append(new KeyBinding('q', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "quit"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodeTab, xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "nextTab"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodeTab,
+				     xpdfKeyModShift | xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "prevTab"));
+  keyBindings->append(new KeyBinding('?', xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "help"));
+
+  //----- alt keys
+  keyBindings->append(new KeyBinding(xpdfKeyCodeLeft, xpdfKeyModAlt,
+				     xpdfKeyContextAny, "goBackward"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodeRight, xpdfKeyModAlt,
+				     xpdfKeyContextAny, "goForward"));
+
+  //----- home/end keys
   keyBindings->append(new KeyBinding(xpdfKeyCodeHome, xpdfKeyModCtrl,
 				     xpdfKeyContextAny, "gotoPage(1)"));
   keyBindings->append(new KeyBinding(xpdfKeyCodeHome, xpdfKeyModNone,
@@ -725,16 +774,29 @@ void GlobalParams::createDefaultKeyBindings() {
   keyBindings->append(new KeyBinding(xpdfKeyCodeEnd, xpdfKeyModNone,
 				     xpdfKeyContextAny,
 				     "scrollToBottomRight"));
+
+  //----- pgup/pgdn keys
   keyBindings->append(new KeyBinding(xpdfKeyCodePgUp, xpdfKeyModNone,
-				     xpdfKeyContextAny, "pageUp"));
-  keyBindings->append(new KeyBinding(xpdfKeyCodeBackspace, xpdfKeyModNone,
-				     xpdfKeyContextAny, "pageUp"));
-  keyBindings->append(new KeyBinding(xpdfKeyCodeDelete, xpdfKeyModNone,
 				     xpdfKeyContextAny, "pageUp"));
   keyBindings->append(new KeyBinding(xpdfKeyCodePgDn, xpdfKeyModNone,
 				     xpdfKeyContextAny, "pageDown"));
-  keyBindings->append(new KeyBinding(' ', xpdfKeyModNone,
-				     xpdfKeyContextAny, "pageDown"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodePgUp, xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "prevPage"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodePgDn, xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "nextPage"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodePgUp, xpdfKeyModCtrl,
+				     xpdfKeyContextScrLockOn,
+				     "prevPageNoScroll"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodePgDn, xpdfKeyModCtrl,
+				     xpdfKeyContextScrLockOn,
+				     "nextPageNoScroll"));
+
+  //----- esc key
+  keyBindings->append(new KeyBinding(xpdfKeyCodeEsc, xpdfKeyModNone,
+				     xpdfKeyContextFullScreen,
+				     "windowMode"));
+
+  //----- arrow keys
   keyBindings->append(new KeyBinding(xpdfKeyCodeLeft, xpdfKeyModNone,
 				     xpdfKeyContextAny, "scrollLeft(16)"));
   keyBindings->append(new KeyBinding(xpdfKeyCodeRight, xpdfKeyModNone,
@@ -743,73 +805,26 @@ void GlobalParams::createDefaultKeyBindings() {
 				     xpdfKeyContextAny, "scrollUp(16)"));
   keyBindings->append(new KeyBinding(xpdfKeyCodeDown, xpdfKeyModNone,
 				     xpdfKeyContextAny, "scrollDown(16)"));
-  keyBindings->append(new KeyBinding('o', xpdfKeyModNone,
-				     xpdfKeyContextAny, "open"));
-  keyBindings->append(new KeyBinding('O', xpdfKeyModNone,
-				     xpdfKeyContextAny, "open"));
-  keyBindings->append(new KeyBinding('r', xpdfKeyModNone,
-				     xpdfKeyContextAny, "reload"));
-  keyBindings->append(new KeyBinding('R', xpdfKeyModNone,
-				     xpdfKeyContextAny, "reload"));
-  keyBindings->append(new KeyBinding('f', xpdfKeyModNone,
-				     xpdfKeyContextAny, "find"));
-  keyBindings->append(new KeyBinding('F', xpdfKeyModNone,
-				     xpdfKeyContextAny, "find"));
-  keyBindings->append(new KeyBinding('f', xpdfKeyModCtrl,
-				     xpdfKeyContextAny, "find"));
-  keyBindings->append(new KeyBinding('g', xpdfKeyModCtrl,
-				     xpdfKeyContextAny, "findNext"));
-  keyBindings->append(new KeyBinding('p', xpdfKeyModCtrl,
-				     xpdfKeyContextAny, "print"));
-  keyBindings->append(new KeyBinding('n', xpdfKeyModNone,
-				     xpdfKeyContextScrLockOff, "nextPage"));
-  keyBindings->append(new KeyBinding('N', xpdfKeyModNone,
-				     xpdfKeyContextScrLockOff, "nextPage"));
-  keyBindings->append(new KeyBinding('n', xpdfKeyModNone,
-				     xpdfKeyContextScrLockOn,
-				     "nextPageNoScroll"));
-  keyBindings->append(new KeyBinding('N', xpdfKeyModNone,
-				     xpdfKeyContextScrLockOn,
-				     "nextPageNoScroll"));
-  keyBindings->append(new KeyBinding('p', xpdfKeyModNone,
-				     xpdfKeyContextScrLockOff, "prevPage"));
-  keyBindings->append(new KeyBinding('P', xpdfKeyModNone,
-				     xpdfKeyContextScrLockOff, "prevPage"));
-  keyBindings->append(new KeyBinding('p', xpdfKeyModNone,
+  keyBindings->append(new KeyBinding(xpdfKeyCodeUp, xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "prevPage"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodeDown, xpdfKeyModCtrl,
+				     xpdfKeyContextAny, "nextPage"));
+  keyBindings->append(new KeyBinding(xpdfKeyCodeUp, xpdfKeyModCtrl,
 				     xpdfKeyContextScrLockOn,
 				     "prevPageNoScroll"));
-  keyBindings->append(new KeyBinding('P', xpdfKeyModNone,
+  keyBindings->append(new KeyBinding(xpdfKeyCodeDown, xpdfKeyModCtrl,
 				     xpdfKeyContextScrLockOn,
-				     "prevPageNoScroll"));
-  keyBindings->append(new KeyBinding('v', xpdfKeyModNone,
-				     xpdfKeyContextAny, "goForward"));
-  keyBindings->append(new KeyBinding('b', xpdfKeyModNone,
-				     xpdfKeyContextAny, "goBackward"));
+				     "nextPageNoScroll"));
+
+  //----- letter keys
+  keyBindings->append(new KeyBinding(' ', xpdfKeyModNone,
+				     xpdfKeyContextAny, "pageDown"));
   keyBindings->append(new KeyBinding('g', xpdfKeyModNone,
 				     xpdfKeyContextAny, "focusToPageNum"));
-  keyBindings->append(new KeyBinding('0', xpdfKeyModNone,
-				     xpdfKeyContextAny, "zoomPercent(125)"));
-  keyBindings->append(new KeyBinding('+', xpdfKeyModNone,
-				     xpdfKeyContextAny, "zoomIn"));
-  keyBindings->append(new KeyBinding('-', xpdfKeyModNone,
-				     xpdfKeyContextAny, "zoomOut"));
   keyBindings->append(new KeyBinding('z', xpdfKeyModNone,
 				     xpdfKeyContextAny, "zoomFitPage"));
   keyBindings->append(new KeyBinding('w', xpdfKeyModNone,
 				     xpdfKeyContextAny, "zoomFitWidth"));
-  keyBindings->append(new KeyBinding('f', xpdfKeyModAlt,
-				     xpdfKeyContextAny,
-				     "toggleFullScreenMode"));
-  keyBindings->append(new KeyBinding('l', xpdfKeyModCtrl,
-				     xpdfKeyContextAny, "redraw"));
-  keyBindings->append(new KeyBinding('w', xpdfKeyModCtrl,
-				     xpdfKeyContextAny, "closeWindowOrQuit"));
-  keyBindings->append(new KeyBinding('?', xpdfKeyModNone,
-				     xpdfKeyContextAny, "about"));
-  keyBindings->append(new KeyBinding('q', xpdfKeyModNone,
-				     xpdfKeyContextAny, "quit"));
-  keyBindings->append(new KeyBinding('Q', xpdfKeyModNone,
-				     xpdfKeyContextAny, "quit"));
 }
 
 void GlobalParams::parseFile(GString *fileName, FILE *f) {
@@ -1523,6 +1538,8 @@ GBool GlobalParams::parseKey(GString *modKeyStr, GString *contextStr,
     *code = xpdfKeyCodeUp;
   } else if (!strcmp(p0, "down")) {
     *code = xpdfKeyCodeDown;
+  } else if (!strcmp(p0, "esc")) {
+    *code = xpdfKeyCodeEsc;
   } else if (p0[0] == 'f' && p0[1] >= '1' && p0[1] <= '9' && !p0[2]) {
     *code = xpdfKeyCodeF1 + (p0[1] - '1');
   } else if (p0[0] == 'f' &&
@@ -1540,6 +1557,11 @@ GBool GlobalParams::parseKey(GString *modKeyStr, GString *contextStr,
 	     (!p0[13] || (p0[13] >= '0' && p0[13] <= '9' && !p0[14])) &&
 	     (btn = atoi(p0 + 12)) >= 1 && btn <= 32) {
     *code = xpdfKeyCodeMouseRelease1 + btn - 1;
+  } else if (!strncmp(p0, "mouseClick", 10) &&
+	     p0[10] >= '0' && p0[10] <= '9' &&
+	     (!p0[11] || (p0[11] >= '0' && p0[11] <= '9' && !p0[12])) &&
+	     (btn = atoi(p0 + 10)) >= 1 && btn <= 32) {
+    *code = xpdfKeyCodeMouseClick1 + btn - 1;
   } else if (*p0 >= 0x20 && *p0 <= 0x7e && !p0[1]) {
     *code = (int)*p0;
   } else {

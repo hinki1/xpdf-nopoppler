@@ -131,16 +131,17 @@ public:
 #define xpdfKeyCodeReturn         0x1001
 #define xpdfKeyCodeEnter          0x1002
 #define xpdfKeyCodeBackspace      0x1003
-#define xpdfKeyCodeInsert         0x1004
-#define xpdfKeyCodeDelete         0x1005
-#define xpdfKeyCodeHome           0x1006
-#define xpdfKeyCodeEnd            0x1007
-#define xpdfKeyCodePgUp           0x1008
-#define xpdfKeyCodePgDn           0x1009
-#define xpdfKeyCodeLeft           0x100a
-#define xpdfKeyCodeRight          0x100b
-#define xpdfKeyCodeUp             0x100c
-#define xpdfKeyCodeDown           0x100d
+#define xpdfKeyCodeEsc            0x1004
+#define xpdfKeyCodeInsert         0x1005
+#define xpdfKeyCodeDelete         0x1006
+#define xpdfKeyCodeHome           0x1007
+#define xpdfKeyCodeEnd            0x1008
+#define xpdfKeyCodePgUp           0x1009
+#define xpdfKeyCodePgDn           0x100a
+#define xpdfKeyCodeLeft           0x100b
+#define xpdfKeyCodeRight          0x100c
+#define xpdfKeyCodeUp             0x100d
+#define xpdfKeyCodeDown           0x100e
 #define xpdfKeyCodeF1             0x1100
 #define xpdfKeyCodeF35            0x1122
 #define xpdfKeyCodeMousePress1    0x2001
@@ -161,6 +162,15 @@ public:
 #define xpdfKeyCodeMouseRelease7  0x2107
 // ...
 #define xpdfKeyCodeMouseRelease32 0x2120
+#define xpdfKeyCodeMouseClick1    0x2201
+#define xpdfKeyCodeMouseClick2    0x2202
+#define xpdfKeyCodeMouseClick3    0x2203
+#define xpdfKeyCodeMouseClick4    0x2204
+#define xpdfKeyCodeMouseClick5    0x2205
+#define xpdfKeyCodeMouseClick6    0x2206
+#define xpdfKeyCodeMouseClick7    0x2207
+// ...
+#define xpdfKeyCodeMouseClick32   0x2220
 #define xpdfKeyModNone            0
 #define xpdfKeyModShift           (1 << 0)
 #define xpdfKeyModCtrl            (1 << 1)
