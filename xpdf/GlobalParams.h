@@ -290,6 +290,7 @@ public:
   double getScreenBlackThreshold();
   double getScreenWhiteThreshold();
   double getMinLineWidth();
+  GBool getEnablePathSimplification();
   GBool getDrawAnnotations();
   GBool getOverprintPreview() { return overprintPreview; }
   GString *getLaunchCommand() { return launchCommand; }
@@ -499,6 +500,8 @@ private:
   double screenBlackThreshold;	// screen black clamping threshold
   double screenWhiteThreshold;	// screen white clamping threshold
   double minLineWidth;		// minimum line width
+  GBool				// enable path simplification
+    enablePathSimplification;
   GBool drawAnnotations;	// draw annotations or not
   GBool overprintPreview;	// enable overprint preview
   GString *launchCommand;	// command executed for 'launch' links

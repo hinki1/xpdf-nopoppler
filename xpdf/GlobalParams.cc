@@ -621,6 +621,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   screenBlackThreshold = 0.0;
   screenWhiteThreshold = 1.0;
   minLineWidth = 0.0;
+  enablePathSimplification = gFalse;
   drawAnnotations = gTrue;
   overprintPreview = gFalse;
   launchCommand = NULL;
@@ -1030,6 +1031,9 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
 		 tokens, fileName, line);
     } else if (!cmd->cmp("minLineWidth")) {
       parseFloat("minLineWidth", &minLineWidth,
+		 tokens, fileName, line);
+    } else if (!cmd->cmp("enablePathSimplification")) {
+      parseYesNo("enablePathSimplification", &enablePathSimplification,
 		 tokens, fileName, line);
     } else if (!cmd->cmp("drawAnnotations")) {
       parseYesNo("drawAnnotations", &drawAnnotations,
@@ -2697,6 +2701,15 @@ double GlobalParams::getMinLineWidth() {
   w = minLineWidth;
   unlockGlobalParams;
   return w;
+}
+
+GBool GlobalParams::getEnablePathSimplification() {
+  GBool en;
+
+  lockGlobalParams;
+  en = enablePathSimplification;
+  unlockGlobalParams;
+  return en;
 }
 
 GBool GlobalParams::getDrawAnnotations() {
