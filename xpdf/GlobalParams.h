@@ -277,6 +277,11 @@ public:
   GBool getTextKeepTinyChars();
   GString *getInitialZoom();
   GBool getContinuousView();
+  GBool getInitialSidebarState();
+  int getMaxTileWidth();
+  int getMaxTileHeight();
+  int getTileCacheSize();
+  int getWorkerThreads();
   GBool getEnableFreeType();
   GBool getDisableFreeTypeHinting();
   GBool getAntialias();
@@ -490,6 +495,12 @@ private:
   GBool textKeepTinyChars;	// keep all characters in text output
   GString *initialZoom;		// initial zoom level
   GBool continuousView;		// continuous view mode
+  GBool initialSidebarState;	// initial sidebar state - open (true)
+				//   or closed (false)
+  int maxTileWidth;		// maximum rasterization tile width
+  int maxTileHeight;		// maximum rasterization tile height
+  int tileCacheSize;		// number of rasterization tiles in cache
+  int workerThreads;		// number of rasterization worker threads
   GBool enableFreeType;		// FreeType enable flag
   GBool disableFreeTypeHinting;	// FreeType hinting disable flag
   GBool antialias;		// font anti-aliasing enable flag

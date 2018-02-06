@@ -608,6 +608,11 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   textKeepTinyChars = gTrue;
   initialZoom = new GString("125");
   continuousView = gFalse;
+  initialSidebarState = gTrue;
+  maxTileWidth = 1500;
+  maxTileHeight = 1500;
+  tileCacheSize = 10;
+  workerThreads = 1;
   enableFreeType = gTrue;
   disableFreeTypeHinting = gFalse;
   antialias = gTrue;
@@ -999,6 +1004,17 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
       parseInitialZoom(tokens, fileName, line);
     } else if (!cmd->cmp("continuousView")) {
       parseYesNo("continuousView", &continuousView, tokens, fileName, line);
+    } else if (!cmd->cmp("initialSidebarState")) {
+      parseYesNo("initialSidebarState", &initialSidebarState,
+		 tokens, fileName, line);
+    } else if (!cmd->cmp("maxTileWidth")) {
+      parseInteger("maxTileWidth", &maxTileWidth, tokens, fileName, line);
+    } else if (!cmd->cmp("maxTileHeight")) {
+      parseInteger("maxTileHeight", &maxTileHeight, tokens, fileName, line);
+    } else if (!cmd->cmp("tileCacheSize")) {
+      parseInteger("tileCacheSize", &tileCacheSize, tokens, fileName, line);
+    } else if (!cmd->cmp("workerThreads")) {
+      parseInteger("workerThreads", &workerThreads, tokens, fileName, line);
     } else if (!cmd->cmp("enableFreeType")) {
       parseYesNo("enableFreeType", &enableFreeType, tokens, fileName, line);
     } else if (!cmd->cmp("disableFreeTypeHinting")) {
@@ -2587,6 +2603,51 @@ GBool GlobalParams::getContinuousView() {
   f = continuousView;
   unlockGlobalParams;
   return f;
+}
+
+GBool GlobalParams::getInitialSidebarState() {
+  GBool state;
+
+  lockGlobalParams;
+  state = initialSidebarState;
+  unlockGlobalParams;
+  return state;
+}
+
+int GlobalParams::getMaxTileWidth() {
+  int w;
+
+  lockGlobalParams;
+  w = maxTileWidth;
+  unlockGlobalParams;
+  return w;
+}
+
+int GlobalParams::getMaxTileHeight() {
+  int h;
+
+  lockGlobalParams;
+  h = maxTileHeight;
+  unlockGlobalParams;
+  return h;
+}
+
+int GlobalParams::getTileCacheSize() {
+  int n;
+
+  lockGlobalParams;
+  n = tileCacheSize;
+  unlockGlobalParams;
+  return n;
+}
+
+int GlobalParams::getWorkerThreads() {
+  int n;
+
+  lockGlobalParams;
+  n = workerThreads;
+  unlockGlobalParams;
+  return n;
 }
 
 GBool GlobalParams::getEnableFreeType() {
