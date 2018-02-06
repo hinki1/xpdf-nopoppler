@@ -299,6 +299,9 @@ public:
   GBool getDrawAnnotations();
   GBool getDrawFormFields();
   GBool getOverprintPreview() { return overprintPreview; }
+  GString *getPaperColor();
+  GString *getMatteColor();
+  GString *getFullScreenMatteColor();
   GString *getLaunchCommand() { return launchCommand; }
   GString *getURLCommand() { return urlCommand; }
   GString *getMovieCommand() { return movieCommand; }
@@ -408,6 +411,8 @@ private:
   void parseYesNo(const char *cmdName, GBool *flag,
 		  GList *tokens, GString *fileName, int line);
   GBool parseYesNo2(char *token, GBool *flag);
+  void parseColor(const char *cmdName, GString **val,
+		  GList *tokens, GString *fileName, int line);
   void parseInteger(const char *cmdName, int *val,
 		    GList *tokens, GString *fileName, int line);
   void parseFloat(const char *cmdName, double *val,
@@ -519,6 +524,9 @@ private:
   GBool drawAnnotations;	// draw annotations or not
   GBool drawFormFields;		// draw form fields or not
   GBool overprintPreview;	// enable overprint preview
+  GString *paperColor;		// paper (page background) color
+  GString *matteColor;		// matte (background outside of page) color
+  GString *fullScreenMatteColor; // matte color in full-screen mode
   GString *launchCommand;	// command executed for 'launch' links
   GString *urlCommand;		// command executed for URL links
   GString *movieCommand;	// command executed for movie annotations

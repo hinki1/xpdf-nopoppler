@@ -630,6 +630,9 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   drawAnnotations = gTrue;
   drawFormFields = gTrue;
   overprintPreview = gFalse;
+  paperColor = new GString("#ffffff");
+  matteColor = new GString("#808080");
+  fullScreenMatteColor = new GString("#000000");
   launchCommand = NULL;
   urlCommand = NULL;
   movieCommand = NULL;
@@ -1060,6 +1063,13 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
 		 tokens, fileName, line);
     } else if (!cmd->cmp("overprintPreview")) {
       parseYesNo("overprintPreview", &overprintPreview,
+		 tokens, fileName, line);
+    } else if (!cmd->cmp("paperColor")) {
+      parseColor("paperColor", &paperColor, tokens, fileName, line);
+    } else if (!cmd->cmp("matteColor")) {
+      parseColor("matteColor", &matteColor, tokens, fileName, line);
+    } else if (!cmd->cmp("fullScreenMatteColor")) {
+      parseColor("fullScreenMatteColor", &fullScreenMatteColor,
 		 tokens, fileName, line);
     } else if (!cmd->cmp("launchCommand")) {
       parseCommand("launchCommand", &launchCommand, tokens, fileName, line);
@@ -1731,6 +1741,19 @@ GBool GlobalParams::parseYesNo2(char *token, GBool *flag) {
   return gTrue;
 }
 
+void GlobalParams::parseColor(const char *cmdName, GString **val,
+			      GList *tokens, GString *fileName, int line) {
+  if (tokens->getLength() != 2) {
+    error(errConfig, -1, "Bad '{0:s}' config file command ({1:t}:{2:d})",
+	  cmdName, fileName, line);
+    return;
+  }
+  if (*val) {
+    delete *val;
+  }
+  *val = ((GString *)tokens->get(1))->copy();
+}
+
 void GlobalParams::parseInteger(const char *cmdName, int *val,
 				GList *tokens, GString *fileName, int line) {
   GString *tok;
@@ -1823,6 +1846,15 @@ GlobalParams::~GlobalParams() {
   deleteGList(psResidentFontsCC, PSFontParam16);
   delete textEncoding;
   delete initialZoom;
+  if (paperColor) {
+    delete paperColor;
+  }
+  if (matteColor) {
+    delete matteColor;
+  }
+  if (fullScreenMatteColor) {
+    delete fullScreenMatteColor;
+  }
   if (launchCommand) {
     delete launchCommand;
   }
@@ -2793,6 +2825,35 @@ GBool GlobalParams::getDrawFormFields() {
   draw = drawFormFields;
   unlockGlobalParams;
   return draw;
+}
+
+
+
+GString *GlobalParams::getPaperColor() {
+  GString *s;
+
+  lockGlobalParams;
+  s = paperColor->copy();
+  unlockGlobalParams;
+  return s;
+}
+
+GString *GlobalParams::getMatteColor() {
+  GString *s;
+
+  lockGlobalParams;
+  s = matteColor->copy();
+  unlockGlobalParams;
+  return s;
+}
+
+GString *GlobalParams::getFullScreenMatteColor() {
+  GString *s;
+
+  lockGlobalParams;
+  s = fullScreenMatteColor->copy();
+  unlockGlobalParams;
+  return s;
 }
 
 GBool GlobalParams::getMapNumericCharNames() {
