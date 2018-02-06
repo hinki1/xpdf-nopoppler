@@ -488,6 +488,20 @@ KeyBinding::~KeyBinding() {
 }
 
 //------------------------------------------------------------------------
+// PopupMenuCmd
+//------------------------------------------------------------------------
+
+PopupMenuCmd::PopupMenuCmd(GString *labelA, GList *cmdsA) {
+  label = labelA;
+  cmds = cmdsA;
+}
+
+PopupMenuCmd::~PopupMenuCmd() {
+  delete label;
+  deleteGList(cmds, GString);
+}
+
+//------------------------------------------------------------------------
 // parsing
 //------------------------------------------------------------------------
 
@@ -618,6 +632,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   mapExtTrueTypeFontsViaUnicode = gTrue;
   enableXFA = gTrue;
   createDefaultKeyBindings();
+  popupMenuCmds = new GList();
   printCommands = gFalse;
   errQuiet = gFalse;
 
@@ -1042,6 +1057,8 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
       parseBind(tokens, fileName, line);
     } else if (!cmd->cmp("unbind")) {
       parseUnbind(tokens, fileName, line);
+    } else if (!cmd->cmp("popupMenuCmd")) {
+      parsePopupMenuCmd(tokens, fileName, line);
     } else if (!cmd->cmp("printCommands")) {
       parseYesNo("printCommands", &printCommands, tokens, fileName, line);
     } else if (!cmd->cmp("errQuiet")) {
@@ -1629,6 +1646,25 @@ GBool GlobalParams::parseKey(GString *modKeyStr, GString *contextStr,
   return gTrue;
 }
 
+void GlobalParams::parsePopupMenuCmd(GList *tokens,
+				     GString *fileName, int line) {
+  GList *cmds;
+  int i;
+
+  if (tokens->getLength() < 3) {
+    error(errConfig, -1,
+	  "Bad 'popupMenuCmd' config file command ({0:t}:{1:d})",
+	  fileName, line);
+    return;
+  }
+  cmds = new GList();
+  for (i = 2; i < tokens->getLength(); ++i) {
+    cmds->append(((GString *)tokens->get(i))->copy());
+  }
+  popupMenuCmds->append(new PopupMenuCmd(((GString *)tokens->get(1))->copy(),
+					 cmds));
+}
+
 void GlobalParams::parseCommand(const char *cmdName, GString **val,
 				GList *tokens, GString *fileName, int line) {
   if (tokens->getLength() != 2) {
@@ -1771,6 +1807,7 @@ GlobalParams::~GlobalParams() {
     delete movieCommand;
   }
   deleteGList(keyBindings, KeyBinding);
+  deleteGList(popupMenuCmds, PopupMenuCmd);
 
   cMapDirs->startIter(&iter);
   while (cMapDirs->getNext(&iter, &key, (void **)&list)) {
@@ -2721,6 +2758,28 @@ GList *GlobalParams::getKeyBinding(int code, int mods, int context) {
   }
   unlockGlobalParams;
   return cmds;
+}
+
+int GlobalParams::getNumPopupMenuCmds() {
+  int n;
+
+  lockGlobalParams;
+  n = popupMenuCmds->getLength();
+  unlockGlobalParams;
+  return n;
+}
+
+PopupMenuCmd *GlobalParams::getPopupMenuCmd(int idx) {
+  PopupMenuCmd *cmd;
+
+  lockGlobalParams;
+  if (idx < popupMenuCmds->getLength()) {
+    cmd = (PopupMenuCmd *)popupMenuCmds->get(idx);
+  } else {
+    cmd = NULL;
+  }
+  unlockGlobalParams;
+  return cmd;
 }
 
 GBool GlobalParams::getPrintCommands() {

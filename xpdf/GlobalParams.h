@@ -189,6 +189,27 @@ public:
 
 //------------------------------------------------------------------------
 
+class PopupMenuCmd {
+public:
+
+  GString *label;		// label for display in the menu
+  GList *cmds;			// list of commands [GString]
+
+  PopupMenuCmd(GString *labelA, GList *cmdsA);
+  ~PopupMenuCmd();
+};
+
+//------------------------------------------------------------------------
+
+#ifdef _WIN32
+struct XpdfWin32ErrorInfo {
+  const char *func;		// last Win32 API function call to fail
+  DWORD code;			// error code returned by that function
+};
+#endif
+
+//------------------------------------------------------------------------
+
 class GlobalParams {
 public:
 
@@ -278,6 +299,8 @@ public:
   GBool getMapExtTrueTypeFontsViaUnicode();
   GBool getEnableXFA();
   GList *getKeyBinding(int code, int mods, int context);
+  int getNumPopupMenuCmds();
+  PopupMenuCmd *getPopupMenuCmd(int idx);
   GBool getPrintCommands();
   GBool getErrQuiet();
 
@@ -369,6 +392,7 @@ private:
 		 int *code, int *mods, int *context,
 		 const char *cmdName,
 		 GList *tokens, GString *fileName, int line);
+  void parsePopupMenuCmd(GList *tokens, GString *fileName, int line);
   void parseCommand(const char *cmdName, GString **val,
 		    GList *tokens, GString *fileName, int line);
   void parseYesNo(const char *cmdName, GBool *flag,
@@ -484,6 +508,7 @@ private:
 				        //   for external TrueType fonts?
   GBool enableXFA;		// enable XFA form rendering
   GList *keyBindings;		// key & mouse button bindings [KeyBinding]
+  GList *popupMenuCmds;		// popup menu commands [PopupMenuCmd]
   GBool printCommands;		// print the drawing commands
   GBool errQuiet;		// suppress error messages?
 
