@@ -1,3 +1,26 @@
+xpdf (3.64) stretch; urgency=low
+
+  * Page.cc supports Thumbnails
+  * updated HTMLGen and TextOutputDev
+  * updated pdftohtml
+  * updated pdftotext
+  * updated pdftoppm
+  * updated pdftopng
+  * updated pdfinfo
+  * updated pdffonts.cc
+  * updated SecurityHandler
+  * updated Zoox
+  * GlobalParams: update keybindings
+  * GlobalParams: PopupMenuCmd
+  * GlobalParams change some parameter types to const
+  * GlobalParams: add psNeverRasterize
+  * GlobalParams: add enablePathSimplification
+  * GlobalParams: add drawFormFields
+  * mehr Parameter zu GlobalParams gefügt
+  * GlobalParams: added colors
+
+ -- Matthias Hinkfoth <hinki@abwesend.de>  Tue, 06 Feb 2018 23:59:05 +0100
+
 xpdf (3.63) stretch; urgency=low
 
   * update XRef.cc to xpdf4-version
