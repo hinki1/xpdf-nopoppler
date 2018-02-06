@@ -267,12 +267,22 @@ Page::Page(PDFDoc *docA, int numA, Dict *pageDict, PageAttrs *attrsA) {
     goto err1;
   }
 
+  // thumbnail
+  pageDict->lookupNF("Thumb", &thumbnail);
+  if (!thumbnail.isRef()) {
+    if (!thumbnail.isNull()) {
+      thumbnail.free();
+      thumbnail.initNull();
+    }
+  }
+
   return;
 
  err2:
   annots.initNull();
  err1:
   contents.initNull();
+  thumbnail.initNull();
   ok = gFalse;
 }
 
@@ -283,6 +293,7 @@ Page::Page(PDFDoc *docA, int numA) {
   attrs = new PageAttrs();
   annots.initNull();
   contents.initNull();
+  thumbnail.initNull();
   ok = gTrue;
 }
 
@@ -290,6 +301,7 @@ Page::~Page() {
   delete attrs;
   annots.free();
   contents.free();
+  thumbnail.free();
 }
 
 Links *Page::getLinks() {
