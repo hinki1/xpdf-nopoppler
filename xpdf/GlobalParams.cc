@@ -597,11 +597,10 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   psRasterMono = gFalse;
   psRasterSliceSize = 20000000;
   psAlwaysRasterize = gFalse;
+  psNeverRasterize = gFalse;
   textEncoding = new GString("Latin1");
 #if defined(_WIN32)
   textEOL = eolDOS;
-#elif defined(MACOS)
-  textEOL = eolMac;
 #else
   textEOL = eolUnix;
 #endif
@@ -980,6 +979,9 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
 		   tokens, fileName, line);
     } else if (!cmd->cmp("psAlwaysRasterize")) {
       parseYesNo("psAlwaysRasterize", &psAlwaysRasterize,
+		 tokens, fileName, line);
+    } else if (!cmd->cmp("psNeverRasterize")) {
+      parseYesNo("psNeverRasterize", &psNeverRasterize,
 		 tokens, fileName, line);
     } else if (!cmd->cmp("textEncoding")) {
       parseTextEncoding(tokens, fileName, line);
@@ -2512,6 +2514,15 @@ GBool GlobalParams::getPSAlwaysRasterize() {
 
   lockGlobalParams;
   rast = psAlwaysRasterize;
+  unlockGlobalParams;
+  return rast;
+}
+
+GBool GlobalParams::getPSNeverRasterize() {
+  GBool rast;
+
+  lockGlobalParams;
+  rast = psNeverRasterize;
   unlockGlobalParams;
   return rast;
 }

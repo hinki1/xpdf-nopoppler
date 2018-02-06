@@ -270,6 +270,7 @@ public:
   GBool getPSRasterMono();
   int getPSRasterSliceSize();
   GBool getPSAlwaysRasterize();
+  GBool getPSNeverRasterize();
   GString *getTextEncodingName();
   EndOfLineKind getTextEOL();
   GBool getTextPageBreaks();
@@ -476,6 +477,7 @@ private:
   int psRasterSliceSize;	// maximum size (pixels) of PostScript
 				//   rasterization slice
   GBool psAlwaysRasterize;	// force PostScript rasterization
+  GBool psNeverRasterize;	// prevent PostScript rasterization
   GString *textEncoding;	// encoding (unicodeMap) to use for text
 				//   output
   EndOfLineKind textEOL;	// type of EOL marker to use for text
