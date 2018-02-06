@@ -623,6 +623,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   minLineWidth = 0.0;
   enablePathSimplification = gFalse;
   drawAnnotations = gTrue;
+  drawFormFields = gTrue;
   overprintPreview = gFalse;
   launchCommand = NULL;
   urlCommand = NULL;
@@ -1037,6 +1038,9 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
 		 tokens, fileName, line);
     } else if (!cmd->cmp("drawAnnotations")) {
       parseYesNo("drawAnnotations", &drawAnnotations,
+		 tokens, fileName, line);
+    } else if (!cmd->cmp("drawFormFields")) {
+      parseYesNo("drawFormFields", &drawFormFields,
 		 tokens, fileName, line);
     } else if (!cmd->cmp("overprintPreview")) {
       parseYesNo("overprintPreview", &overprintPreview,
@@ -2721,6 +2725,14 @@ GBool GlobalParams::getDrawAnnotations() {
   return draw;
 }
 
+GBool GlobalParams::getDrawFormFields() {
+  GBool draw;
+
+  lockGlobalParams;
+  draw = drawFormFields;
+  unlockGlobalParams;
+  return draw;
+}
 
 GBool GlobalParams::getMapNumericCharNames() {
   GBool map;
@@ -3164,6 +3176,20 @@ void GlobalParams::setScreenWhiteThreshold(double thresh) {
   screenWhiteThreshold = thresh;
   unlockGlobalParams;
 }
+
+void GlobalParams::setDrawFormFields(GBool draw) {
+  lockGlobalParams;
+  drawFormFields = draw;
+  unlockGlobalParams;
+}
+
+void GlobalParams::setOverprintPreview(GBool preview) {
+  lockGlobalParams;
+  overprintPreview = preview;
+  unlockGlobalParams;
+}
+
+
 
 void GlobalParams::setMapNumericCharNames(GBool map) {
   lockGlobalParams;

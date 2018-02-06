@@ -292,6 +292,7 @@ public:
   double getMinLineWidth();
   GBool getEnablePathSimplification();
   GBool getDrawAnnotations();
+  GBool getDrawFormFields();
   GBool getOverprintPreview() { return overprintPreview; }
   GString *getLaunchCommand() { return launchCommand; }
   GString *getURLCommand() { return urlCommand; }
@@ -350,6 +351,8 @@ public:
   void setScreenGamma(double gamma);
   void setScreenBlackThreshold(double thresh);
   void setScreenWhiteThreshold(double thresh);
+  void setDrawFormFields(GBool draw);
+  void setOverprintPreview(GBool preview);
   void setMapNumericCharNames(GBool map);
   void setMapUnknownCharNames(GBool map);
   void setMapExtTrueTypeFontsViaUnicode(GBool map);
@@ -503,6 +506,7 @@ private:
   GBool				// enable path simplification
     enablePathSimplification;
   GBool drawAnnotations;	// draw annotations or not
+  GBool drawFormFields;		// draw form fields or not
   GBool overprintPreview;	// enable overprint preview
   GString *launchCommand;	// command executed for 'launch' links
   GString *urlCommand;		// command executed for URL links
