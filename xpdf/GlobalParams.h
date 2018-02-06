@@ -219,8 +219,8 @@ public:
 
   ~GlobalParams();
 
-  void setBaseDir(char *dir);
-  void setupBaseFonts(char *dir);
+  void setBaseDir(const char *dir);
+  void setupBaseFonts(const char *dir);
 
   void parseLine(char *buf, GString *fileName, int line);
 

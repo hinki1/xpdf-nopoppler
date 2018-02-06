@@ -1829,7 +1829,7 @@ GlobalParams::~GlobalParams() {
 
 //------------------------------------------------------------------------
 
-void GlobalParams::setBaseDir(char *dir) {
+void GlobalParams::setBaseDir(const char *dir) {
   delete baseDir;
   baseDir = new GString(dir);
 }
@@ -1882,7 +1882,7 @@ static void getWinFontDir(char *winFontDir) {
 }
 #endif
 
-void GlobalParams::setupBaseFonts(char *dir) {
+void GlobalParams::setupBaseFonts(const char *dir) {
   GString *fontName;
   GString *fileName;
   int fontNum;
