@@ -375,7 +375,6 @@ public:
 
 private:
 
-  void createDefaultKeyBindings();
   void parseFile(GString *fileName, FILE *f);
   void parseNameToUnicode(GList *tokens, GString *fileName, int line);
   void parseCIDToUnicode(GList *tokens, GString *fileName, int line);
