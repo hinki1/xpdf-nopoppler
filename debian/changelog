@@ -1,3 +1,16 @@
+xpdf (3.65) stretch; urgency=low
+
+  * remove default key bindings
+  * build durchgesehen
+  * change type of StrokeAdjustMode
+  * fix debian/rules clean target
+  * fix getImageBounds for new strokeAdjustMode type
+  * fix SplashXPath constructor declaration
+  * various fixes for StrokeModeAdjust type transition
+  * update xpdf version information in config.h
+
+ -- Matthias Hinkfoth <hinki@abwesend.de>  Wed, 14 Feb 2018 22:21:42 +0100
+
 xpdf (3.64) stretch; urgency=low
 
   * Page.cc supports Thumbnails
