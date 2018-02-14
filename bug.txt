@@ -1,10 +1,3 @@
-markieren:
-
-863ae geht
-1949d baut nicht
-c5f7b baut nicht
-2b32f geht nicht
-
 1949 integriert den kompletten splash-Ordner von xpdf4.
 Das war übertrieben.
 
@@ -17,3 +10,6 @@ xpdf/SplashOutputDev.cc ändert den Typ von SplashStrokeAdjustMode.
 Page.cc hängt von Gfx.cc und GlobalParams.cc ab.
 Page.cc uses abortCheckCbk
 Page.cc uses globalParams->getDrawFormFields()
+
+build:
+configure braucht install-sh

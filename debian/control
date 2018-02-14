@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Matthias Hinkfoth <hinki@abwesend.de>
 Standards-Version: 4.1.1
 Build-Depends:
+ autoconf (>= 2.57),
  debhelper (>= 9),
  pkg-config,
  libpaper-dev,

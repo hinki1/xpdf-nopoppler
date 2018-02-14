@@ -6,14 +6,19 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
 includes=$(strip $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --cflags freetype2))
 
-CXX=$(DEB_HOST_GNU_TYPE)-g++
-LIBS+=-lXm -lpaper $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --libs png --libs xt --libs x11 --libs freetype2) -pthread
+CXX = $(DEB_HOST_GNU_TYPE)-g++
+LIBS += -lXm -lpaper
+pkg-config-libs := png xt x11 freetype2
+pkg-config-libs := $(foreach lib,$(pkg-config-libs), --libs $(lib))
+LIBS += $(shell $(DEB_HOST_GNU_TYPE)-pkg-config $(pkg-config-libs))
+LIBS += -pthread
 #CPPFLAGS+=$(includes) $(includes)/goo $(includes)/splash
-CPPFLAGS+=-Wno-write-strings -Wno-format-extra-args -Wfatal-errors
-CPPFLAGS+=-DHAVE_DIRENT_H -DHAVE_PAPER_H #-DSYSTEM_XPDFRC=\"/etc/xpdf/xpdfrc\"
+CPPFLAGS += -Wno-write-strings -Wno-format-extra-args -Wfatal-errors
+CPPFLAGS += -DHAVE_DIRENT_H -DHAVE_PAPER_H
 
-sources=$(sort $(shell for file in $(files); do echo $$file.*; done))
-objects=$(sort $(shell for file in $(files); do echo build/$$(basename $$file).o; done))
+# ist das noch für etwas gut?
+sources = $(sort $(shell for file in $(files); do echo $$file.*; done))
+objects = $(sort $(shell for file in $(files); do echo build/$$(basename $$file).o; done))
 
 override_dh_auto_configure:
 	autoconf
@@ -22,6 +27,10 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	make all
 	cp xpdf/xpdf xpdf/xpdf.real
+
+override_dh_clean:
+	dh_clean
+	rm ./configure
 
 %:
 	dh ${@}
