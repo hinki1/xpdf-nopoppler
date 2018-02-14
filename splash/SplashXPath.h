@@ -81,7 +81,8 @@ public:
   // space, via <matrix>.  If <closeSubpaths> is true, closes all open
   // subpaths.
   SplashXPath(SplashPath *path, SplashCoord *matrix,
-	      SplashCoord flatness, GBool closeSubpaths);
+	      SplashCoord flatness, GBool closeSubpaths,
+	      GBool simplify, SplashStrokeAdjustMode strokeAdjMode);
 
   // Copy an expanded path.
   SplashXPath *copy() { return new SplashXPath(this); }
