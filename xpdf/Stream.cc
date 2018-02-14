@@ -39,10 +39,6 @@
 #include "JPXStream.h"
 #include "Stream-CCITT.h"
 
-#ifdef __DJGPP__
-static GBool setDJSYSFLAGS = gFalse;
-#endif
-
 #ifdef VMS
 #ifdef __GNUC__
 #define SEEK_SET 0
