@@ -120,8 +120,8 @@ configure script version.
 ***************
 
 The non-X programs (pdftops, pdftotext, pdfinfo, pdffonts, pdfdetach,
-pdfimages, and pdftoppm) will compile with both gcc (from cygwin),
-djgpp (the Delorie port of gcc) and Microsoft Visual C++.
+pdfimages, and pdftoppm) will compile with both gcc (from cygwin)
+and Microsoft Visual C++.
 
 With cygwin, the build procedure is the same as for Unix:
 
@@ -151,37 +151,6 @@ port (thanks to Michael A. Richmond for these instructions):
     (this should build xpdf.exe, in addition to the command line
     utilities)
 
-With djgpp:
-
-  * Open a DOS window.
-
-  * ./dj_make
-
-  * djgpp is a DOS/Windows port of gcc, available from
-    http://www.delorie.com/
-
-With djgpp, for DOS 6 (instead of Win32):
-
-  * ./dj_make
-
-  * cd xpdf
-
-  * strip pdftops.exe
-
-  * exe2coff pdftops.exe
-
-  * copy /B c:\djgpp\bin\cwsdstub.exe+pdftops pdftops.exe
-
-  * upx pdftops.exe
-    - if you want compressed executables
-
-  * and similarly for the other executables
-
-  * cwsdstub.exe comes from djgpp/v2misc/csdpmi5b.zip on any of the
-    djgpp ftp mirrors; exe2coff is part of the standard djgpp install
-
-  * upx comes from http://upx.sourceforge.net/
-
 With the Microsoft tools:
 
   * Open a DOS window.
@@ -192,5 +161,5 @@ With the Microsoft tools:
 
   * Type "ms_make"
 
-The dj_make and ms_make scripts don't build pdftoppm -- you'll need to
+The ms_make script doesn't build pdftoppm -- you'll need to
 install FreeType 2 before you can compile pdftoppm.
