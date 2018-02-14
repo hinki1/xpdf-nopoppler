@@ -225,7 +225,7 @@ GBool SplashFTFont::makeGlyph(int c, int xFrac, int yFrac,
   SplashFTFontFile *ff;
   FT_Vector offset;
   FT_GlyphSlot slot;
-  FT_UInt gid;
+  int gid;
   FT_Int32 flags;
   int rowSize;
   Guchar *p, *q;
@@ -240,11 +240,11 @@ GBool SplashFTFont::makeGlyph(int c, int xFrac, int yFrac,
   slot = ff->face->glyph;
 
   if (ff->codeToGID && c < ff->codeToGIDLen) {
-    gid = (FT_UInt)ff->codeToGID[c];
+    gid = ff->codeToGID[c];
   } else {
-    gid = (FT_UInt)c;
+    gid = c;
   }
-  if (ff->trueType && gid < 0) {
+  if (ff->fontType == splashFontTrueType && gid < 0) {
     // skip the TrueType notdef glyph
     return gFalse;
   }
@@ -263,7 +263,7 @@ GBool SplashFTFont::makeGlyph(int c, int xFrac, int yFrac,
   flags = FT_LOAD_NO_BITMAP;
   if (ff->engine->flags & splashFTNoHinting) {
     flags |= FT_LOAD_NO_HINTING;
-  } else if (ff->useLightHinting) {
+  } else if (ff->fontType == splashFontType1) {
     flags |= FT_LOAD_TARGET_LIGHT;
   } else {
     flags |= FT_LOAD_NO_AUTOHINT;
@@ -332,7 +332,7 @@ SplashPath *SplashFTFont::getGlyphPath(int c) {
   SplashFTFontFile *ff;
   SplashFTFontPath path;
   FT_GlyphSlot slot;
-  FT_UInt gid;
+  int gid;
   FT_Glyph glyph;
 
   ff = (SplashFTFontFile *)fontFile;
@@ -342,9 +342,9 @@ SplashPath *SplashFTFont::getGlyphPath(int c) {
   if (ff->codeToGID && c < ff->codeToGIDLen) {
     gid = ff->codeToGID[c];
   } else {
-    gid = (FT_UInt)c;
+    gid = c;
   }
-  if (ff->trueType && gid < 0) {
+  if (ff->fontType == splashFontTrueType && gid < 0) {
     // skip the TrueType notdef glyph
     return NULL;
   }

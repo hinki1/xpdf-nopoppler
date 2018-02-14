@@ -199,12 +199,13 @@ SplashFontFile *SplashFontEngine::loadOpenTypeT1CFont(SplashFontFileID *idA,
 
 SplashFontFile *SplashFontEngine::loadCIDFont(SplashFontFileID *idA,
 #if LOAD_FONTS_FROM_MEM
-					      GString *fontBuf
+					      GString *fontBuf,
 #else
 					      char *fileName,
-					      GBool deleteFile
+					      GBool deleteFile,
 #endif
-					      ) {
+					      int *codeToGID,
+					      int codeToGIDLen) {
   SplashFontFile *fontFile;
 
   fontFile = NULL;
@@ -212,11 +213,11 @@ SplashFontFile *SplashFontEngine::loadCIDFont(SplashFontFileID *idA,
   if (!fontFile && ftEngine) {
     fontFile = ftEngine->loadCIDFont(idA,
 #if LOAD_FONTS_FROM_MEM
-				     fontBuf
+				     fontBuf,
 #else
-				     fileName, deleteFile
+				     fileName, deleteFile,
 #endif
-				     );
+				     codeToGID, codeToGIDLen);
   }
 #endif
 

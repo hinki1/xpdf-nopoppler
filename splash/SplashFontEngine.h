@@ -78,11 +78,11 @@ public:
 				      const char **enc);
   SplashFontFile *loadCIDFont(SplashFontFileID *idA,
 #if LOAD_FONTS_FROM_MEM
-			      GString *fontBuf
+			      GString *fontBuf,
 #else
-			      char *fileName, GBool deleteFile
+			      char *fileName, GBool deleteFile,
 #endif
-			      );
+			      int *codeToGID, int codeToGIDLen);
   SplashFontFile *loadOpenTypeCFFFont(SplashFontFileID *idA,
 #if LOAD_FONTS_FROM_MEM
 				      GString *fontBuf,

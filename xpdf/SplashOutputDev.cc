@@ -1377,15 +1377,24 @@ void SplashOutputDev::doUpdateFont(GfxState *state) {
       break;
     case fontCIDType0:
     case fontCIDType0C:
+      if (((GfxCIDFont *)gfxFont)->getCIDToGID()) {
+        n = ((GfxCIDFont *)gfxFont)->getCIDToGIDLen();
+        codeToGID = (int *)gmallocn(n, sizeof(int));
+        memcpy(codeToGID, ((GfxCIDFont *)gfxFont)->getCIDToGID(),
+               n * sizeof(int));
+      } else {
+        codeToGID = NULL;
+        n = 0;
+      }
       if (!(fontFile = fontEngine->loadCIDFont(
 			   id,
 #if LOAD_FONTS_FROM_MEM
 			   fontBuf
 #else
 			   fileName->getCString(),
-			   fileName == tmpFileName
+			   fileName == tmpFileName,
 #endif
-			))) {
+			   codeToGID, n))) {
 
 	error(errSyntaxError, -1, "Couldn't create a font for '{0:s}'",
 	      gfxFont->getName() ? gfxFont->getName()->getCString()

@@ -1,9 +1,7 @@
 1949 integriert den kompletten splash-Ordner von xpdf4.
 Das war übertrieben.
 
-splash/SplashClip.* ändert den Typ von SplashStrokeAdjustMode.
-splash/SplashFTFont.h entfernt nur HAVE_FREETYPE_FREETYPE_H.
-xpdf/GlobalParams.cc ändert den Typ von StrokeAdjustMode.
+splash/SplashClip.cc brauch SplashXPathScanner
 xpdf/PDFCore.cc kommentiert eine fehlende Methode aus. Das könnte ein Fehler sein.
 
 Page.cc hängt von Gfx.cc und GlobalParams.cc ab.
@@ -12,43 +10,3 @@ Page.cc uses globalParams->getDrawFormFields()
 
 build:
 configure braucht install-sh
-
-grep -n StrokeAdjustMode -s */*
-xpdf/SplashOutputDev.cc ändert den Typ von SplashStrokeAdjustMode.
-changed:
-
-splash/Splash.cc:
-getStrokeAdjust
-setStrokeAdjust
-
-das selbe in splash/Splash.h
-
-splash/SplashClip.cc:
-clipToPath()
-SplashXPath constructor call
-clipSpan()
-clipSpanBinary()
-getXMinI()
-getXMaxI()
-getYMinI()
-getYMaxI()
-updateIntBounds()
-splashStrokeAdjust() call
-
-das selbe in splash/SplashClip.h
-
-replace splashStrokeAdjust in splash/SplashMath.h
-
-in splash/SplashState.h: change type of strokeAdjust
-
-splash/SplashXPath.cc:
-change constructor
-change strokeAdjust(). sollte mit der xpdf4-version identisch sein. nicht geprüft.
-add read of hint->projectingCap
-change call to splashStrokeAdjust
-
-xpdf/GlobalParams.cc
-change getStrokeAdjust()
-
-xpdf/GlobalParams.h
-hier steht nochmal enum StrokeAdjustMode drin!
