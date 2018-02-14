@@ -3213,14 +3213,14 @@ SplashError Splash::fillGlyph2(int x0, int y0, SplashGlyphBitmap *glyph) {
 
 void Splash::getImageBounds(SplashCoord xyMin, SplashCoord xyMax,
 			    int *xyMinI, int *xyMaxI) {
-  if (state->strokeAdjust) {
-    splashStrokeAdjust(xyMin, xyMax, xyMinI, xyMaxI);
-  } else {
+  if (state->strokeAdjust == splashStrokeAdjustOff) {
     *xyMinI = splashFloor(xyMin);
     *xyMaxI = splashFloor(xyMax);
     if (*xyMaxI <= *xyMinI) {
       *xyMaxI = *xyMinI + 1;
     }
+  } else {
+    splashStrokeAdjust(xyMin, xyMax, xyMinI, xyMaxI, state->strokeAdjust);
   }
 }
 
