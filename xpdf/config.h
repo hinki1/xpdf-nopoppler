@@ -71,7 +71,7 @@
 #define pclose _pclose
 #endif
 
-#if defined(VMS) || defined(VMCMS) || defined(DOS) || defined(__EMX__) || defined(_WIN32)
+#if defined(VMS) || defined(VMCMS) || defined(DOS) || defined(_WIN32)
 #define POPEN_READ_MODE "rb"
 #else
 #define POPEN_READ_MODE "r"

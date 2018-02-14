@@ -46,8 +46,8 @@ GString *getHomeDir() {
   //---------- VMS ----------
   return new GString("SYS$LOGIN:");
 
-#elif defined(__EMX__) || defined(_WIN32)
-  //---------- OS/2+EMX and Win32 ----------
+#elif defined(_WIN32)
+  //---------- Win32 ----------
   char *s;
   GString *ret;
 
@@ -86,9 +86,7 @@ GString *getHomeDir() {
 GString *getCurrentDir() {
   char buf[PATH_MAX+1];
 
-#if defined(__EMX__)
-  if (_getcwd2(buf, sizeof(buf)))
-#elif defined(_WIN32)
+#if defined(_WIN32)
   if (GetCurrentDirectoryA(sizeof(buf), buf))
 #elif defined(ACORN)
   if (strcpy(buf, "@"))
@@ -172,46 +170,6 @@ GString *appendToPath(GString *path, const char *fileName) {
   }
   return path;
 
-#elif defined(__EMX__)
-  //---------- OS/2+EMX ----------
-  int i;
-
-  // appending "." does nothing
-  if (!strcmp(fileName, "."))
-    return path;
-
-  // appending ".." goes up one directory
-  if (!strcmp(fileName, "..")) {
-    for (i = path->getLength() - 2; i >= 0; --i) {
-      if (path->getChar(i) == '/' || path->getChar(i) == '\\' ||
-	  path->getChar(i) == ':')
-	break;
-    }
-    if (i <= 0) {
-      if (path->getChar(0) == '/' || path->getChar(0) == '\\') {
-	path->del(1, path->getLength() - 1);
-      } else if (path->getLength() >= 2 && path->getChar(1) == ':') {
-	path->del(2, path->getLength() - 2);
-      } else {
-	path->clear();
-	path->append("..");
-      }
-    } else {
-      if (path->getChar(i-1) == ':')
-	++i;
-      path->del(i, path->getLength() - i);
-    }
-    return path;
-  }
-
-  // otherwise, append "/" and new path component
-  if (path->getLength() > 0 &&
-      path->getChar(path->getLength() - 1) != '/' &&
-      path->getChar(path->getLength() - 1) != '\\')
-    path->append('/');
-  path->append(fileName);
-  return path;
-
 #else
   //---------- Unix ----------
   int i;
@@ -259,8 +217,8 @@ GString *grabPath(char *fileName) {
     return new GString(fileName, p + 1 - fileName);
   return new GString();
 
-#elif defined(__EMX__) || defined(_WIN32)
-  //---------- OS/2+EMX and Win32 ----------
+#elif defined(_WIN32)
+  //---------- Win32 ----------
   char *p;
 
   if ((p = strrchr(fileName, '/')))
@@ -295,8 +253,8 @@ GBool isAbsolutePath(char *path) {
   return strchr(path, ':') ||
 	 (path[0] == '[' && path[1] != '.' && path[1] != '-');
 
-#elif defined(__EMX__) || defined(_WIN32)
-  //---------- OS/2+EMX and Win32 ----------
+#elif defined(_WIN32)
+  //---------- Win32 ----------
   return path[0] == '/' || path[0] == '\\' || path[1] == ':';
 
 #elif defined(ACORN)
@@ -341,7 +299,7 @@ GString *makePathAbsolute(GString *path) {
   return path;
 
 #else
-  //---------- Unix and OS/2+EMX ----------
+  //---------- Unix ----------
   struct passwd *pw;
   char buf[PATH_MAX+1];
   GString *s;
@@ -350,9 +308,6 @@ GString *makePathAbsolute(GString *path) {
 
   if (path->getChar(0) == '~') {
     if (path->getChar(1) == '/' ||
-#ifdef __EMX__
-	path->getChar(1) == '\\' ||
-#endif
 	path->getLength() == 1) {
       path->del(0, 1);
       s = getHomeDir();
@@ -360,11 +315,7 @@ GString *makePathAbsolute(GString *path) {
       delete s;
     } else {
       p1 = path->getCString() + 1;
-#ifdef __EMX__
-      for (p2 = p1; *p2 && *p2 != '/' && *p2 != '\\'; ++p2) ;
-#else
       for (p2 = p1; *p2 && *p2 != '/'; ++p2) ;
-#endif
       if ((n = p2 - p1) > PATH_MAX)
 	n = PATH_MAX;
       strncpy(buf, p1, n);
@@ -376,9 +327,7 @@ GString *makePathAbsolute(GString *path) {
     }
   } else if (!isAbsolutePath(path->getCString())) {
     if (getcwd(buf, sizeof(buf))) {
-#ifndef __EMX__
       path->insert(0, '/');
-#endif
       path->insert(0, buf);
     }
   }
@@ -446,7 +395,7 @@ GBool openTempFile(GString **name, FILE **f,
   }
   delete s;
   return gFalse;
-#elif defined(VMS) || defined(__EMX__) || defined(ACORN)
+#elif defined(VMS) || defined(ACORN)
   //---------- non-Unix ----------
   char *s;
 

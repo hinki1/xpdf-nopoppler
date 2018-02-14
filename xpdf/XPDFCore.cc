@@ -607,8 +607,6 @@ void XPDFCore::doAction(LinkAction *action) {
       }
 #ifdef VMS
       fileName->insert(0, "spawn/nowait ");
-#elif defined(__EMX__)
-      fileName->insert(0, "start /min /n ");
 #else
       fileName->append(" &");
 #endif
@@ -754,8 +752,6 @@ void XPDFCore::runCommand(GString *cmdFmt, GString *arg) {
   }
 #ifdef VMS
   cmd->insert(0, "spawn/nowait ");
-#elif defined(__EMX__)
-  cmd->insert(0, "start /min /n ");
 #else
   cmd->append(" &");
 #endif

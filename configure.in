@@ -87,18 +87,6 @@ LIBPREFIX="lib"
 AR="ar rc"
 UP_DIR=""
 
-dnl ##### Check for OS/2.
-AC_CACHE_CHECK([for OS/2 (with EMX)],
-xpdf_cv_sys_os2,
-[AC_TRY_COMPILE([],
-[__EMX__],
-xpdf_cv_sys_os2=yes, xpdf_cv_sys_os2=no)])
-if test "$xpdf_cv_sys_os2" = yes; then
-  EXE=".exe"
-  LIBPREFIX=""
-  AR="ar -rc"
-fi
-
 dnl ##### Do substitutions.
 AC_SUBST(EXE)
 AC_SUBST(LIBPREFIX)
