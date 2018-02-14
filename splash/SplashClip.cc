@@ -202,11 +202,15 @@ SplashError SplashClip::clipToRect(SplashCoord x0, SplashCoord y0,
 }
 
 SplashError SplashClip::clipToPath(SplashPath *path, SplashCoord *matrix,
-				   SplashCoord flatness, GBool eoA) {
+				   SplashCoord flatness, GBool eoA,
+				   GBool enablePathSimplification,
+				   SplashStrokeAdjustMode strokeAdjust) {
   SplashXPath *xPath;
   SplashCoord t;
 
-  xPath = new SplashXPath(path, matrix, flatness, gTrue);
+  xPath = new SplashXPath(path, matrix, flatness, gTrue,
+			  enablePathSimplification,
+			  strokeAdjust);
 
   // check for an empty path
   if (xPath->length == 0) {
@@ -325,7 +329,7 @@ SplashClipResult SplashClip::testRect(int rectXMin, int rectYMin,
 }
 
 void SplashClip::clipSpan(Guchar *line, int y, int x0, int x1,
-			  GBool strokeAdjust) {
+			  SplashStrokeAdjustMode strokeAdjust) {
   SplashCoord d;
   int x0a, x1a, x, i;
 
@@ -360,7 +364,7 @@ void SplashClip::clipSpan(Guchar *line, int y, int x0, int x1,
   //--- clip to the floating point rectangle
   //    (if stroke adjustment is disabled)
 
-  if (!strokeAdjust) {
+  if (strokeAdjust == splashStrokeAdjustOff) {
 
     // clip left edge (xMin)
     if (x0a == xMinI) {
@@ -406,7 +410,7 @@ void SplashClip::clipSpan(Guchar *line, int y, int x0, int x1,
 }
 
 GBool SplashClip::clipSpanBinary(Guchar *line, int y, int x0, int x1,
-				 GBool strokeAdjust) {
+				 SplashStrokeAdjustMode strokeAdjust) {
   int x0a, x1a, x0b, x1b, x, i;
   Guchar any;
 
@@ -467,33 +471,33 @@ GBool SplashClip::clipSpanBinary(Guchar *line, int y, int x0, int x1,
   return any != 0;
 }
 
-int SplashClip::getXMinI(GBool strokeAdjust) {
+int SplashClip::getXMinI(SplashStrokeAdjustMode strokeAdjust) {
   updateIntBounds(strokeAdjust);
   return xMinI;
 }
 
-int SplashClip::getXMaxI(GBool strokeAdjust) {
+int SplashClip::getXMaxI(SplashStrokeAdjustMode strokeAdjust) {
   updateIntBounds(strokeAdjust);
   return xMaxI;
 }
 
-int SplashClip::getYMinI(GBool strokeAdjust) {
+int SplashClip::getYMinI(SplashStrokeAdjustMode strokeAdjust) {
   updateIntBounds(strokeAdjust);
   return yMinI;
 }
 
-int SplashClip::getYMaxI(GBool strokeAdjust) {
+int SplashClip::getYMaxI(SplashStrokeAdjustMode strokeAdjust) {
   updateIntBounds(strokeAdjust);
   return yMaxI;
 }
 
-void SplashClip::updateIntBounds(GBool strokeAdjust) {
+void SplashClip::updateIntBounds(SplashStrokeAdjustMode strokeAdjust) {
   if (intBoundsValid && strokeAdjust == intBoundsStrokeAdjust) {
     return;
   }
-  if (strokeAdjust && length == 0) {
-    splashStrokeAdjust(xMin, xMax, &xMinI, &xMaxI);
-    splashStrokeAdjust(yMin, yMax, &yMinI, &yMaxI);
+  if (strokeAdjust != splashStrokeAdjustOff && length == 0) {
+    splashStrokeAdjust(xMin, xMax, &xMinI, &xMaxI, strokeAdjust);
+    splashStrokeAdjust(yMin, yMax, &yMinI, &yMaxI, strokeAdjust);
   } else {
     xMinI = splashFloor(xMin);
     yMinI = splashFloor(yMin);

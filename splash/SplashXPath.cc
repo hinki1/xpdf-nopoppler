@@ -55,11 +55,14 @@ inline void SplashXPath::transform(SplashCoord *matrix,
 //------------------------------------------------------------------------
 
 SplashXPath::SplashXPath(SplashPath *path, SplashCoord *matrix,
-			 SplashCoord flatness, GBool closeSubpaths) {
+			 SplashCoord flatness, GBool closeSubpaths,
+			 GBool simplify,
+			 SplashStrokeAdjustMode strokeAdjMode) {
   SplashXPathPoint *pts;
   SplashCoord x0, y0, x1, y1, x2, y2, x3, y3, xsp, ysp;
   SplashCoord xMinFP, xMaxFP, yMinFP, yMaxFP;
   int curSubpath, i;
+  GBool adjusted;
 
   // transform the points
   pts = (SplashXPathPoint *)gmallocn(path->length, sizeof(SplashXPathPoint));
@@ -69,7 +72,8 @@ SplashXPath::SplashXPath(SplashPath *path, SplashCoord *matrix,
 
   // do stroke adjustment
   if (path->hints) {
-    strokeAdjust(pts, path->hints, path->hintsLength);
+    adjusted = strokeAdjust(pts, path->hints, path->hintsLength,
+			    strokeAdjMode);
   }
 
   segs = NULL;
@@ -175,14 +179,18 @@ SplashXPath::SplashXPath(SplashPath *path, SplashCoord *matrix,
   }
 }
 
-void SplashXPath::strokeAdjust(SplashXPathPoint *pts,
-			       SplashPathHint *hints, int nHints) {
+GBool SplashXPath::strokeAdjust(SplashXPathPoint *pts,
+			       SplashPathHint *hints, int nHints,
+			       SplashStrokeAdjustMode strokeAdjMode) {
   SplashXPathAdjust *adjusts, *adjust;
   SplashPathHint *hint;
   SplashCoord x0, y0, x1, y1, x2, y2, x3, y3;
-  SplashCoord adj0, adj1, d;
+  SplashCoord adj0, adj1, w, d;
   int xi0, xi1;
   int i, j;
+  GBool adjusted;
+
+  adjusted = gFalse;
 
   // set up the stroke adjustment hints
   adjusts = (SplashXPathAdjust *)gmallocn(nHints, sizeof(SplashXPathAdjust));
@@ -192,14 +200,21 @@ void SplashXPath::strokeAdjust(SplashXPathPoint *pts,
     x1 = pts[hint->ctrl0 + 1].x;    y1 = pts[hint->ctrl0 + 1].y;
     x2 = pts[hint->ctrl1    ].x;    y2 = pts[hint->ctrl1    ].y;
     x3 = pts[hint->ctrl1 + 1].x;    y3 = pts[hint->ctrl1 + 1].y;
+    w = -1;
     if (x0 == x1 && x2 == x3) {
       adjusts[i].vert = gTrue;
       adj0 = x0;
       adj1 = x2;
+      if (hint->projectingCap) {
+	w = splashAbs(x1 - x0);
+      }
     } else if (y0 == y1 && y2 == y3) {
       adjusts[i].vert = gFalse;
       adj0 = y0;
       adj1 = y2;
+      if (hint->projectingCap) {
+	w = splashAbs(x1 - x0);
+      }
     } else {
       goto done;
     }
@@ -220,7 +235,7 @@ void SplashXPath::strokeAdjust(SplashXPathPoint *pts,
     adjusts[i].xmb = (SplashCoord)0.5 * (adj0 + adj1) + d;
     adjusts[i].x1a = adj1 - d;
     adjusts[i].x1b = adj1 + d;
-    splashStrokeAdjust(adj0, adj1, &xi0, &xi1);
+    splashStrokeAdjust(adj0, adj1, &xi0, &xi1, strokeAdjMode, w);
     adjusts[i].x0 = (SplashCoord)xi0;
     // the "minus epsilon" thing here is needed when vector
     // antialiasing is turned off -- otherwise stroke adjusted lines
@@ -255,9 +270,11 @@ void SplashXPath::strokeAdjust(SplashXPathPoint *pts,
       }
     }
   }
+  adjusted = gTrue;
 
  done:
   gfree(adjusts);
+  return adjusted;
 }
 
 SplashXPath::SplashXPath(SplashXPath *xPath) {

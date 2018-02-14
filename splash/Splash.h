@@ -95,7 +95,7 @@ public:
   SplashCoord *getLineDash();
   int getLineDashLength();
   SplashCoord getLineDashPhase();
-  GBool getStrokeAdjust();
+  SplashStrokeAdjustMode getStrokeAdjust();
   SplashClip *getClip();
   SplashBitmap *getSoftMask();
   GBool getInNonIsolatedGroup();
@@ -118,7 +118,7 @@ public:
   // the <lineDash> array will be copied
   void setLineDash(SplashCoord *lineDash, int lineDashLength,
 		   SplashCoord lineDashPhase);
-  void setStrokeAdjust(GBool strokeAdjust);
+  void setStrokeAdjust(SplashStrokeAdjustMode strokeAdjust);
   // NB: uses transformed coordinates.
   void clipResetToRect(SplashCoord x0, SplashCoord y0,
 		       SplashCoord x1, SplashCoord y1);

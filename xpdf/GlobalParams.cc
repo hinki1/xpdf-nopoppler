@@ -2590,13 +2590,13 @@ GBool GlobalParams::getAntialiasPrinting() {
   return f;
 }
 
-GBool GlobalParams::getStrokeAdjust() {
-  GBool f;
+StrokeAdjustMode GlobalParams::getStrokeAdjust() {
+  StrokeAdjustMode mode;
 
   lockGlobalParams;
-  f = strokeAdjust;
+  mode = strokeAdjust;
   unlockGlobalParams;
-  return f;
+  return mode;
 }
 
 ScreenType GlobalParams::getScreenType() {

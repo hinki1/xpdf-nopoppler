@@ -2052,7 +2052,7 @@ SplashCoord Splash::getLineDashPhase() {
   return state->lineDashPhase;
 }
 
-GBool Splash::getStrokeAdjust() {
+SplashStrokeAdjustMode Splash::getStrokeAdjust() {
   return state->strokeAdjust;
 }
 
@@ -2133,7 +2133,7 @@ void Splash::setLineDash(SplashCoord *lineDash, int lineDashLength,
   state->setLineDash(lineDash, lineDashLength, lineDashPhase);
 }
 
-void Splash::setStrokeAdjust(GBool strokeAdjust) {
+void Splash::setStrokeAdjust(SplashStrokeAdjustMode strokeAdjust) {
   state->strokeAdjust = strokeAdjust;
 }
 

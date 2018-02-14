@@ -262,23 +262,53 @@ static inline GBool splashCheckDet(SplashCoord m11, SplashCoord m12,
 //         but
 //               xMin  = 10.1   xMax  = 11.3   (width = 1.2)
 //           --> xMinI = 10     xMaxI = 12     (width = 2)
+//
+// 4. Use a hybrid approach, choosing between two of the above
+//    options, based on width.  E.g., use #2 if width <= 4, and use #1
+//    if width > 4.
+//
+// If w >= 0 and strokeAdjMode is splashStrokeAdjustCAD then a special
+// mode for projecting line caps is enabled, with w being the
+// transformed line width.
+
 static inline void splashStrokeAdjust(SplashCoord xMin, SplashCoord xMax,
-				      int *xMinI, int *xMaxI) {
+				      int *xMinI, int *xMaxI,
+				      SplashStrokeAdjustMode strokeAdjMode,
+				      SplashCoord w = -1) {
   int x0, x1;
 
-  // NB: enable exactly one of these.
+  // this will never be called with strokeAdjMode == splashStrokeAdjustOff
+  if (strokeAdjMode == splashStrokeAdjustCAD) {
+    x0 = splashRound(xMin);
+    if (w >= 0) {
+      x1 = splashRound(xMax - w) + splashRound(w);
+    } else {
+      x1 = x0 + splashRound(xMax - xMin);
+    }
+  } else {
+    // NB: enable exactly one of these.
 #if 1 // 1. Round both edge coordinates.
-  x0 = splashRound(xMin);
-  x1 = splashRound(xMax);
+    x0 = splashRound(xMin);
+    x1 = splashRound(xMax);
 #endif
 #if 0 // 2. Round the min coordinate; add the ceiling of the width.
-  x0 = splashRound(xMin);
-  x1 = x0 + splashCeil(xMax - xMin);
+    x0 = splashRound(xMin);
+    x1 = x0 + splashCeil(xMax - xMin);
 #endif
 #if 0 // 3. Use floor on the min coord and ceiling on the max coord.
-  x0 = splashFloor(xMin);
-  x1 = splashCeil(xMax);
+    x0 = splashFloor(xMin);
+    x1 = splashCeil(xMax);
 #endif
+#if 0 // 4. Hybrid.
+    SplashCoord w = xMax - xMin;
+    x0 = splashRound(xMin);
+    if (w > 4) {
+      x1 = splashRound(xMax);
+    } else {
+      x1 = x0 + splashRound(w);
+    }
+#endif
+  }
   if (x1 == x0) {
     ++x1;
   }

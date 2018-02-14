@@ -287,7 +287,7 @@ public:
   GBool getAntialias();
   GBool getVectorAntialias();
   GBool getAntialiasPrinting();
-  GBool getStrokeAdjust();
+  StrokeAdjustMode getStrokeAdjust();
   ScreenType getScreenType();
   int getScreenSize();
   int getScreenDotRadius();
@@ -510,7 +510,7 @@ private:
   GBool antialias;		// font anti-aliasing enable flag
   GBool vectorAntialias;	// vector anti-aliasing enable flag
   GBool antialiasPrinting;	// allow anti-aliasing when printing
-  GBool strokeAdjust;		// stroke adjustment enable flag
+  StrokeAdjustMode strokeAdjust; // stroke adjustment mode
   ScreenType screenType;	// halftone screen type
   int screenSize;		// screen matrix size
   int screenDotRadius;		// screen dot radius

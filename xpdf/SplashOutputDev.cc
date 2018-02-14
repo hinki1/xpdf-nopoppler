@@ -56,6 +56,14 @@ extern "C" int unlink(char *filename);
 #define type3FontCacheMaxSets 8
 #define type3FontCacheSize    (128*1024)
 
+// Map StrokeAdjustMode (from GlobalParams) to SplashStrokeAdjustMode
+// (for Splash).
+static SplashStrokeAdjustMode mapStrokeAdjustMode[3] = {
+  splashStrokeAdjustOff,
+  splashStrokeAdjustNormal,
+  splashStrokeAdjustCAD
+};
+
 //------------------------------------------------------------------------
 
 // Divide a 16-bit value (in [0, 255*255]) by 255, returning an 8-bit result.
@@ -633,7 +641,8 @@ SplashOutputDev::SplashOutputDev(SplashColorMode colorModeA,
 			    colorMode != splashModeMono1, bitmapTopDown);
   splash = new Splash(bitmap, vectorAntialias, &screenParams);
   splash->setMinLineWidth(globalParams->getMinLineWidth());
-  splash->setStrokeAdjust(globalParams->getStrokeAdjust());
+  splash->setStrokeAdjust(
+		mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
   splash->clear(paperColor, 0);
 
   fontEngine = NULL;
@@ -810,7 +819,8 @@ void SplashOutputDev::startPage(int pageNum, GfxState *state) {
   splash->setFlatness(1);
   // the SA parameter supposedly defaults to false, but Acrobat
   // apparently hardwires it to true
-  splash->setStrokeAdjust(globalParams->getStrokeAdjust());
+  splash->setStrokeAdjust(
+		mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
   splash->clear(paperColor, 0);
   if (startPageCbk) {
     (*startPageCbk)(startPageCbkData);
@@ -917,7 +927,15 @@ void SplashOutputDev::updateLineWidth(GfxState *state) {
 void SplashOutputDev::updateStrokeAdjust(GfxState *state) {
 #if 0 // the SA parameter supposedly defaults to false, but Acrobat
       // apparently hardwires it to true
-  splash->setStrokeAdjust(state->getStrokeAdjust());
+  if (state->getStrokeAdjust()) {
+    if (globalParams->getStrokeAdjustMode() == strokeAdjustCAD) {
+      splash->setStrokeAdjust(splashStrokeAdjustCAD);
+    } else {
+      splash->setStrokeAdjust(splashStrokeAdjustNormal);
+    }
+  } else {
+    splash->setStrokeAdjust(splashStrokeAdjustOff);
+  }
 #endif
 }
 
@@ -1711,7 +1729,8 @@ void SplashOutputDev::tilingPatternFill(GfxState *state, Gfx *gfx,
 					 colorMode, gTrue, bitmapTopDown);
   splash = new Splash(bitmap, vectorAntialias, origSplash->getScreen());
   splash->setMinLineWidth(globalParams->getMinLineWidth());
-  splash->setStrokeAdjust(globalParams->getStrokeAdjust());
+  splash->setStrokeAdjust(
+		mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
   for (i = 0; i < splashMaxColorComps; ++i) {
     color[i] = 0;
   }
@@ -1826,6 +1845,7 @@ void SplashOutputDev::drawChar(GfxState *state, double x, double y,
   SplashPath *path;
   int render;
   GBool doFill, doStroke, doClip, strokeAdjust;
+  SplashStrokeAdjustMode strokeAdjust;
   double m[4];
   GBool horiz;
 
@@ -1869,10 +1889,10 @@ void SplashOutputDev::drawChar(GfxState *state, double x, double y,
   // don't use stroke adjustment when stroking text -- the results
   // tend to be ugly (because characters with horizontal upper or
   // lower edges get misaligned relative to the other characters)
-  strokeAdjust = gFalse; // make gcc happy
+  strokeAdjust = splashStrokeAdjustOff; // make gcc happy
   if (doStroke) {
     strokeAdjust = splash->getStrokeAdjust();
-    splash->setStrokeAdjust(gFalse);
+    splash->setStrokeAdjust(splashStrokeAdjustOff);
   }
 
   // fill and stroke
@@ -2332,7 +2352,8 @@ void SplashOutputDev::setSoftMaskFromImageMask(GfxState *state,
   maskBitmap = new SplashBitmap(bitmap->getWidth(), bitmap->getHeight(),
 				1, splashModeMono8, gFalse);
   maskSplash = new Splash(maskBitmap, gTrue);
-  maskSplash->setStrokeAdjust(globalParams->getStrokeAdjust());
+  maskSplash->setStrokeAdjust(
+		mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
   clearMaskRegion(state, maskSplash, 0, 0, 1, 1);
   maskColor[0] = 0xff;
   maskSplash->setFillPattern(new SplashSolidColor(maskColor));
@@ -2781,7 +2802,8 @@ void SplashOutputDev::drawMaskedImage(GfxState *state, Object *ref,
     imgMaskData.y = 0;
     maskBitmap = new SplashBitmap(width, height, 1, splashModeMono1, gFalse);
     maskSplash = new Splash(maskBitmap, gFalse);
-    maskSplash->setStrokeAdjust(globalParams->getStrokeAdjust());
+    maskSplash->setStrokeAdjust(
+		       mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
     maskColor[0] = 0;
     maskSplash->clear(maskColor);
     maskColor[0] = 0xff;
@@ -2930,7 +2952,8 @@ void SplashOutputDev::drawSoftMaskedImage(GfxState *state, Object *ref,
   maskBitmap = new SplashBitmap(bitmap->getWidth(), bitmap->getHeight(),
 				1, splashModeMono8, gFalse);
   maskSplash = new Splash(maskBitmap, vectorAntialias);
-  maskSplash->setStrokeAdjust(globalParams->getStrokeAdjust());
+  maskSplash->setStrokeAdjust(
+		     mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
   clearMaskRegion(state, maskSplash, 0, 0, 1, 1);
   maskSplash->drawImage(&imageSrc, &imgMaskData, splashModeMono8, gFalse,
 			maskWidth, maskHeight, mat, interpolate);
@@ -3220,7 +3243,8 @@ void SplashOutputDev::beginTransparencyGroup(GfxState *state, double *bbox,
   splash = new Splash(bitmap, vectorAntialias,
 		      transpGroup->origSplash->getScreen());
   splash->setMinLineWidth(globalParams->getMinLineWidth());
-  splash->setStrokeAdjust(globalParams->getStrokeAdjust());
+  splash->setStrokeAdjust(
+		 mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
   //~ Acrobat apparently copies at least the fill and stroke colors, and
   //~ maybe other state(?) -- but not the clipping path (and not sure
   //~ what else)
@@ -3311,6 +3335,8 @@ void SplashOutputDev::setSoftMask(GfxState *state, double *bbox,
     tSplash = new Splash(tBitmap, vectorAntialias,
 			 transpGroupStack->origSplash->getScreen());
     tSplash->setStrokeAdjust(globalParams->getStrokeAdjust());
+    tSplash->setStrokeAdjust(
+		    mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
     if (transpGroupStack->blendingColorSpace) {
       switch (tBitmap->getMode()) {
       case splashModeMono1:
