@@ -10,3 +10,8 @@ Page.cc uses globalParams->getDrawFormFields()
 
 build:
 configure braucht install-sh
+
+GlobalParams ändert
+defaultFitZoom
+continousView
+psLevel2Gray,psLevel3Gray

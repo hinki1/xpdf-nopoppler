@@ -1,11 +1,3 @@
-//========================================================================
-//
-// config.h
-//
-// Copyright 1996-2014 Glyph & Cog, LLC
-//
-//========================================================================
-
 #ifndef CONFIG_H
 #define CONFIG_H
 
@@ -29,10 +21,6 @@
 
 // copyright notice
 #define xpdfCopyright "Copyright 1996-2017 Glyph & Cog, LLC"
-
-// Windows resource file stuff
-//#define winxpdfVersion "WinXpdf 3.04"
-//#define xpdfCopyrightAmp "Copyright 1996-2014 Glyph && Cog, LLC"
 
 //------------------------------------------------------------------------
 // paper size
