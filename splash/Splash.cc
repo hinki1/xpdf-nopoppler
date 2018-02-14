@@ -2385,7 +2385,9 @@ void Splash::strokeNarrow(SplashPath *path) {
 
   nClipRes[0] = nClipRes[1] = nClipRes[2] = 0;
 
-  xPath = new SplashXPath(path, state->matrix, state->flatness, gFalse);
+  xPath = new SplashXPath(path, state->matrix, state->flatness, gFalse,
+			  state->enablePathSimplification,
+			  state->strokeAdjust);
 
   pipeInit(&pipe, state->strokePattern,
 	   (Guchar)splashRound(state->strokeAlpha * 255),
@@ -2768,7 +2770,9 @@ SplashError Splash::fillWithPattern(SplashPath *path, GBool eo,
 
   path2 = tweakFillPath(path);
 
-  xPath = new SplashXPath(path2, state->matrix, state->flatness, gTrue);
+  xPath = new SplashXPath(path2, state->matrix, state->flatness, gTrue,
+			  state->enablePathSimplification,
+			  state->strokeAdjust);
   if (path2 != path) {
     delete path2;
   }
@@ -3025,7 +3029,9 @@ SplashError Splash::xorFill(SplashPath *path, GBool eo) {
     opClipRes = splashClipAllOutside;
     return splashOk;
   }
-  xPath = new SplashXPath(path, state->matrix, state->flatness, gTrue);
+  xPath = new SplashXPath(path, state->matrix, state->flatness, gTrue,
+                          state->enablePathSimplification,
+			  state->strokeAdjust);
   xMin = xPath->getXMin();
   yMin = xPath->getYMin();
   xMax = xPath->getXMax();

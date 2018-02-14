@@ -278,7 +278,7 @@ SplashError SplashClip::clipToPath(SplashPath *path, SplashCoord *matrix,
 
 SplashClipResult SplashClip::testRect(int rectXMin, int rectYMin,
 				      int rectXMax, int rectYMax,
-				      GBool strokeAdjust) {
+				      SplashStrokeAdjustMode strokeAdjust) {
   // In general, this function tests the rectangle:
   //     x = [rectXMin, rectXMax + 1)    (note: coords are ints)
   //     y = [rectYMin, rectYMax + 1)
@@ -286,7 +286,7 @@ SplashClipResult SplashClip::testRect(int rectXMin, int rectYMin,
   //     x = [xMin, xMax)                (note: coords are fp)
   //     y = [yMin, yMax)
 
-  if (strokeAdjust && length == 0) {
+  if (strokeAdjust != splashStrokeAdjustOff && length == 0) {
     // special case for stroke adjustment with a simple clipping
     // rectangle -- the clipping region is:
     //     x = [xMinI, xMaxI + 1)

@@ -49,6 +49,7 @@ struct SplashPathPoint {
 struct SplashPathHint {
   int ctrl0, ctrl1;
   int firstPt, lastPt;
+  GBool projectingCap;
 };
 
 //------------------------------------------------------------------------
@@ -89,7 +90,8 @@ public:
   // Add a stroke adjustment hint.  The controlling segments are
   // <ctrl0> and <ctrl1> (where segments are identified by their first
   // point), and the points to be adjusted are <firstPt> .. <lastPt>.
-  void addStrokeAdjustHint(int ctrl0, int ctrl1, int firstPt, int lastPt);
+  void addStrokeAdjustHint(int ctrl0, int ctrl1, int firstPt, int lastPt,
+			   GBool projectingCap = gFalse);
 
   // Add (<dx>, <dy>) to every point on this path.
   void offset(SplashCoord dx, SplashCoord dy);

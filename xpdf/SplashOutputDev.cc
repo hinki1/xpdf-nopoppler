@@ -71,14 +71,6 @@ static inline Guchar div255(int x) {
   return (Guchar)((x + (x >> 8) + 0x80) >> 8);
 }
 
-// Map StrokeAdjustMode (from GlobalParams) to SplashStrokeAdjustMode
-// (for Splash).
-static SplashStrokeAdjustMode mapStrokeAdjustMode[3] = {
-  splashStrokeAdjustOff,
-  splashStrokeAdjustNormal,
-  splashStrokeAdjustCAD
-};
-
 //------------------------------------------------------------------------
 // Blend functions
 //------------------------------------------------------------------------
@@ -1844,7 +1836,7 @@ void SplashOutputDev::drawChar(GfxState *state, double x, double y,
 			       Unicode *u, int uLen) {
   SplashPath *path;
   int render;
-  GBool doFill, doStroke, doClip, strokeAdjust;
+  GBool doFill, doStroke, doClip;
   SplashStrokeAdjustMode strokeAdjust;
   double m[4];
   GBool horiz;
@@ -3334,7 +3326,6 @@ void SplashOutputDev::setSoftMask(GfxState *state, double *bbox,
     //~ space is given
     tSplash = new Splash(tBitmap, vectorAntialias,
 			 transpGroupStack->origSplash->getScreen());
-    tSplash->setStrokeAdjust(globalParams->getStrokeAdjust());
     tSplash->setStrokeAdjust(
 		    mapStrokeAdjustMode[globalParams->getStrokeAdjust()]);
     if (transpGroupStack->blendingColorSpace) {

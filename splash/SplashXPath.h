@@ -99,8 +99,9 @@ private:
   SplashXPath(SplashXPath *xPath);
   void transform(SplashCoord *matrix, SplashCoord xi, SplashCoord yi,
 		 SplashCoord *xo, SplashCoord *yo);
-  void strokeAdjust(SplashXPathPoint *pts,
-		    SplashPathHint *hints, int nHints);
+  GBool strokeAdjust(SplashXPathPoint *pts,
+		     SplashPathHint *hints, int nHints,
+		     SplashStrokeAdjustMode strokeAdjMode);
   void grow(int nSegs);
   void addCurve(SplashCoord x0, SplashCoord y0,
 		SplashCoord x1, SplashCoord y1,

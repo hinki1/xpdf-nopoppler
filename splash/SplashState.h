@@ -117,6 +117,7 @@ private:
          cmykTransferY[256],
          cmykTransferK[256];
   Guint overprintMask;
+  GBool enablePathSimplification;
 
   SplashState *next;		// used by Splash class
 

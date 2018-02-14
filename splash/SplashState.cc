@@ -55,7 +55,7 @@ SplashState::SplashState(int width, int height, GBool vectorAntialias,
   lineDash = NULL;
   lineDashLength = 0;
   lineDashPhase = 0;
-  strokeAdjust = gFalse;
+  strokeAdjust = splashStrokeAdjustOff;
   clip = new SplashClip(0, 0, width, height);
   clipIsShared = gFalse;
   softMask = NULL;
@@ -73,6 +73,7 @@ SplashState::SplashState(int width, int height, GBool vectorAntialias,
     cmykTransferK[i] = (Guchar)i;
   }
   overprintMask = 0xffffffff;
+  enablePathSimplification = gFalse;
   next = NULL;
 }
 
@@ -99,7 +100,7 @@ SplashState::SplashState(int width, int height, GBool vectorAntialias,
   lineDash = NULL;
   lineDashLength = 0;
   lineDashPhase = 0;
-  strokeAdjust = gFalse;
+  strokeAdjust = splashStrokeAdjustOff;
   clip = new SplashClip(0, 0, width, height);
   clipIsShared = gFalse;
   softMask = NULL;
@@ -117,6 +118,7 @@ SplashState::SplashState(int width, int height, GBool vectorAntialias,
     cmykTransferK[i] = (Guchar)i;
   }
   overprintMask = 0xffffffff;
+  enablePathSimplification = gFalse;
   next = NULL;
 }
 
@@ -158,6 +160,7 @@ SplashState::SplashState(SplashState *state) {
   memcpy(cmykTransferY, state->cmykTransferY, 256);
   memcpy(cmykTransferK, state->cmykTransferK, 256);
   overprintMask = state->overprintMask;
+  enablePathSimplification = state->enablePathSimplification;
   next = NULL;
 }
 
@@ -225,7 +228,8 @@ SplashError SplashState::clipToPath(SplashPath *path, GBool eo) {
     clip = clip->copy();
     clipIsShared = gFalse;
   }
-  return clip->clipToPath(path, matrix, flatness, eo);
+  return clip->clipToPath(path, matrix, flatness, eo,
+			  enablePathSimplification, strokeAdjust);
 }
 
 void SplashState::setSoftMask(SplashBitmap *softMaskA) {

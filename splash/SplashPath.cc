@@ -156,7 +156,8 @@ SplashError SplashPath::close(GBool force) {
 }
 
 void SplashPath::addStrokeAdjustHint(int ctrl0, int ctrl1,
-				     int firstPt, int lastPt) {
+				     int firstPt, int lastPt,
+				     GBool projectingCap) {
   if (hintsLength == hintsSize) {
     hintsSize = hintsLength ? 2 * hintsLength : 8;
     hints = (SplashPathHint *)greallocn(hints, hintsSize,
@@ -166,6 +167,7 @@ void SplashPath::addStrokeAdjustHint(int ctrl0, int ctrl1,
   hints[hintsLength].ctrl1 = ctrl1;
   hints[hintsLength].firstPt = firstPt;
   hints[hintsLength].lastPt = lastPt;
+  hints[hintsLength].projectingCap = projectingCap;
   ++hintsLength;
 }
 
