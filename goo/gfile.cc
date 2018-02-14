@@ -14,15 +14,13 @@
 #  include <time.h>
 #  include <direct.h>
 #else
-#  if !defined(ACORN)
-#    include <sys/types.h>
-#    include <sys/stat.h>
-#    include <fcntl.h>
-#  endif
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <fcntl.h>
 #  include <time.h>
 #  include <limits.h>
 #  include <string.h>
-#  if !defined(VMS) && !defined(ACORN)
+#  if !defined(VMS)
 #    include <pwd.h>
 #  endif
 #  if defined(VMS) && (__DECCXX_VER < 50200000)
@@ -57,10 +55,6 @@ GString *getHomeDir() {
     ret = new GString(".");
   return ret;
 
-#elif defined(ACORN)
-  //---------- RISCOS ----------
-  return new GString("@");
-
 #else
   //---------- Unix ----------
   char *s;
@@ -88,8 +82,6 @@ GString *getCurrentDir() {
 
 #if defined(_WIN32)
   if (GetCurrentDirectoryA(sizeof(buf), buf))
-#elif defined(ACORN)
-  if (strcpy(buf, "@"))
 #else
   if (getcwd(buf, sizeof(buf)))
 #endif
@@ -153,23 +145,6 @@ GString *appendToPath(GString *path, const char *fileName) {
   path->append(buf);
   return path;
 
-#elif defined(ACORN)
-  //---------- RISCOS ----------
-  char *p;
-  int i;
-
-  path->append(".");
-  i = path->getLength();
-  path->append(fileName);
-  for (p = path->getCString() + i; *p; ++p) {
-    if (*p == '/') {
-      *p = '.';
-    } else if (*p == '.') {
-      *p = '/';
-    }
-  }
-  return path;
-
 #else
   //---------- Unix ----------
   int i;
@@ -229,14 +204,6 @@ GString *grabPath(char *fileName) {
     return new GString(fileName, (int)(p + 1 - fileName));
   return new GString();
 
-#elif defined(ACORN)
-  //---------- RISCOS ----------
-  char *p;
-
-  if ((p = strrchr(fileName, '.')))
-    return new GString(fileName, p - fileName);
-  return new GString();
-
 #else
   //---------- Unix ----------
   char *p;
@@ -256,10 +223,6 @@ GBool isAbsolutePath(char *path) {
 #elif defined(_WIN32)
   //---------- Win32 ----------
   return path[0] == '/' || path[0] == '\\' || path[1] == ':';
-
-#elif defined(ACORN)
-  //---------- RISCOS ----------
-  return path[0] == '$';
 
 #else
   //---------- Unix ----------
@@ -291,11 +254,6 @@ GString *makePathAbsolute(GString *path) {
   }
   path->clear();
   path->append(buf);
-  return path;
-
-#elif defined(ACORN)
-  //---------- RISCOS ----------
-  path->insert(0, '@');
   return path;
 
 #else
@@ -395,7 +353,7 @@ GBool openTempFile(GString **name, FILE **f,
   }
   delete s;
   return gFalse;
-#elif defined(VMS) || defined(ACORN)
+#elif defined(VMS)
   //---------- non-Unix ----------
   char *s;
 

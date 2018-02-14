@@ -21,7 +21,6 @@
 #  else
 #    include <windows.h>
 #  endif
-#elif defined(ACORN)
 #elif defined(ANDROID)
 #else
 #  include <unistd.h>
