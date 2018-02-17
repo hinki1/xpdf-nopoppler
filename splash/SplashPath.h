@@ -90,6 +90,8 @@ public:
   // Add a stroke adjustment hint.  The controlling segments are
   // <ctrl0> and <ctrl1> (where segments are identified by their first
   // point), and the points to be adjusted are <firstPt> .. <lastPt>.
+  // <projectingCap> is true if the points are part of a projecting
+  // line cap.
   void addStrokeAdjustHint(int ctrl0, int ctrl1, int firstPt, int lastPt,
 			   GBool projectingCap = gFalse);
 
@@ -103,6 +105,10 @@ public:
 
   // Get the current point.
   GBool getCurPt(SplashCoord *x, SplashCoord *y);
+
+  // Returns true if the path contains one or more zero length
+  // subpaths.
+  GBool containsZeroLengthSubpaths();
 
 private:
 
