@@ -826,6 +826,7 @@ void Splash::pipeRunSimpleMono1(SplashPipe *pipe, int x0, int x1, int y,
   Guchar cResult0;
   SplashColorPtr destColorPtr;
   Guchar destColorMask;
+  SplashScreenCursor screenCursor;
   int cSrcStride, x;
 
   if (cSrcPtr) {
@@ -844,11 +845,13 @@ void Splash::pipeRunSimpleMono1(SplashPipe *pipe, int x0, int x1, int y,
   destColorPtr = &bitmap->data[y * bitmap->rowSize + (x0 >> 3)];
   destColorMask = 0x80 >> (x0 & 7);
 
+  screenCursor = state->screen->getTestCursor(y);
+
   for (x = x0; x <= x1; ++x) {
 
     //----- write destination pixel
     cResult0 = state->grayTransfer[cSrcPtr[0]];
-    if (state->screen->test(x, y, cResult0)) {
+    if (state->screen->testWithCursor(screenCursor, x, cResult0)) {
       *destColorPtr |= destColorMask;
     } else {
       *destColorPtr &= ~destColorMask;
@@ -2174,6 +2177,10 @@ void Splash::setOverprintMask(Guint overprintMask) {
   state->overprintMask = overprintMask;
 }
 
+void Splash::setEnablePathSimplification(GBool en) {
+  state->enablePathSimplification = en;
+}
+
 //------------------------------------------------------------------------
 // state save/restore
 //------------------------------------------------------------------------
@@ -2860,7 +2867,7 @@ SplashPath *Splash::tweakFillPath(SplashPath *path) {
   SplashCoord xx0, yy0, xx1, yy1, dx, dy, d, wx, wy, w;
   int n;
 
-  if (!state->strokeAdjust || path->hints) {
+  if (state->strokeAdjust == splashStrokeAdjustOff || path->hints) {
     return path;
   }
 
@@ -3267,8 +3274,14 @@ SplashError Splash::fillImageMask(SplashImageMaskSource src, void *srcData,
   // stream-mode upscaling -- this is slower, so we only use it if the
   // upscaled mask is large (in which case clipping should remove many
   // pixels)
-  if (wSize > 2 * w && hSize > 2 * h && wSize * hSize > 1000000) {
+#if USE_FIXEDPOINT
+  if ((wSize > 2 * w && hSize > 2 * h && (int)wSize > 1000000 / (int)hSize) ||
+      (wSize >     w && hSize >     h && (int)wSize > 10000000 / (int)hSize)) {
+#else
+  if ((wSize > 2 * w && hSize > 2 * h && wSize * hSize > 1000000) ||
+      (wSize >     w && hSize >     h && wSize * hSize > 10000000)) {
     upscaleMask(src, srcData, w, h, mat, glyphMode, interpolate);
+#endif
 
   // scaling only
   } else if (mat[0] > 0 && minorAxisZero && mat[3] > 0) {
@@ -3475,10 +3488,12 @@ void Splash::upscaleMask(SplashImageMaskSource src, void *srcData,
 	  if (y1 >= srcHeight) {
 	    y1 = srcHeight - 1;
 	  }
-	  pix0 = ((SplashCoord)1 - sx) * unscaledImage[y0 * srcWidth + x0]
-	         + sx * unscaledImage[y0 * srcWidth + x1];
-	  pix1 = ((SplashCoord)1 - sx) * unscaledImage[y1 * srcWidth + x0]
-	         + sx * unscaledImage[y1 * srcWidth + x1];
+	  pix0 = ((SplashCoord)1 - sx)
+	           * (SplashCoord)unscaledImage[y0 * srcWidth + x0]
+	         + sx * (SplashCoord)unscaledImage[y0 * srcWidth + x1];
+	  pix1 = ((SplashCoord)1 - sx)
+	           * (SplashCoord)unscaledImage[y1 * srcWidth + x0]
+	         + sx * (SplashCoord)unscaledImage[y1 * srcWidth + x1];
 	  scanBuf[x] = (Guchar)splashRound(((SplashCoord)1 - sy) * pix0
 					   + sy * pix1);
 	} else {
@@ -4342,7 +4357,13 @@ SplashError Splash::drawImage(SplashImageSource src, void *srcData,
   // stream-mode upscaling -- this is slower, so we only use it if the
   // upscaled image is large (in which case clipping should remove
   // many pixels)
-  if (wSize > 2 * w && hSize > 2 * h && wSize * hSize > 1000000) {
+#if USE_FIXEDPOINT
+  if ((wSize > 2 * w && hSize > 2 * h && (int)wSize > 1000000 / (int)hSize) ||
+      (wSize >     w && hSize >     h && (int)wSize > 10000000 / (int)hSize)) {
+#else
+  if ((wSize > 2 * w && hSize > 2 * h && wSize * hSize > 1000000) ||
+      (wSize >     w && hSize >     h && wSize * hSize > 10000000)) {
+#endif
     upscaleImage(src, srcData, srcMode, nComps, srcAlpha,
 		 w, h, mat, interpolate);
 
@@ -4380,7 +4401,7 @@ SplashError Splash::drawImage(SplashImageSource src, void *srcData,
     }
 
   // scaling plus horizontal flip
-  } else if (mat[0] > 0 && minorAxisZero && mat[3] > 0) {
+  } else if (mat[0] < 0 && minorAxisZero && mat[3] > 0) {
     getImageBounds(mat[0] + mat[4], mat[4], &x0, &x1);
     getImageBounds(mat[5], mat[3] + mat[5], &y0, &y1);
     clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1,
@@ -4397,7 +4418,7 @@ SplashError Splash::drawImage(SplashImageSource src, void *srcData,
     }
     
   // scaling plus horizontal and vertical flips
-  } else if (mat[0] > 0 && minorAxisZero && mat[3] < 0) {
+  } else if (mat[0] < 0 && minorAxisZero && mat[3] < 0) {
     getImageBounds(mat[0] + mat[4], mat[4], &x0, &x1);
     getImageBounds(mat[3] + mat[5], mat[5], &y0, &y1);
     clipRes = state->clip->testRect(x0, y0, x1 - 1, y1 - 1,
