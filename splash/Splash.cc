@@ -403,7 +403,7 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 
     if (pipe->noTransparency && !state->blendFunc) {
 
-      //----- write destination pixel
+      //----- result color
 
       switch (bitmap->mode) {
       case splashModeMono1:
@@ -2757,7 +2757,7 @@ SplashError Splash::fillWithPattern(SplashPath *path, GBool eo,
   SplashPath *path2;
   SplashXPath *xPath;
   SplashXPathScanner *scanner;
-  int xMin, yMin, xMax, yMax, x, y, t;
+  int xMin, yMin, xMax, xMin2, xMax2, yMax, y, t;
   SplashClipResult clipRes;
 
   if (path->length == 0) {
@@ -2815,23 +2815,25 @@ SplashError Splash::fillWithPattern(SplashPath *path, GBool eo,
     // draw the spans
     if (vectorAntialias && !inShading) {
       for (y = yMin; y <= yMax; ++y) {
-	scanner->getSpan(scanBuf, y, xMin, xMax);
-	if (clipRes != splashClipAllInside) {
-	  state->clip->clipSpan(scanBuf, y, xMin, xMax, state->strokeAdjust);
+	scanner->getSpan(scanBuf, y, xMin, xMax, &xMin2, &xMax2);
+	if (xMin2 <= xMax2) {
+	  if (clipRes != splashClipAllInside) {
+	    state->clip->clipSpan(scanBuf, y, xMin2, xMax2,
+				  state->strokeAdjust);
+	  }
+	  (this->*pipe.run)(&pipe, xMin2, xMax2, y, scanBuf + xMin2, NULL);
 	}
-	for (x = xMin; x <= xMax; ++x) {
-	  scanBuf[x] = aaGamma[scanBuf[x]];
-	}
-	(this->*pipe.run)(&pipe, xMin, xMax, y, scanBuf + xMin, NULL);
       }
     } else {
       for (y = yMin; y <= yMax; ++y) {
-	scanner->getSpanBinary(scanBuf, y, xMin, xMax);
-	if (clipRes != splashClipAllInside) {
-	  state->clip->clipSpanBinary(scanBuf, y, xMin, xMax,
-				      state->strokeAdjust);
+	scanner->getSpanBinary(scanBuf, y, xMin, xMax, &xMin2, &xMax2);
+	if (xMin2 <= xMax2) {
+	  if (clipRes != splashClipAllInside) {
+	    state->clip->clipSpanBinary(scanBuf, y, xMin2, xMax2,
+					state->strokeAdjust);
+	  }
+	  (this->*pipe.run)(&pipe, xMin2, xMax2, y, scanBuf + xMin2, NULL);
 	}
-	(this->*pipe.run)(&pipe, xMin, xMax, y, scanBuf + xMin, NULL);
       }
     }
   }
@@ -3018,7 +3020,7 @@ SplashError Splash::xorFill(SplashPath *path, GBool eo) {
   SplashPipe pipe;
   SplashXPath *xPath;
   SplashXPathScanner *scanner;
-  int xMin, yMin, xMax, yMax, y, t;
+  int xMin, yMin, xMax, yMax, xMin2, xMax2, y, t;
   SplashClipResult clipRes;
   SplashBlendFunc origBlendFunc;
 
@@ -3071,7 +3073,7 @@ SplashError Splash::xorFill(SplashPath *path, GBool eo) {
 
     // draw the spans
     for (y = yMin; y <= yMax; ++y) {
-      scanner->getSpanBinary(scanBuf, y, xMin, xMax);
+      scanner->getSpanBinary(scanBuf, y, xMin, xMax, &xMin2, &xMax2);
       if (clipRes != splashClipAllInside) {
 	state->clip->clipSpanBinary(scanBuf, y, xMin, xMax,
 				    state->strokeAdjust);

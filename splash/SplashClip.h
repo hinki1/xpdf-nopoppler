@@ -98,7 +98,7 @@ public:
   int getYMaxI(SplashStrokeAdjustMode strokeAdjust);
 
   // Get the number of arbitrary paths used by the clip region.
-  int getNumPaths() { return length; }
+  int getNumPaths();
 
 private:
 
@@ -122,6 +122,8 @@ private:
   Guchar *eo;
   SplashXPathScanner **scanners;
   int length, size;
+  GBool isSimple;
+  SplashClip *prev;
   Guchar *buf;
 };
 
