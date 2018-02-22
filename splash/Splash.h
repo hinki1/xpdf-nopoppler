@@ -424,7 +424,6 @@ private:
   SplashBitmap			// for transparency groups, this is the bitmap
     *groupBackBitmap;		//   containing the alpha0/color0 values
   int groupBackX, groupBackY;	// offset within groupBackBitmap
-  Guchar aaGamma[256];
   SplashCoord minLineWidth;
   int modXMin, modYMin, modXMax, modYMax;
   SplashClipResult opClipRes;

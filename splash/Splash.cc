@@ -36,7 +36,6 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#define splashAAGamma 0.67
 //------------------------------------------------------------------------
 
 // distance of Bezier control point from center for circle approximation
