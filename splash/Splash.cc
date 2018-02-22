@@ -6390,7 +6390,7 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
     // (NB: if stroke adjustment is enabled, the closepath operation MUST
     // add a segment because this segment is used for a hint)
     right2 = pathOut->length - 1;
-    pathOut->close(state->strokeAdjust);
+    pathOut->close(state->strokeAdjust != splashStrokeAdjustOff);
 
     // draw the join
     join2 = pathOut->length;
@@ -6506,7 +6506,7 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
     }
 
     // add stroke adjustment hints
-    if (state->strokeAdjust) {
+    if (state->strokeAdjust != splashStrokeAdjustOff) {
       if (seg == 0 && !closed) {
 	if (state->lineCap == splashLineCapButt) {
 	  pathOut->addStrokeAdjustHint(firstPt, left2 + 1,
