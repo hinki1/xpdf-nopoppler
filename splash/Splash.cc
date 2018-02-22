@@ -711,9 +711,9 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	  cResult0 = 0;
 	} else {
 	  cResult0 = state->grayTransfer[((alphaI - aSrc) * cDest[0] +
-					  aSrc * ((255 - alphaIm1) * cSrc[0] +
-						  alphaIm1 * cBlend[0]) / 255) /
-					 alphaI];
+		      aSrc * ((255 - alphaIm1) * cSrc[0] +
+			      alphaIm1 * cBlend[0]) / 255)
+	             / alphaI];
 	}
 	break;
       case splashPipeResultColorAlphaBlendRGB:
@@ -723,17 +723,17 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	  cResult2 = 0;
 	} else {
 	  cResult0 = state->rgbTransferR[((alphaI - aSrc) * cDest[0] +
-					  aSrc * ((255 - alphaIm1) * cSrc[0] +
-						  alphaIm1 * cBlend[0]) / 255) /
-					 alphaI];
+		      aSrc * ((255 - alphaIm1) * cSrc[0] +
+			      alphaIm1 * cBlend[0]) / 255)
+	             / alphaI];
 	  cResult1 = state->rgbTransferG[((alphaI - aSrc) * cDest[1] +
-					  aSrc * ((255 - alphaIm1) * cSrc[1] +
-						  alphaIm1 * cBlend[1]) / 255) /
-					 alphaI];
+		      aSrc * ((255 - alphaIm1) * cSrc[1] +
+			      alphaIm1 * cBlend[1]) / 255)
+	             / alphaI];
 	  cResult2 = state->rgbTransferB[((alphaI - aSrc) * cDest[2] +
-					  aSrc * ((255 - alphaIm1) * cSrc[2] +
-						  alphaIm1 * cBlend[2]) / 255) /
-					 alphaI];
+		      aSrc * ((255 - alphaIm1) * cSrc[2] +
+			      alphaIm1 * cBlend[2]) / 255)
+	             / alphaI];
 	}
 	break;
 #if SPLASH_CMYK
@@ -744,26 +744,22 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	  cResult2 = 0;
 	  cResult3 = 0;
 	} else {
-	  cResult0 =
-	    state->cmykTransferC[((alphaI - aSrc) * cDest[0] +
-				  aSrc * ((255 - alphaIm1) * cSrc[0] +
-					  alphaIm1 * cBlend[0]) / 255) /
-				 alphaI];
-	  cResult1 =
-	    state->cmykTransferM[((alphaI - aSrc) * cDest[1] +
-				  aSrc * ((255 - alphaIm1) * cSrc[1] +
-					  alphaIm1 * cBlend[1]) / 255) /
-				 alphaI];
-	  cResult2 =
-	    state->cmykTransferY[((alphaI - aSrc) * cDest[2] +
-				  aSrc * ((255 - alphaIm1) * cSrc[2] +
-					  alphaIm1 * cBlend[2]) / 255) /
-				 alphaI];
-	  cResult3 =
-	    state->cmykTransferK[((alphaI - aSrc) * cDest[3] +
-				  aSrc * ((255 - alphaIm1) * cSrc[3] +
-					  alphaIm1 * cBlend[3]) / 255) /
-				 alphaI];
+	  cResult0 = state->cmykTransferC[((alphaI - aSrc) * cDest[0] +
+		      aSrc * ((255 - alphaIm1) * cSrc[0] +
+			      alphaIm1 * cBlend[0]) / 255)
+	             / alphaI];
+	  cResult1 = state->cmykTransferM[((alphaI - aSrc) * cDest[1] +
+		      aSrc * ((255 - alphaIm1) * cSrc[1] +
+			      alphaIm1 * cBlend[1]) / 255)
+	             / alphaI];
+	  cResult2 = state->cmykTransferY[((alphaI - aSrc) * cDest[2] +
+		      aSrc * ((255 - alphaIm1) * cSrc[2] +
+			      alphaIm1 * cBlend[2]) / 255)
+	             / alphaI];
+	  cResult3 = state->cmykTransferK[((alphaI - aSrc) * cDest[3] +
+		      aSrc * ((255 - alphaIm1) * cSrc[3] +
+			      alphaIm1 * cBlend[3]) / 255)
+	             / alphaI];
 	}
 	break;
 #endif
@@ -1069,9 +1065,9 @@ void Splash::pipeRunShapeMono1(SplashPipe *pipe, int x0, int x1, int y,
     //----- read destination pixel
     cDest0 = (*destColorPtr & destColorMask) ? 0xff : 0x00;
 
-    //----- result color
-    // note: aDest = alphaI = aResult = 0xff
-    cResult0 = state->grayTransfer[(Guchar)div255((0xff - aSrc) * cDest0 +
+      //----- result color
+      // note: aDest = alphaI = aResult = 0xff
+      cResult0 = state->grayTransfer[(Guchar)div255((0xff - aSrc) * cDest0 +
 						  aSrc * cSrcPtr[0])];
 
     //----- write destination pixel
@@ -1143,9 +1139,9 @@ void Splash::pipeRunShapeMono8(SplashPipe *pipe, int x0, int x1, int y,
     cDest0 = *destColorPtr;
     aDest = *destAlphaPtr;
 
-    //----- result alpha and non-isolated group element correction
-    aResult = aSrc + aDest - div255(aSrc * aDest);
-    alphaI = aResult;
+	//----- result alpha and non-isolated group element correction
+	aResult = aSrc + aDest - div255(aSrc * aDest);
+	alphaI = aResult;
 
     //----- result color
     if (alphaI == 0) {
@@ -1214,32 +1210,29 @@ void Splash::pipeRunShapeRGB8(SplashPipe *pipe, int x0, int x1, int y,
     }
     lastX = x;
 
-    //----- read destination pixel
-    cDest0 = destColorPtr[0];
-    cDest1 = destColorPtr[1];
-    cDest2 = destColorPtr[2];
-    aDest = *destAlphaPtr;
-
     //----- source alpha
     aSrc = shape;
 
-    //----- result alpha and non-isolated group element correction
-    aResult = aSrc + aDest - div255(aSrc * aDest);
-    alphaI = aResult;
+    //----- read destination pixel
+	cDest0 = destColorPtr[0];
+	cDest1 = destColorPtr[1];
+	cDest2 = destColorPtr[2];
+	aDest = *destAlphaPtr;
 
-    //----- result color
-    if (alphaI == 0) {
-      cResult0 = 0;
-      cResult1 = 0;
-      cResult2 = 0;
-    } else {
-      cResult0 = state->rgbTransferR[(Guchar)(((alphaI - aSrc) * cDest0 +
-					       aSrc * cSrcPtr[0]) / alphaI)];
-      cResult1 = state->rgbTransferG[(Guchar)(((alphaI - aSrc) * cDest1 +
-					       aSrc * cSrcPtr[1]) / alphaI)];
-      cResult2 = state->rgbTransferB[(Guchar)(((alphaI - aSrc) * cDest2 +
-					       aSrc * cSrcPtr[2]) / alphaI)];
-    }
+	//----- result alpha and non-isolated group element correction
+	aResult = aSrc + aDest - div255(aSrc * aDest);
+	alphaI = aResult;
+
+      if (alphaI == 0) {
+	cResult0 = 0;
+	cResult1 = 0;
+	cResult2 = 0;
+      } else {
+	//----- result color
+	cResult0 = state->rgbTransferR[(Guchar)(((alphaI - aSrc) * cDest0 + aSrc * cSrcPtr[0]) / alphaI)];
+	cResult1 = state->rgbTransferG[(Guchar)(((alphaI - aSrc) * cDest1 + aSrc * cSrcPtr[1]) / alphaI)];
+	cResult2 = state->rgbTransferB[(Guchar)(((alphaI - aSrc) * cDest2 + aSrc * cSrcPtr[2]) / alphaI)];
+      }
 
     //----- write destination pixel
     destColorPtr[0] = cResult0;
@@ -1303,18 +1296,18 @@ void Splash::pipeRunShapeBGR8(SplashPipe *pipe, int x0, int x1, int y,
     }
     lastX = x;
 
-    //----- read destination pixel
-    cDest0 = destColorPtr[2];
-    cDest1 = destColorPtr[1];
-    cDest2 = destColorPtr[0];
-    aDest = *destAlphaPtr;
-
     //----- source alpha
     aSrc = shape;
 
-    //----- result alpha and non-isolated group element correction
-    aResult = aSrc + aDest - div255(aSrc * aDest);
-    alphaI = aResult;
+	//----- read destination pixel
+	cDest0 = destColorPtr[2];
+	cDest1 = destColorPtr[1];
+	cDest2 = destColorPtr[0];
+	aDest = *destAlphaPtr;
+
+	//----- result alpha and non-isolated group element correction
+	aResult = aSrc + aDest - div255(aSrc * aDest);
+	alphaI = aResult;
 
     //----- result color
     if (alphaI == 0) {
@@ -1426,9 +1419,9 @@ void Splash::pipeRunShapeCMYK8(SplashPipe *pipe, int x0, int x1, int y,
     //----- source alpha
     aSrc = shape;
 
-    //----- result alpha and non-isolated group element correction
-    aResult = aSrc + aDest - div255(aSrc * aDest);
-    alphaI = aResult;
+	//----- result alpha and non-isolated group element correction
+	aResult = aSrc + aDest - div255(aSrc * aDest);
+	alphaI = aResult;
 
     //----- result color
     if (alphaI == 0) {
@@ -1689,12 +1682,9 @@ void Splash::pipeRunAARGB8(SplashPipe *pipe, int x0, int x1, int y,
       cResult1 = 0;
       cResult2 = 0;
     } else {
-      cResult0 = state->rgbTransferR[(Guchar)(((alphaI - aSrc) * cDest0 +
-					       aSrc * cSrcPtr[0]) / alphaI)];
-      cResult1 = state->rgbTransferG[(Guchar)(((alphaI - aSrc) * cDest1 +
-					       aSrc * cSrcPtr[1]) / alphaI)];
-      cResult2 = state->rgbTransferB[(Guchar)(((alphaI - aSrc) * cDest2 +
-					       aSrc * cSrcPtr[2]) / alphaI)];
+      cResult0 = state->rgbTransferR[(Guchar)(((alphaI - aSrc) * cDest0 + aSrc * cSrcPtr[0]) / alphaI)];
+      cResult1 = state->rgbTransferG[(Guchar)(((alphaI - aSrc) * cDest1 + aSrc * cSrcPtr[1]) / alphaI)];
+      cResult2 = state->rgbTransferB[(Guchar)(((alphaI - aSrc) * cDest2 + aSrc * cSrcPtr[2]) / alphaI)];
     }
 
     //----- write destination pixel
@@ -1780,12 +1770,9 @@ void Splash::pipeRunAABGR8(SplashPipe *pipe, int x0, int x1, int y,
       cResult1 = 0;
       cResult2 = 0;
     } else {
-      cResult0 = state->rgbTransferR[(Guchar)(((alphaI - aSrc) * cDest0 +
-					       aSrc * cSrcPtr[0]) / alphaI)];
-      cResult1 = state->rgbTransferG[(Guchar)(((alphaI - aSrc) * cDest1 +
-					       aSrc * cSrcPtr[1]) / alphaI)];
-      cResult2 = state->rgbTransferB[(Guchar)(((alphaI - aSrc) * cDest2 +
-					       aSrc * cSrcPtr[2]) / alphaI)];
+      cResult0 = state->rgbTransferR[(Guchar)(((alphaI - aSrc) * cDest0 + aSrc * cSrcPtr[0]) / alphaI)];
+      cResult1 = state->rgbTransferG[(Guchar)(((alphaI - aSrc) * cDest1 + aSrc * cSrcPtr[1]) / alphaI)];
+      cResult2 = state->rgbTransferB[(Guchar)(((alphaI - aSrc) * cDest2 + aSrc * cSrcPtr[2]) / alphaI)];
     }
 
     //----- write destination pixel
@@ -1897,14 +1884,10 @@ void Splash::pipeRunAACMYK8(SplashPipe *pipe, int x0, int x1, int y,
       cResult2 = 0;
       cResult3 = 0;
     } else {
-      cResult0 = state->cmykTransferC[(Guchar)(((alphaI - aSrc) * cDest0 +
-						aSrc * cSrc0) / alphaI)];
-      cResult1 = state->cmykTransferM[(Guchar)(((alphaI - aSrc) * cDest1 +
-						aSrc * cSrc1) / alphaI)];
-      cResult2 = state->cmykTransferY[(Guchar)(((alphaI - aSrc) * cDest2 +
-						aSrc * cSrc2) / alphaI)];
-      cResult3 = state->cmykTransferK[(Guchar)(((alphaI - aSrc) * cDest3 +
-						aSrc * cSrc3) / alphaI)];
+      cResult0 = state->cmykTransferC[(Guchar)(((alphaI - aSrc) * cDest0 + aSrc * cSrc0) / alphaI)];
+      cResult1 = state->cmykTransferM[(Guchar)(((alphaI - aSrc) * cDest1 + aSrc * cSrc1) / alphaI)];
+      cResult2 = state->cmykTransferY[(Guchar)(((alphaI - aSrc) * cDest2 + aSrc * cSrc2) / alphaI)];
+      cResult3 = state->cmykTransferK[(Guchar)(((alphaI - aSrc) * cDest3 + aSrc * cSrc3) / alphaI)];
     }
 
     //----- write destination pixel
@@ -2727,6 +2710,7 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
 
       // process the segment
       while (segLen > 0) {
+
 
 	if (lineDashDist >= segLen) {
 	  if (lineDashOn) {
@@ -5961,16 +5945,14 @@ SplashError Splash::composite(SplashBitmap *src, int xSrc, int ySrc,
 	  (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
 			    src->getAlphaPtr() +
 			      (ySrc + y) * src->getWidth() + xSrc,
-			    src->getDataPtr() + (ySrc + y) * src->getRowSize() +
-			      xSrc * bitmapComps);
-          }
+			    src->getDataPtr() + (ySrc + y) * src->getRowSize() + xSrc * bitmapComps);
+	}
       } else {
 	for (y = 0; y < h; ++y) {
 	  (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
 			    NULL,
-			    src->getDataPtr() + (ySrc + y) * src->getRowSize() +
-			    xSrc * bitmapComps);
-        }
+			    src->getDataPtr() + (ySrc + y) * src->getRowSize() + xSrc * bitmapComps);
+	}
       }
     } else {
       x0 = xDest;
@@ -6267,7 +6249,8 @@ SplashError Splash::blitCorrectedAlpha(SplashBitmap *dest, int xSrc, int ySrc,
 }
 
 SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
-				    GBool flatten) {
+
+				   GBool flatten) {
   SplashPath *pathIn, *dashPath, *pathOut;
   SplashCoord d, dx, dy, wdx, wdy, dxNext, dyNext, wdxNext, wdyNext;
   SplashCoord crossprod, dotprod, miter, m;
