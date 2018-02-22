@@ -5967,6 +5967,7 @@ SplashError Splash::composite(SplashBitmap *src, int xSrc, int ySrc,
 			    NULL,
 			    src->getDataPtr() + (ySrc + y) * src->getRowSize() +
 			    xSrc * bitmapComps);
+        }
       }
     } else {
       x0 = xDest;
