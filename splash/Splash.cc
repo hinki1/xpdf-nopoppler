@@ -1021,6 +1021,7 @@ void Splash::pipeRunShapeMono1(SplashPipe *pipe, int x0, int x1, int y,
   Guchar shape, aSrc, cDest0, cResult0;
   SplashColorPtr destColorPtr;
   Guchar destColorMask;
+  SplashScreenCursor screenCursor;
   int cSrcStride, x, lastX;
 
   if (cSrcPtr) {
@@ -1045,6 +1046,8 @@ void Splash::pipeRunShapeMono1(SplashPipe *pipe, int x0, int x1, int y,
 
   destColorPtr = &bitmap->data[y * bitmap->rowSize + (x0 >> 3)];
   destColorMask = 0x80 >> (x0 & 7);
+
+  screenCursor = state->screen->getTestCursor(y);
 
   for (x = x0; x <= x1; ++x) {
 
