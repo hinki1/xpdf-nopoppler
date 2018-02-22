@@ -1062,11 +1062,11 @@ void Splash::pipeRunShapeMono1(SplashPipe *pipe, int x0, int x1, int y,
     }
     lastX = x;
 
-    //----- read destination pixel
-    cDest0 = (*destColorPtr & destColorMask) ? 0xff : 0x00;
-
     //----- source alpha
     aSrc = shape;
+
+    //----- read destination pixel
+    cDest0 = (*destColorPtr & destColorMask) ? 0xff : 0x00;
 
     //----- result color
     // note: aDest = alphaI = aResult = 0xff
@@ -1135,12 +1135,12 @@ void Splash::pipeRunShapeMono8(SplashPipe *pipe, int x0, int x1, int y,
     }
     lastX = x;
 
+    //----- source alpha
+    aSrc = shape;
+
     //----- read destination pixel
     cDest0 = *destColorPtr;
     aDest = *destAlphaPtr;
-
-    //----- source alpha
-    aSrc = shape;
 
     //----- result alpha and non-isolated group element correction
     aResult = aSrc + aDest - div255(aSrc * aDest);
