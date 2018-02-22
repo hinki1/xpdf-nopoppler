@@ -6313,16 +6313,17 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
     wdy = (SplashCoord)0.5 * w * dy;
 
     // draw the start cap
-    pathOut->moveTo(pathIn->pts[i0].x - wdy, pathIn->pts[i0].y + wdx);
     if (i0 == subpathStart0) {
-      firstPt = pathOut->length - 1;
+      firstPt = pathOut->length;
     }
     if (first && !closed) {
       switch (state->lineCap) {
       case splashLineCapButt:
+	pathOut->moveTo(pathIn->pts[i0].x - wdy, pathIn->pts[i0].y + wdx);
 	pathOut->lineTo(pathIn->pts[i0].x + wdy, pathIn->pts[i0].y - wdx);
 	break;
       case splashLineCapRound:
+	pathOut->moveTo(pathIn->pts[i0].x - wdy, pathIn->pts[i0].y + wdx);
 	pathOut->curveTo(pathIn->pts[i0].x - wdy - bezierCircle * wdx,
 			 pathIn->pts[i0].y + wdx - bezierCircle * wdy,
 			 pathIn->pts[i0].x - wdx - bezierCircle * wdy,
@@ -6337,29 +6338,27 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 			 pathIn->pts[i0].y - wdx);
 	break;
       case splashLineCapProjecting:
-	pathOut->lineTo(pathIn->pts[i0].x - wdx - wdy,
+	pathOut->moveTo(pathIn->pts[i0].x - wdx - wdy,
 			pathIn->pts[i0].y + wdx - wdy);
 	pathOut->lineTo(pathIn->pts[i0].x - wdx + wdy,
 			pathIn->pts[i0].y - wdx - wdy);
-	pathOut->lineTo(pathIn->pts[i0].x + wdy,
-			pathIn->pts[i0].y - wdx);
 	break;
       }
     } else {
+      pathOut->moveTo(pathIn->pts[i0].x - wdy, pathIn->pts[i0].y + wdx);
       pathOut->lineTo(pathIn->pts[i0].x + wdy, pathIn->pts[i0].y - wdx);
     }
 
-    // draw the left side of the segment rectangle
+    // draw the left side of the segment rectangle and the end cap
     left2 = pathOut->length - 1;
-    pathOut->lineTo(pathIn->pts[j0].x + wdy, pathIn->pts[j0].y - wdx);
-
-    // draw the end cap
     if (last && !closed) {
       switch (state->lineCap) {
       case splashLineCapButt:
+	pathOut->lineTo(pathIn->pts[j0].x + wdy, pathIn->pts[j0].y - wdx);
 	pathOut->lineTo(pathIn->pts[j0].x - wdy, pathIn->pts[j0].y + wdx);
 	break;
       case splashLineCapRound:
+	pathOut->lineTo(pathIn->pts[j0].x + wdy, pathIn->pts[j0].y - wdx);
 	pathOut->curveTo(pathIn->pts[j0].x + wdy + bezierCircle * wdx,
 			 pathIn->pts[j0].y - wdx + bezierCircle * wdy,
 			 pathIn->pts[j0].x + wdx + bezierCircle * wdy,
@@ -6378,11 +6377,10 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 			pathIn->pts[j0].y - wdx + wdy);
 	pathOut->lineTo(pathIn->pts[j0].x - wdy + wdx,
 			pathIn->pts[j0].y + wdx + wdy);
-	pathOut->lineTo(pathIn->pts[j0].x - wdy,
-			pathIn->pts[j0].y + wdx);
 	break;
       }
     } else {
+      pathOut->lineTo(pathIn->pts[j0].x + wdy, pathIn->pts[j0].y - wdx);
       pathOut->lineTo(pathIn->pts[j0].x - wdy, pathIn->pts[j0].y + wdx);
     }
 
