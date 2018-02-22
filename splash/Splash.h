@@ -420,6 +420,7 @@ private:
   int bitmapComps;
   SplashState *state;
   Guchar *scanBuf;
+  Guchar *scanBuf2;
   SplashBitmap			// for transparency groups, this is the bitmap
     *groupBackBitmap;		//   containing the alpha0/color0 values
   int groupBackX, groupBackY;	// offset within groupBackBitmap

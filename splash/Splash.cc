@@ -1938,13 +1938,12 @@ Splash::Splash(SplashBitmap *bitmapA, GBool vectorAntialiasA,
   state = new SplashState(bitmap->width, bitmap->height, vectorAntialias,
 			  screenParams);
   scanBuf = (Guchar *)gmalloc(bitmap->width);
-  if (vectorAntialias) {
-    for (i = 0; i <= 255; ++i) {
-      aaGamma[i] = (Guchar)splashRound(
-			       splashPow((SplashCoord)i / (SplashCoord)255,
-					 splashAAGamma) * 255);
-    }
+  if (bitmap->mode == splashModeMono1) {
+    scanBuf2 = (Guchar *)gmalloc(bitmap->width);
+  } else {
+    scanBuf2 = NULL;
   }
+  groupBackBitmap = NULL;
   minLineWidth = 0;
   clearModRegion();
   debugMode = gFalse;
@@ -1961,13 +1960,12 @@ Splash::Splash(SplashBitmap *bitmapA, GBool vectorAntialiasA,
   state = new SplashState(bitmap->width, bitmap->height, vectorAntialias,
 			  screenA);
   scanBuf = (Guchar *)gmalloc(bitmap->width);
-  if (vectorAntialias) {
-    for (i = 0; i <= 255; ++i) {
-      aaGamma[i] = (Guchar)splashRound(
-			       splashPow((SplashCoord)i / (SplashCoord)255,
-					 splashAAGamma) * 255);
-    }
+  if (bitmap->mode == splashModeMono1) {
+    scanBuf2 = (Guchar *)gmalloc(bitmap->width);
+  } else {
+    scanBuf2 = NULL;
   }
+  groupBackBitmap = NULL;
   minLineWidth = 0;
   clearModRegion();
   debugMode = gFalse;
@@ -1979,6 +1977,7 @@ Splash::~Splash() {
   }
   delete state;
   gfree(scanBuf);
+  gfree(scanBuf2);
 }
 
 //------------------------------------------------------------------------
@@ -5928,33 +5927,157 @@ SplashError Splash::composite(SplashBitmap *src, int xSrc, int ySrc,
 			      int xDest, int yDest, int w, int h,
 			      GBool noClip, GBool nonIsolated) {
   SplashPipe pipe;
+  Guchar *mono1Ptr, *lineBuf, *linePtr;
+  Guchar mono1Mask, b;
+  int x0, x1, x, y0, y1, y, t;
 
-
-  int x0, x1, y0, y1, y, t;
-
-  if (src->mode != bitmap->mode) {
+  if (!(src->mode == bitmap->mode ||
+	(src->mode == splashModeMono8 && bitmap->mode == splashModeMono1) ||
+	(src->mode == splashModeRGB8 && bitmap->mode == splashModeBGR8))) {
     return splashErrModeMismatch;
   }
 
   pipeInit(&pipe, NULL,
 	   (Guchar)splashRound(state->fillAlpha * 255),
 	   !noClip || src->alpha != NULL, nonIsolated);
+  if (src->mode == splashModeMono1) {
+    // in mono1 mode, pipeRun expects the source to be in mono8
+    // format, so we need to extract the source color values into
+    // scanBuf, expanding them from mono1 to mono8
     if (noClip) {
       if (src->alpha) {
 	for (y = 0; y < h; ++y) {
-
+	  mono1Ptr = src->getDataPtr()
+	             + (ySrc + y) * src->rowSize + (xSrc >> 3);
+	  mono1Mask = 0x80 >> (xSrc & 7);
+	  for (x = 0; x < w; ++x) {
+	    scanBuf[x] = (*mono1Ptr & mono1Mask) ? 0xff : 0x00;
+	    mono1Ptr += mono1Mask & 1;
+	    mono1Mask = (mono1Mask << 7) | (mono1Mask >> 1);
+	  }
 	  // this uses shape instead of alpha, which isn't technically
 	  // correct, but works out the same
 	  (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
 			    src->getAlphaPtr() +
 			      (ySrc + y) * src->getWidth() + xSrc,
-			    src->getDataPtr() + (ySrc + y) * src->getRowSize() + xSrc * bitmapComps);
+			    scanBuf);
 	}
       } else {
 	for (y = 0; y < h; ++y) {
+	  mono1Ptr = src->getDataPtr()
+	             + (ySrc + y) * src->rowSize + (xSrc >> 3);
+	  mono1Mask = 0x80 >> (xSrc & 7);
+	  for (x = 0; x < w; ++x) {
+	    scanBuf[x] = (*mono1Ptr & mono1Mask) ? 0xff : 0x00;
+	    mono1Ptr += mono1Mask & 1;
+	    mono1Mask = (mono1Mask << 7) | (mono1Mask >> 1);
+	  }
 	  (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
 			    NULL,
-			    src->getDataPtr() + (ySrc + y) * src->getRowSize() + xSrc * bitmapComps);
+			    scanBuf);
+	}
+      }
+    } else {
+      x0 = xDest;
+      if ((t = state->clip->getXMinI(state->strokeAdjust)) > x0) {
+	x0 = t;
+      }
+      x1 = xDest + w;
+      if ((t = state->clip->getXMaxI(state->strokeAdjust) + 1) < x1) {
+	x1 = t;
+      }
+      y0 = yDest;
+      if ((t = state->clip->getYMinI(state->strokeAdjust)) > y0) {
+	y0 = t;
+      }
+      y1 = yDest + h;
+      if ((t = state->clip->getYMaxI(state->strokeAdjust) + 1) < y1) {
+	y1 = t;
+      }
+      if (x0 < x1 && y0 < y1) {
+	if (src->alpha) {
+	  for (y = y0; y < y1; ++y) {
+	    mono1Ptr = src->getDataPtr()
+	               + (ySrc + y - yDest) * src->rowSize
+	               + ((xSrc + x0 - xDest) >> 3);
+	    mono1Mask = 0x80 >> ((xSrc + x0 - xDest) & 7);
+	    for (x = x0; x < x1; ++x) {
+	      scanBuf[x] = (*mono1Ptr & mono1Mask) ? 0xff : 0x00;
+	      mono1Ptr += mono1Mask & 1;
+	      mono1Mask = (mono1Mask << 7) | (mono1Mask >> 1);
+	    }
+	    memcpy(scanBuf2 + x0,
+		   src->getAlphaPtr() + (ySrc + y - yDest) * src->getWidth() + 
+		     (xSrc + x0 - xDest),
+		   x1 - x0);
+	    if (!state->clip->clipSpanBinary(scanBuf2, y, x0, x1 - 1,
+					     state->strokeAdjust)) {
+	      continue;
+	    }
+	    // this uses shape instead of alpha, which isn't technically
+	    // correct, but works out the same
+	    (this->*pipe.run)(&pipe, x0, x1 - 1, y,
+			      scanBuf2 + x0,
+			      scanBuf + x0);
+	  }
+	} else {
+	  for (y = y0; y < y1; ++y) {
+	    mono1Ptr = src->getDataPtr()
+	               + (ySrc + y - yDest) * src->rowSize
+	               + ((xSrc + x0 - xDest) >> 3);
+	    mono1Mask = 0x80 >> ((xSrc + x0 - xDest) & 7);
+	    for (x = x0; x < x1; ++x) {
+	      scanBuf[x] = (*mono1Ptr & mono1Mask) ? 0xff : 0x00;
+	      mono1Ptr += mono1Mask & 1;
+	      mono1Mask = (mono1Mask << 7) | (mono1Mask >> 1);
+	    }
+	    memset(scanBuf2 + x0, 0xff, x1 - x0);
+	    if (!state->clip->clipSpanBinary(scanBuf2, y, x0, x1 - 1,
+					     state->strokeAdjust)) {
+	      continue;
+	    }
+	    (this->*pipe.run)(&pipe, x0, x1 - 1, y,
+			      scanBuf2 + x0,
+			      scanBuf + x0);
+	  }
+	}
+      }
+    }
+
+  } else if (src->mode == splashModeBGR8) {
+    // in BGR8 mode, pipeRun expects the source to be in RGB8 format,
+    // so we need to swap bytes
+    lineBuf = (Guchar *)gmallocn(w, 3);
+    if (noClip) {
+      if (src->alpha) {
+	for (y = 0; y < h; ++y) {
+	  memcpy(lineBuf,
+		 src->getDataPtr() + (ySrc + y) * src->rowSize + xSrc * 3,
+		 w * 3);
+	  for (x = 0, linePtr = lineBuf; x < w; ++x, linePtr += 3) {
+	    b = linePtr[0];
+	    linePtr[0] = linePtr[2];
+	    linePtr[2] = b;
+	  }
+	  // this uses shape instead of alpha, which isn't technically
+	  // correct, but works out the same
+	  (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
+			    src->getAlphaPtr() +
+			      (ySrc + y) * src->getWidth() + xSrc,
+			    lineBuf);
+	}
+      } else {
+	for (y = 0; y < h; ++y) {
+	  memcpy(lineBuf,
+		 src->getDataPtr() + (ySrc + y) * src->rowSize + xSrc * 3,
+		 w * 3);
+	  for (x = 0, linePtr = lineBuf; x < w; ++x, linePtr += 3) {
+	    b = linePtr[0];
+	    linePtr[0] = linePtr[2];
+	    linePtr[2] = b;
+	  }
+	  (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
+			    NULL, lineBuf);
 	}
       }
     } else {
@@ -5981,30 +6104,110 @@ SplashError Splash::composite(SplashBitmap *src, int xSrc, int ySrc,
 		   src->getAlphaPtr() + (ySrc + y - yDest) * src->getWidth() + 
 		     (xSrc + x0 - xDest),
 		   x1 - x0);
-	    if (!state->clip->clipSpanBinary(scanBuf, y, x0, x1 - 1,
-					     state->strokeAdjust)) {
-	      continue;
-	  }
-	  // this uses shape instead of alpha, which isn't technically
-	  // correct, but works out the same
-	  (this->*pipe.run)(&pipe, x0, x1 - 1, y,
-			    scanBuf + x0,
-			    src->getDataPtr() +
-			      (ySrc + y - yDest) * src->getRowSize() +
-			      (xSrc + x0 - xDest) * bitmapComps);
+	    state->clip->clipSpan(scanBuf, y, x0, x1 - 1, state->strokeAdjust);
+	    memcpy(lineBuf,
+		   src->getDataPtr() +
+		     (ySrc + y - yDest) * src->rowSize +
+		     (xSrc + x0 - xDest) * 3,
+		   (x1 - x0) * 3);
+	    for (x = 0, linePtr = lineBuf; x < x1 - x0; ++x, linePtr += 3) {
+	      b = linePtr[0];
+	      linePtr[0] = linePtr[2];
+	      linePtr[2] = b;
+	    }
+	    // this uses shape instead of alpha, which isn't technically
+	    // correct, but works out the same
+	    (this->*pipe.run)(&pipe, x0, x1 - 1, y,
+			      scanBuf + x0, lineBuf);
 	  }
 	} else {
 	  for (y = y0; y < y1; ++y) {
 	    memset(scanBuf + x0, 0xff, x1 - x0);
-	    if (!state->clip->clipSpanBinary(scanBuf, y, x0, x1 - 1,
-					     state->strokeAdjust)) {
-	      continue;
-	  }
-	    (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
+	    state->clip->clipSpan(scanBuf, y, x0, x1 - 1, state->strokeAdjust);
+	    memcpy(lineBuf,
+		   src->getDataPtr() +
+		     (ySrc + y - yDest) * src->rowSize +
+		     (xSrc + x0 - xDest) * 3,
+		   (x1 - x0) * 3);
+	    for (x = 0, linePtr = lineBuf; x < x1 - x0; ++x, linePtr += 3) {
+	      b = linePtr[0];
+	      linePtr[0] = linePtr[2];
+	      linePtr[2] = b;
+	    }
+	    (this->*pipe.run)(&pipe, x0, x1 - 1, yDest + y,
 			      scanBuf + x0,
 			      src->getDataPtr() +
-			        (ySrc + y - yDest) * src->getRowSize() +
-			        (xSrc - xDest) * bitmapComps);
+			        (ySrc + y - yDest) * src->rowSize +
+			        (xSrc + x0 - xDest) * bitmapComps);
+	  }
+	}
+      }
+    }
+    gfree(lineBuf);
+
+  } else { // src->mode not mono1 or BGR8
+    if (noClip) {
+      if (src->alpha) {
+	for (y = 0; y < h; ++y) {
+	  // this uses shape instead of alpha, which isn't technically
+	  // correct, but works out the same
+	  (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
+			    src->getAlphaPtr() +
+			      (ySrc + y) * src->getWidth() + xSrc,
+			    src->getDataPtr() + (ySrc + y) * src->rowSize +
+			      xSrc * bitmapComps);
+	}
+      } else {
+	for (y = 0; y < h; ++y) {
+	  (this->*pipe.run)(&pipe, xDest, xDest + w - 1, yDest + y,
+			    NULL,
+			    src->getDataPtr() + (ySrc + y) * src->rowSize +
+			      xSrc * bitmapComps);
+	}
+      }
+    } else {
+      x0 = xDest;
+      if ((t = state->clip->getXMinI(state->strokeAdjust)) > x0) {
+	x0 = t;
+      }
+      x1 = xDest + w;
+      if ((t = state->clip->getXMaxI(state->strokeAdjust) + 1) < x1) {
+	x1 = t;
+      }
+      y0 = yDest;
+      if ((t = state->clip->getYMinI(state->strokeAdjust)) > y0) {
+	y0 = t;
+      }
+      y1 = yDest + h;
+      if ((t = state->clip->getYMaxI(state->strokeAdjust) + 1) < y1) {
+	y1 = t;
+      }
+      if (x0 < x1 && y0 < y1) {
+	if (src->alpha) {
+	  for (y = y0; y < y1; ++y) {
+	    memcpy(scanBuf + x0,
+		   src->getAlphaPtr() + (ySrc + y - yDest) * src->getWidth() + 
+		     (xSrc + x0 - xDest),
+		   x1 - x0);
+	    state->clip->clipSpan(scanBuf, y, x0, x1 - 1, state->strokeAdjust);
+	    // this uses shape instead of alpha, which isn't technically
+	    // correct, but works out the same
+	    (this->*pipe.run)(&pipe, x0, x1 - 1, y,
+			      scanBuf + x0,
+			      src->getDataPtr() +
+			        (ySrc + y - yDest) * src->rowSize +
+			        (xSrc + x0 - xDest) * bitmapComps);
+	  }
+	} else {
+	  for (y = y0; y < y1; ++y) {
+	    memset(scanBuf + x0, 0xff, x1 - x0);
+	    state->clip->clipSpan(scanBuf, y, x0, x1 - 1, state->strokeAdjust);
+	    (this->*pipe.run)(&pipe, x0, x1 - 1, yDest + y,
+			      scanBuf + x0,
+			      src->getDataPtr() +
+			        (ySrc + y - yDest) * src->rowSize +
+			        (xSrc + x0 - xDest) * bitmapComps);
+	  }
 	}
       }
     }
@@ -6012,6 +6215,7 @@ SplashError Splash::composite(SplashBitmap *src, int xSrc, int ySrc,
 
   return splashOk;
 }
+
 
 void Splash::compositeBackground(SplashColorPtr color) {
   SplashColorPtr p;
