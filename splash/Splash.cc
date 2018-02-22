@@ -401,6 +401,8 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
       pipe->pattern->getColor(x, y, pipe->cSrcVal);
     }
 
+    cResult0 = cResult1 = cResult2 = cResult3 = 0; // make gcc happy
+
     if (pipe->noTransparency && !state->blendFunc) {
 
       //----- result color
@@ -633,8 +635,6 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
       }
 
       //----- result color
-
-      cResult0 = cResult1 = cResult2 = cResult3 = 0; // make gcc happy
 
       switch (pipe->resultColorCtrl) {
 
