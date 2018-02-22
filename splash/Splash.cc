@@ -6537,16 +6537,8 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 	}
 	pathOut->addStrokeAdjustHint(left1, right1, right2 + 1, right2 + 1);
       }
-      left0 = left1;
-      left1 = left2;
-      right0 = right1;
-      right1 = right2;
-      join0 = join1;
-      join1 = join2;
-      if (seg == 0) {
-	leftFirst = left2;
-	rightFirst = right2;
-      }
+
+	// end of subpath
       if (last) {
 	if (seg >= 2) {
 	  pathOut->addStrokeAdjustHint(left1, right1, left0 + 1, right0);
@@ -6575,6 +6567,17 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 					 left1 + 2, left1 + 3);
 	  }
 	}
+      }
+
+      left0 = left1;
+      left1 = left2;
+      right0 = right1;
+      right1 = right2;
+      join0 = join1;
+      join1 = join2;
+      if (seg == 0) {
+	leftFirst = left2;
+	rightFirst = right2;
       }
     }
 
