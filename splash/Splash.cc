@@ -6183,6 +6183,86 @@ SplashError Splash::blitTransparent(SplashBitmap *src, int xSrc, int ySrc,
   return splashOk;
 }
 
+SplashError Splash::blitCorrectedAlpha(SplashBitmap *dest, int xSrc, int ySrc,
+				       int xDest, int yDest, int w, int h) {
+  SplashColorPtr p, q;
+  Guchar *alpha0Ptr;
+  Guchar alpha0, aSrc;
+  int x, y, mask, srcMask;
+
+  if (bitmap->mode != dest->mode ||
+      !bitmap->alpha ||
+      !dest->alpha ||
+      !groupBackBitmap) {
+    return splashErrModeMismatch;
+  }
+
+  switch (bitmap->mode) {
+  case splashModeMono1:
+    for (y = 0; y < h; ++y) {
+      p = &dest->data[(yDest + y) * dest->rowSize + (xDest >> 3)];
+      mask = 0x80 >> (xDest & 7);
+      q = &bitmap->data[(ySrc + y) * bitmap->rowSize + (xSrc >> 3)];
+      srcMask = 0x80 >> (xSrc & 7);
+      for (x = 0; x < w; ++x) {
+	if (*q & srcMask) {
+	  *p |= mask;
+	} else {
+	  *p &= ~mask;
+	}
+	if (!(mask >>= 1)) {
+	  mask = 0x80;
+	  ++p;
+	}
+	if (!(srcMask >>= 1)) {
+	  srcMask = 0x80;
+	  ++q;
+	}
+      }
+    }
+    break;
+  case splashModeMono8:
+    for (y = 0; y < h; ++y) {
+      p = &dest->data[(yDest + y) * dest->rowSize + xDest];
+      q = &bitmap->data[(ySrc + y) * bitmap->rowSize + xSrc];
+      memcpy(p, q, w);
+    }
+    break;
+  case splashModeRGB8:
+  case splashModeBGR8:
+    for (y = 0; y < h; ++y) {
+      p = &dest->data[(yDest + y) * dest->rowSize + 3 * xDest];
+      q = &bitmap->data[(ySrc + y) * bitmap->rowSize + 3 * xSrc];
+      memcpy(p, q, 3 * w);
+    }
+    break;
+#if SPLASH_CMYK
+  case splashModeCMYK8:
+    for (y = 0; y < h; ++y) {
+      p = &dest->data[(yDest + y) * dest->rowSize + 4 * xDest];
+      q = &bitmap->data[(ySrc + y) * bitmap->rowSize + 4 * xSrc];
+      memcpy(p, q, 4 * w);
+    }
+    break;
+#endif
+  }
+
+  for (y = 0; y < h; ++y) {
+    p = &dest->alpha[(yDest + y) * dest->width + xDest];
+    q = &bitmap->alpha[(ySrc + y) * bitmap->width + xSrc];
+    alpha0Ptr = &groupBackBitmap->alpha[(groupBackY + ySrc + y)
+					  * groupBackBitmap->width +
+					(groupBackX + xSrc)];
+    for (x = 0; x < w; ++x) {
+      alpha0 = *alpha0Ptr++;
+      aSrc = *q++;
+      *p++ = alpha0 + aSrc - div255(alpha0 * aSrc);
+    }
+  }
+
+  return splashOk;
+}
+
 SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 				    GBool flatten) {
   SplashPath *pathIn, *dashPath, *pathOut;
