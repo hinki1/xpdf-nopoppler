@@ -6671,6 +6671,29 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
   return pathOut;
 }
 
+SplashClipResult Splash::limitRectToClipRect(int *xMin, int *yMin,
+					     int *xMax, int *yMax) {
+  int t;
+
+  if ((t = state->clip->getXMinI(state->strokeAdjust)) > *xMin) {
+    *xMin = t;
+  }
+  if ((t = state->clip->getXMaxI(state->strokeAdjust) + 1) < *xMax) {
+    *xMax = t;
+  }
+  if ((t = state->clip->getYMinI(state->strokeAdjust)) > *yMin) {
+    *yMin = t;
+  }
+  if ((t = state->clip->getYMaxI(state->strokeAdjust) + 1) < *yMax) {
+    *yMax = t;
+  }
+  if (*xMin >= *xMax || *yMin >= *yMax) {
+    return splashClipAllOutside;
+  }
+  return state->clip->testRect(*xMin, *yMin, *xMax - 1, *yMax - 1,
+			       state->strokeAdjust);
+}
+
 void Splash::dumpPath(SplashPath *path) {
   int i;
 
