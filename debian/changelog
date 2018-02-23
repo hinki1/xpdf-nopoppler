@@ -1,3 +1,49 @@
+xpdf (3.66) stretch; urgency=low
+
+  * use gmempp.h
+  * update SplashMath.h
+  * update Splash*Font*
+  * config.h erleichtert
+  * remove MACOS ifdefs
+  * remote DJGPP ifdefs
+  * remove dj_make.bat
+  * remove OS2 define
+  * remove EMX ifdefs
+  * remove ACORN ifdefs
+  * zwei neue Funktionen in SplashScreen.h
+  * neue funktion in SplashState
+  * neue funktion in SplashPath
+  * update SplashXPath und drumherum
+  * small changes to Splash.cc
+  * move variable initialization
+  * Splash.cc: moved some assignments
+  * formatierung geändert und type casts
+  * Splash.cc: } ?
+  * fix strokeAdjust
+  * Formatierung
+  * Splash.cc: makeStrokePath modifiziert
+  * neue Funktion blitCorrectedAlpha
+  * neue Funktion limitRectToClipRect
+  * Splash.cc: neue variable screenCursor
+  * Splash.cc: Formatierung
+  * neue variable screenCursor
+  * Splash.ss: composite() ersetzt
+  * Splash.* aufgeräumt
+  * Splash.cc: Formatierung
+  * make code sane
+  * use splashSqrt
+  * rearrange color transfer
+  * Hinweis zu makeStrokePath
+  * install binary as /usr/bin/xpdf
+  * don't create xpdf.real
+  * clean debian/rules
+  * remove top level files for win32 build
+  * change license to agpl
+  * update README
+  * removed ANNOUNCE
+
+ -- Matthias Hinkfoth <hinki@abwesend.de>  Fri, 23 Feb 2018 20:35:51 +0100
+
 xpdf (3.65) stretch; urgency=low
 
   * remove default key bindings

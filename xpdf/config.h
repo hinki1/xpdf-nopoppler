@@ -6,13 +6,13 @@
 //------------------------------------------------------------------------
 
 // xpdf version
-#define xpdfVersion          "3.65"
-#define xpdfVersionNum       3.65
+#define xpdfVersion          "3.66"
+#define xpdfVersionNum       3.66
 #define xpdfMajorVersion     3
-#define xpdfMinorVersion     65
+#define xpdfMinorVersion     66
 #define xpdfUpdateVersion    0
 #define xpdfMajorVersionStr  "3"
-#define xpdfMinorVersionStr  "65"
+#define xpdfMinorVersionStr  "66"
 #define xpdfUpdateVersionStr "0"
 
 // supported PDF version
