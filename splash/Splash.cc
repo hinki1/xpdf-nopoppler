@@ -2896,7 +2896,7 @@ SplashPath *Splash::tweakFillPath(SplashPath *path) {
 	 splashAbs(path->pts[1].y - path->pts[2].y) < 0.001)))) {
     wx = state->matrix[0] + state->matrix[2];
     wy = state->matrix[1] + state->matrix[3];
-    w = sqrt(wx*wx + wy*wy);
+    w = splashSqrt(wx*wx + wy*wy);
     if (w < 0.001) {
       w = 0;
     } else {
@@ -2914,7 +2914,7 @@ SplashPath *Splash::tweakFillPath(SplashPath *path) {
     }
     dx = xx1 - xx0;
     dy = yy1 - yy0;
-    d = sqrt(dx * dx + dy * dy);
+    d = splashSqrt(dx * dx + dy * dy);
     if (d < 0.001) {
       d = 0;
     } else {
