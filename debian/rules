@@ -26,7 +26,6 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 	make all
-	cp xpdf/xpdf xpdf/xpdf.real
 
 override_dh_clean:
 	dh_clean
