@@ -4,21 +4,19 @@ export DH_VERBOSE=1
 
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 
-includes=$(strip $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --cflags freetype2))
+#includes=$(strip $(shell $(DEB_HOST_GNU_TYPE)-pkg-config --cflags freetype2))
+includes=$(strip $(shell pkg-config --cflags freetype2))
 
 CXX = $(DEB_HOST_GNU_TYPE)-g++
 LIBS += -lXm -lpaper
 pkg-config-libs := png xt x11 freetype2
 pkg-config-libs := $(foreach lib,$(pkg-config-libs), --libs $(lib))
-LIBS += $(shell $(DEB_HOST_GNU_TYPE)-pkg-config $(pkg-config-libs))
+#LIBS += $(shell $(DEB_HOST_GNU_TYPE)-pkg-config $(pkg-config-libs))
+LIBS += $(strip $(shell pkg-config $(pkg-config-libs)))
 LIBS += -pthread
-#CPPFLAGS+=$(includes) $(includes)/goo $(includes)/splash
+CPPFLAGS += $(includes)
 CPPFLAGS += -Wno-write-strings -Wno-format-extra-args -Wfatal-errors
 CPPFLAGS += -DHAVE_DIRENT_H -DHAVE_PAPER_H
-
-# ist das noch für etwas gut?
-sources = $(sort $(shell for file in $(files); do echo $$file.*; done))
-objects = $(sort $(shell for file in $(files); do echo build/$$(basename $$file).o; done))
 
 override_dh_auto_configure:
 	autoconf
@@ -32,4 +30,4 @@ override_dh_clean:
 	rm -f ./configure
 
 %:
-	dh ${@}
+	dh $@
