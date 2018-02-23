@@ -1,14 +1,10 @@
 Xpdf
 ====
 
-version 3.04
-2014-may-28
+version 3.65
 
 The Xpdf software and documentation are
-copyright 1996-2014 Glyph & Cog, LLC.
-
-Email: derekn@foolabs.com
-WWW: http://www.foolabs.com/xpdf/
+copyright 1996-2017 Glyph & Cog, LLC.
 
 The PDF data structures, operators, and specification are
 copyright 1985-2006 Adobe Systems Inc.
@@ -23,42 +19,14 @@ the name of Adobe's PDF software.)  The Xpdf project also includes a
 PDF text extractor, PDF-to-PostScript converter, and various other
 utilities.
 
-Xpdf runs under the X Window System on UNIX and OS/2.  The non-X
-components (pdftops, pdftotext, etc.) also run on Windows and Mac OSX
-systems and should run on pretty much any system with a decent C++
-compiler.  Xpdf will run on 32-bit and 64-bit machines.
+Xpdf runs under the X Window System on UNIX.
 
 
 License & Distribution
 ----------------------
 
-Xpdf is licensed under the GNU General Pulbic License (GPL), version 2
-or 3.  This means that you can distribute derivatives of Xpdf under
-any of the following:
-  - GPL v2 only
-  - GPL v3 only
-  - GPL v2 or v3
-
-The Xpdf source package includes the text of both GPL versions:
-COPYING for GPL v2, COPYING3 for GPL v3.
-
-Please note that Xpdf is NOT licensed under "any later version" of the
-GPL, as I have no idea what those versions will look like.
-
-If you are redistributing unmodified copies of Xpdf (or any of the
-Xpdf tools) in binary form, you need to include all of the
-documentation: README, man pages (or help files), COPYING, and
-COPYING3.
-
-If you want to incorporate the Xpdf source code into another program
-(or create a modified version of Xpdf), and you are distributing that
-program, you have two options: release your program under the GPL (v2
-and/or v3), or purchase a commercial Xpdf source license.
-
-If you're interested in commercial licensing, please see the Glyph &
-Cog web site:
-
-    http://www.glyphandcog.com/
+This version of Xpdf is licensed under the GNU Affero General Public
+License (AGPL), version 3 or later.
 
 
 Compatibility
@@ -68,25 +36,7 @@ Xpdf is developed and tested on Linux.
 
 In addition, it has been compiled by others on Solaris, AIX, HP-UX,
 Digital Unix, Irix, and numerous other Unix implementations, as well
-as OS/2.  It should work on pretty much any system which runs X11 and
-has Unix-like libraries.  You'll need ANSI C++ and C compilers to
-compile it.
-
-The non-X components of Xpdf (pdftops, pdftotext, pdfinfo, pdffonts,
-pdfdetach, pdftoppm, and pdfimages) can also be compiled on Windows
-and Mac OSX systems.  See the Xpdf web page for details.
-
-If you compile Xpdf for a system not listed on the web page, please
-let me know.  If you're willing to make your binary available by ftp
-or on the web, I'll be happy to add a link from the Xpdf web page.  I
-have decided not to host any binaries I didn't compile myself (for
-disk space and support reasons).
-
-If you can't get Xpdf to compile on your system, send me email and
-I'll try to help.
-
-Xpdf has been ported to the Acorn, Amiga, BeOS, and EPOC.  See the
-Xpdf web page for links.
+as OS/2.
 
 
 Getting Xpdf
@@ -94,17 +44,7 @@ Getting Xpdf
 
 The latest version is available from:
 
-  http://www.foolabs.com/xpdf/
-
-or:
-
-  ftp://ftp.foolabs.com/pub/xpdf/
-
-Source code and several precompiled executables are available.
-
-Announcements of new versions are posted to comp.text.pdf and emailed
-to a list of people.  If you'd like to receive email notification of
-new versions, just let me know.
+  https://github.com/hinki1/xpdf-nopoppler.git
 
 
 Running Xpdf
@@ -141,30 +81,6 @@ pages: xpdf(1), etc.
 
 All of these utilities read an optional configuration file: see the
 xpdfrc(5) man page.
-
-
-Upgrading from Xpdf 3.02 (and earlier)
---------------------------------------
-
-The font configuration system has been changed.  Previous versions
-used mostly separate commands to configure fonts for display and for
-PostScript output.  As of 3.03, configuration options that make sense
-for both display and PS output have been unified.
-
-The following xpdfrc commands have been removed:
-* displayFontT1, displayFontTT: replaced with fontFile
-* displayNamedCIDFontT1, displayNamedCIDFontTT: replaced with fontFile
-* displayCIDFontT1, displayCIDFontTT: replaced with fontFileCC
-* psFont: replaced with psResidentFont
-* psNamedFont16: replaced with psResidentFont16
-* psFont16: replaced with psResidentFontCC
-
-See the xpdfrc(5) man page for more information on the new commands.
-
-Pdftops will now embed external 16-bit fonts (configured with the
-fontFileCC command) when the PDF file refers to a non-embedded font.
-It does not do any subsetting (yet), so the resulting PS files will be
-large.
 
 
 Compiling Xpdf
