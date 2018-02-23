@@ -6460,6 +6460,7 @@ SplashError Splash::blitCorrectedAlpha(SplashBitmap *dest, int xSrc, int ySrc,
   return splashOk;
 }
 
+// wird in SplashOutputDev.cc benutzt
 SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 
 				   GBool flatten) {
