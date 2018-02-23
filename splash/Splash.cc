@@ -1912,8 +1912,6 @@ inline void Splash::transform(SplashCoord *matrix,
 
 Splash::Splash(SplashBitmap *bitmapA, GBool vectorAntialiasA,
 	       SplashScreenParams *screenParams) {
-  int i;
-
   bitmap = bitmapA;
   bitmapComps = splashColorModeNComps[bitmap->mode];
   vectorAntialias = vectorAntialiasA;
@@ -1934,8 +1932,6 @@ Splash::Splash(SplashBitmap *bitmapA, GBool vectorAntialiasA,
 
 Splash::Splash(SplashBitmap *bitmapA, GBool vectorAntialiasA,
 	       SplashScreen *screenA) {
-  int i;
-
   bitmap = bitmapA;
   bitmapComps = splashColorModeNComps[bitmap->mode];
   vectorAntialias = vectorAntialiasA;
@@ -3008,6 +3004,10 @@ GBool Splash::pathAllOutside(SplashPath *path) {
   } else if (y > yMax2) {
     yMax2 = y;
   }
+  // sanity-check the coordinates - xMinI/yMinI/xMaxI/yMaxI are
+  // 32-bit integers, so coords need to be < 2^31
+  SplashXPath::clampCoords(&xMin2, &yMin2);
+  SplashXPath::clampCoords(&xMax2, &yMax2);
   xMinI = splashFloor(xMin2);
   yMinI = splashFloor(yMin2);
   xMaxI = splashFloor(xMax2);
@@ -5170,6 +5170,12 @@ void Splash::scaleImageYdXu(SplashImageSource src, void *srcData,
     alphaLineBuf = NULL;
     alphaPixBuf = NULL;
   }
+
+  // make gcc happy
+  pix[0] = pix[1] = pix[2] = 0;
+#if SPLASH_CMYK
+  pix[3] = 0;
+#endif
 
   // init y scale Bresenham
   yt = 0;
