@@ -277,6 +277,7 @@ public:
   GBool getTextKeepTinyChars();
   GString *getInitialZoom();
   GBool getContinuousView();
+  int getDefaultFitZoom();
   GBool getInitialSidebarState();
   int getMaxTileWidth();
   int getMaxTileHeight();
@@ -500,6 +501,8 @@ private:
   GBool textKeepTinyChars;	// keep all characters in text output
   GString *initialZoom;		// initial zoom level
   GBool continuousView;		// continuous view mode
+  int defaultFitZoom;		// default zoom factor if initialZoom is
+				//   'page' or 'width'.
   GBool initialSidebarState;	// initial sidebar state - open (true)
 				//   or closed (false)
   int maxTileWidth;		// maximum rasterization tile width

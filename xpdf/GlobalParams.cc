@@ -608,6 +608,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   textKeepTinyChars = gTrue;
   initialZoom = new GString("125");
   continuousView = gFalse;
+  defaultFitZoom = 0;
   initialSidebarState = gTrue;
   maxTileWidth = 1500;
   maxTileHeight = 1500;
@@ -873,6 +874,8 @@ void GlobalParams::parseLine(char *buf, GString *fileName, int line) {
       parseInitialZoom(tokens, fileName, line);
     } else if (!cmd->cmp("continuousView")) {
       parseYesNo("continuousView", &continuousView, tokens, fileName, line);
+    } else if (!cmd->cmp("defaultFitZoom")) {
+      parseInteger("defaultFitZoom", &defaultFitZoom, tokens, fileName, line);
     } else if (!cmd->cmp("initialSidebarState")) {
       parseYesNo("initialSidebarState", &initialSidebarState,
 		 tokens, fileName, line);
@@ -2525,6 +2528,15 @@ GBool GlobalParams::getContinuousView() {
   f = continuousView;
   unlockGlobalParams;
   return f;
+}
+
+int GlobalParams::getDefaultFitZoom() {
+  int z;
+
+  lockGlobalParams;
+  z = defaultFitZoom;
+  unlockGlobalParams;
+  return z;
 }
 
 GBool GlobalParams::getInitialSidebarState() {
