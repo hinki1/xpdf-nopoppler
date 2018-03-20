@@ -2,7 +2,7 @@
 //
 // Gfx.h
 //
-// Copyright 1996-2003 Glyph & Cog, LLC
+// Copyright 1996-2016 Glyph & Cog, LLC
 //
 //========================================================================
 
@@ -17,6 +17,7 @@
 
 #include "gtypes.h"
 #include "gfile.h"
+#include "GfxState.h"
 
 class GString;
 class GList;
@@ -30,19 +31,6 @@ class Function;
 class OutputDev;
 class GfxFontDict;
 class GfxFont;
-class GfxPattern;
-class GfxTilingPattern;
-class GfxShadingPattern;
-class GfxShading;
-class GfxFunctionShading;
-class GfxAxialShading;
-class GfxRadialShading;
-class GfxGouraudTriangleShading;
-class GfxPatchMeshShading;
-struct GfxPatch;
-class GfxState;
-struct GfxColor;
-class GfxColorSpace;
 class Gfx;
 class PDFRectangle;
 class AnnotBorderStyle;
