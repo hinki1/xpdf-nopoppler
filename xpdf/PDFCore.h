@@ -2,7 +2,7 @@
 //
 // PDFCore.h
 //
-// Copyright 2004 Glyph & Cog, LLC
+// Copyright 2004-2014 Glyph & Cog, LLC
 //
 //========================================================================
 
@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include "SplashTypes.h"
 #include "CharTypes.h"
+#include "DisplayState.h"
+#include "TextOutputDev.h"
 
 class GString;
 class GList;
@@ -111,6 +113,14 @@ struct PDFHistory {
 
 #define pdfHistorySize 50
 
+//------------------------------------------------------------------------
+// SelectMode
+//------------------------------------------------------------------------
+
+enum SelectMode {
+  selectModeBlock,
+  selectModeLinear
+};
 
 //------------------------------------------------------------------------
 // PDFCore
@@ -119,8 +129,8 @@ struct PDFHistory {
 class PDFCore {
 public:
 
-  PDFCore(SplashColorMode colorModeA, int bitmapRowPadA,
-	  GBool reverseVideoA, SplashColorPtr paperColorA,
+  PDFCore(SplashColorMode colorMode, int bitmapRowPad,
+	  GBool reverseVideo, SplashColorPtr paperColor,
 	  GBool incrementalUpdate);
   virtual ~PDFCore();
 
@@ -156,7 +166,8 @@ public:
   // set, the window is vertically scrolled to the top; otherwise, no
   // scrolling is done.  If <addToHist> is set, this page change is
   // added to the history list.
-  virtual void displayPage(int topPageA, double zoomA, int rotateA,
+
+  virtual void displayPage(int page, double zoomA, int rotateA,
 			   GBool scrollToTop, GBool addToHist);
 
   // Display a link destination.
@@ -190,7 +201,8 @@ public:
   virtual void scrollToBottomEdge();
   virtual void scrollToTopLeft();
   virtual void scrollToBottomRight();
-  virtual void zoomToRect(int pg, double ulx, double uly,
+
+  virtual void zoomToRect(int page, double ulx, double uly,
 			  double lrx, double lry);
   virtual void zoomCentered(double zoomA);
   virtual void zoomToCurrentWidth();
@@ -202,9 +214,10 @@ public:
   void setSelectionColor(SplashColor color);
 
   // Current selected region.
-  void setSelection(int newSelectPage,
-		    int newSelectULX, int newSelectULY,
-		    int newSelectLRX, int newSelectLRY);
+  void setSelection(int page, int x0, int y0, int x1, int y1);
+
+
+
   void moveSelection(int pg, int x, int y);
   GBool getSelection(int *pg, double *ulx, double *uly,
 		     double *lrx, double *lry);
@@ -224,7 +237,7 @@ public:
 
   //----- coordinate conversion
 
-  // user space: per-pace, as defined by PDF file; unit = point
+  // user space: per-page, as defined by PDF file; unit = point
   // device space: (0,0) is upper-left corner of a page; unit = pixel
   // window space: (0,0) is upper-left corner of drawing area; unit = pixel
 
@@ -243,11 +256,14 @@ public:
 
   PDFDoc *getDoc() { return doc; }
   int getPageNum() { return topPage; }
+
   double getZoom() { return zoom; }
   double getZoomDPI() { return dpi; }
   int getRotate() { return rotate; }
   GBool getContinuousMode() { return continuousMode; }
-  virtual void setReverseVideo(GBool reverseVideoA);
+
+
+  virtual void setReverseVideo(GBool reverseVideo);
   GBool canGoBack() { return historyBLen > 1; }
   GBool canGoForward() { return historyFLen > 0; }
   int getScrollX() { return scrollX; }
@@ -259,7 +275,6 @@ public:
 
 protected:
 
-  int loadFile2(PDFDoc *newDoc);
   void addPage(int pg, int rot);
   void needTile(PDFCorePage *page, int x, int y);
   void xorRectangle(int pg, int x0, int y0, int x1, int y1,
@@ -283,6 +298,29 @@ protected:
 			 GBool needUpdate, GBool composited = gTrue);
   virtual void updateScrollbars() = 0;
   virtual GBool checkForNewFile() { return gFalse; }
+
+
+
+
+
+
+
+
+
+
+
+
+  int loadFile2(PDFDoc *newDoc);
+
+
+
+
+
+
+
+
+
+
 
   PDFDoc *doc;			// current PDF file
   GBool continuousMode;		// false for single-page mode, true for
