@@ -4434,6 +4434,7 @@ void Gfx::takeContentStreamStack(Gfx *oldGfx) {
 
 void Gfx::opBeginImage(Object args[], int numArgs) {
   Stream *str;
+  GBool haveLength;
   int c1, c2, c3;
 
   // NB: this function is run even if ocState is false -- doImage() is
@@ -4446,23 +4447,27 @@ void Gfx::opBeginImage(Object args[], int numArgs) {
   if (str) {
     doImage(NULL, str, gTrue);
   
-    // skip 'EI' tag
-    c1 = str->getUndecodedStream()->getChar();
-    c2 = str->getUndecodedStream()->getChar();
-    c3 = str->getUndecodedStream()->lookChar();
-    while (!(c1 == 'E' && c2 == 'I' && Lexer::isSpace(c3)) && c3 != EOF) {
-      c1 = c2;
+    if (0) {
+    // else, look for the 'EI' tag and skip it
+    } else {
+      c1 = str->getUndecodedStream()->getChar();
       c2 = str->getUndecodedStream()->getChar();
       c3 = str->getUndecodedStream()->lookChar();
+      while (!(c1 == 'E' && c2 == 'I' && Lexer::isSpace(c3)) && c3 != EOF) {
+	c1 = c2;
+	c2 = str->getUndecodedStream()->getChar();
+	c3 = str->getUndecodedStream()->lookChar();
+      }
+      delete str;
     }
-    delete str;
   }
 }
 
 Stream *Gfx::buildImageStream() {
   Object dict;
-  Object obj;
+  Object obj, lengthObj;
   char *key;
+  int length;
   Stream *str;
 
   // build dictionary
@@ -4493,6 +4498,8 @@ Stream *Gfx::buildImageStream() {
   }
   obj.free();
 
+  // check for length field
+  length = 0;
   // make stream
   if (!(str = parser->getStream())) {
     error(errSyntaxError, getPos(), "Invalid inline image data");
@@ -4563,7 +4570,7 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
   if (args[0].isName("OC") && numArgs == 2 && args[1].isName() &&
       res->lookupPropertiesNF(args[1].getName(), &obj)) {
     if (doc->getOptionalContent()->evalOCObject(&obj, &ocStateNew)) {
-      ocState = ocStateNew;
+      ocState &= ocStateNew;
     }
     obj.free();
     mcKind = gfxMCOptionalContent;
