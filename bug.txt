@@ -1,7 +1,6 @@
 1949 integriert den kompletten splash-Ordner von xpdf4.
 Das war übertrieben.
 
-splash/SplashClip.cc brauch SplashXPathScanner
 xpdf/PDFCore.cc kommentiert eine fehlende Methode aus. Das könnte ein Fehler sein.
 
 Page.cc hängt von Gfx.cc und GlobalParams.cc ab.
