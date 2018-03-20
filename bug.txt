@@ -14,3 +14,5 @@ GlobalParams ändert
 defaultFitZoom
 continousView
 psLevel2Gray,psLevel3Gray
+
+Gfx.cc benötigt GfxRenderingIntent aus GfxState.h

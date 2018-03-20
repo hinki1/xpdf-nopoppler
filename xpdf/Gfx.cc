@@ -761,18 +761,21 @@ void Gfx::go(GBool topLevel) {
 
   // args at end with no command
   if (numArgs > 0) {
-    error(errSyntaxError, getPos(), "Leftover args in content stream");
-    if (printCommands) {
-      printf("%d leftovers:", numArgs);
-      for (i = 0; i < numArgs; ++i) {
-	printf(" ");
-	args[i].print(stdout);
+    if (!lastAbortCheck) {
+      error(errSyntaxError, getPos(), "Leftover args in content stream");
+      if (printCommands) {
+	printf("%d leftovers:", numArgs);
+	for (i = 0; i < numArgs; ++i) {
+	  printf(" ");
+	  args[i].print(stdout);
+	}
+	printf("\n");
+	fflush(stdout);
       }
-      printf("\n");
-      fflush(stdout);
     }
-    for (i = 0; i < numArgs; ++i)
+    for (i = 0; i < numArgs; ++i) {
       args[i].free();
+    }
   }
 
   // update display
@@ -1271,6 +1274,7 @@ void Gfx::doSoftMask(Object *str, Object *strRef, GBool alpha,
 }
 
 void Gfx::opSetRenderingIntent(Object args[], int numArgs) {
+
 }
 
 //------------------------------------------------------------------------
@@ -1888,6 +1892,7 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
 			      GBool stroke, GBool eoFill, GBool text) {
   GfxPatternColorSpace *patCS;
   GfxColorSpace *cs;
+  GfxColor color;
   GfxState *savedState;
   double xMin, yMin, xMax, yMax, x, y, x1, y1, t;
   double cxMin, cyMin, cxMax, cyMax;
@@ -1896,7 +1901,7 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
   double bbox[4], m[6], ictm[6], m1[6], imb[6];
   double det;
   double xstep, ystep;
-  int i;
+  int abortCheckCounter, i;
 
   // get color space
   patCS = (GfxPatternColorSpace *)(stroke ? state->getStrokeColorSpace()
@@ -1908,7 +1913,7 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
   ptm = tPat->getMatrix();
   // iCTM = invert CTM
   det = ctm[0] * ctm[3] - ctm[1] * ctm[2];
-  if (fabs(det) < 0.000001) {
+  if (fabs(det) <= 1e-10) {
     error(errSyntaxError, getPos(), "Singular matrix in tiling pattern fill");
     return;
   }
@@ -1936,7 +1941,7 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
 
   // construct a (device space) -> (pattern space) transform matrix
   det = m1[0] * m1[3] - m1[1] * m1[2];
-  if (fabs(det) < 0.000001) {
+  if (fabs(det) <= 1e-10) {
     error(errSyntaxError, getPos(), "Singular matrix in tiling pattern fill");
     return;
   }
@@ -2061,10 +2066,12 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
     m1[4] = m[4];
     m1[5] = m[5];
     out->tilingPatternFill(state, this, tPat->getContentStreamRef(),
-			   tPat->getPaintType(), tPat->getResDict(),
+			   tPat->getPaintType(),
+			   tPat->getResDict(),
 			   m1, bbox,
 			   xi0, yi0, xi1, yi1, xstep, ystep);
   } else {
+    abortCheckCounter = 0;
     for (yi = yi0; yi < yi1; ++yi) {
       for (xi = xi0; xi < xi1; ++xi) {
 	x = xi * xstep;
@@ -2116,7 +2123,7 @@ void Gfx::doShadingPatternFill(GfxShadingPattern *sPat,
   ptm = sPat->getMatrix();
   // iCTM = invert CTM
   det = ctm[0] * ctm[3] - ctm[1] * ctm[2];
-  if (fabs(det) < 0.000001) {
+  if (fabs(det) <= 1e-10) {
     error(errSyntaxError, getPos(), "Singular matrix in shading pattern fill");
     return;
   }
@@ -2413,7 +2420,7 @@ void Gfx::doAxialShFill(GfxAxialShading *shading) {
   double x0, y0, x1, y1;
   double dx, dy, mul;
   GBool dxdyZero, horiz;
-  double tMin, tMax, t, tx, ty;
+  double tMin, tMax, tMinExt, tMaxExt, t, tx, ty;
   double sMin, sMax, tmp;
   double ux0, uy0, ux1, uy1, vx0, vy0, vx1, vy1;
   double t0, t1, tt;
@@ -2436,7 +2443,7 @@ void Gfx::doAxialShFill(GfxAxialShading *shading) {
   shading->getCoords(&x0, &y0, &x1, &y1);
   dx = x1 - x0;
   dy = y1 - y0;
-  dxdyZero = fabs(dx) < 0.01 && fabs(dy) < 0.01;
+  dxdyZero = fabs(dx) < 0.0001 && fabs(dy) < 0.0001;
   horiz = fabs(dy) < fabs(dx);
   if (dxdyZero) {
     tMin = tMax = 0;
@@ -2626,6 +2633,13 @@ void Gfx::doAxialShFill(GfxAxialShading *shading) {
   }
 }
 
+#if defined(__GNUC__) && !defined(__clang__)
+// this function makes a lot of sin()/cos() calls, which are slow
+// with glibc 2.16 and newer on x86; accuracy isn't terribly
+// important here, so tell gcc to use the fast version
+#pragma GCC optimize ("fast-math")
+#endif
+
 void Gfx::doRadialShFill(GfxRadialShading *shading) {
   double xMin, yMin, xMax, yMax;
   double x0, y0, r0, x1, y1, r1, t0, t1;
@@ -2638,9 +2652,9 @@ void Gfx::doRadialShFill(GfxRadialShading *shading) {
   GBool haveSLeft, haveSRight, haveSTop, haveSBottom, haveSZero;
   GBool haveSMin, haveSMax;
   GBool enclosed;
-  int ia, ib, k, n;
   double *ctm;
   double theta, alpha, angle, t;
+  int abortCheckCounter, ia, ib, k, n;
 
   if (out->useShadedFills() &&
       out->radialShadedFill(state, shading)) {
@@ -2827,6 +2841,7 @@ void Gfx::doRadialShFill(GfxRadialShading *shading) {
   }
 
   // fill the circles
+  abortCheckCounter = 0;
   while (ia < radialMaxSplits) {
 
     // go as far along the t axis (toward t1) as we can, such that the
@@ -3010,8 +3025,9 @@ void Gfx::doGouraudTriangleShFill(GfxGouraudTriangleShading *shading) {
   double color0[gfxColorMaxComps];
   double color1[gfxColorMaxComps];
   double color2[gfxColorMaxComps];
-  int i;
+  int abortCheckCounter, i;
 
+  abortCheckCounter = 0;
   for (i = 0; i < shading->getNTriangles(); ++i) {
     shading->getTriangle(i, &x0, &y0, color0,
 			 &x1, &y1, color1,
@@ -3088,7 +3104,7 @@ void Gfx::gouraudFillTriangle(double x0, double y0, double *color0,
 }
 
 void Gfx::doPatchMeshShFill(GfxPatchMeshShading *shading) {
-  int start, i;
+  int start, abortCheckCounter, i;
 
   if (shading->getNPatches() > 128) {
     start = 3;
@@ -3099,6 +3115,7 @@ void Gfx::doPatchMeshShFill(GfxPatchMeshShading *shading) {
   } else {
     start = 0;
   }
+  abortCheckCounter = 0;
   for (i = 0; i < shading->getNPatches(); ++i) {
     fillPatch(shading->getPatch(i), shading, start);
   }
@@ -3814,16 +3831,16 @@ void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
   int width, height;
   int bits, maskBits;
   StreamColorSpaceMode csMode;
-  GBool mask;
-  GBool invert;
+  GBool mask, invert;
   GfxColorSpace *colorSpace, *maskColorSpace;
   GfxImageColorMap *colorMap, *maskColorMap;
   Object maskObj, smaskObj;
-  GBool haveColorKeyMask, haveExplicitMask, haveSoftMask;
+  GBool haveColorKeyMask, haveExplicitMask, haveSoftMask, haveMatte;
   int maskColors[2*gfxColorMaxComps];
   int maskWidth, maskHeight;
   GBool maskInvert;
   Stream *maskStr;
+  double matte[gfxColorMaxComps];
   GBool interpolate;
   Object obj1, obj2;
   int i, n;
@@ -3993,7 +4010,7 @@ void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
     }
 
     // get the mask
-    haveColorKeyMask = haveExplicitMask = haveSoftMask = gFalse;
+    haveColorKeyMask = haveExplicitMask = haveSoftMask = haveMatte = gFalse;
     maskStr = NULL; // make gcc happy
     maskWidth = maskHeight = 0; // make gcc happy
     maskInvert = gFalse; // make gcc happy
