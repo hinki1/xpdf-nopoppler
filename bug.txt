@@ -16,3 +16,4 @@ continousView
 psLevel2Gray,psLevel3Gray
 
 Gfx.cc benötigt GfxRenderingIntent aus GfxState.h
+Gfx.cc benötigt habeLength-Parameter von EmbedStream
