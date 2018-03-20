@@ -55,8 +55,8 @@
 // Max delta allowed in any color component for a function shading fill.
 #define functionColorDelta (dblToCol(1 / 256.0))
 
-// Max number of splits along the t axis for an axial shading fill.
-#define axialMaxSplits 256
+// Number of splits along the t axis for an axial shading fill.
+#define axialSplits 256
 
 // Max delta allowed in any color component for an axial shading fill.
 #define axialColorDelta (dblToCol(1 / 256.0))
@@ -2417,8 +2417,8 @@ void Gfx::doAxialShFill(GfxAxialShading *shading) {
   double sMin, sMax, tmp;
   double ux0, uy0, ux1, uy1, vx0, vy0, vx1, vy1;
   double t0, t1, tt;
-  double ta[axialMaxSplits + 1];
-  int next[axialMaxSplits + 1];
+  double ta[axialSplits + 1];
+  int next[axialSplits + 1];
   GfxColor color0, color1;
   int nComps;
   int i, j, k;
@@ -2503,8 +2503,8 @@ void Gfx::doAxialShFill(GfxAxialShading *shading) {
   // set up
   nComps = shading->getColorSpace()->getNComps();
   ta[0] = tMin;
-  next[0] = axialMaxSplits;
-  ta[axialMaxSplits] = tMax;
+  next[0] = axialSplits;
+  ta[axialSplits] = tMax;
 
   // compute the color at t = tMin
   if (tMin < 0) {
@@ -2541,7 +2541,7 @@ void Gfx::doAxialShFill(GfxAxialShading *shading) {
   vy0 = ty + sMax * dx;
 
   i = 0;
-  while (i < axialMaxSplits) {
+  while (i < axialSplits) {
 
     // bisect until color difference is small enough or we hit the
     // bisection limit
@@ -2556,7 +2556,7 @@ void Gfx::doAxialShFill(GfxAxialShading *shading) {
       }
       // require at least two splits (to avoid problems where the
       // color doesn't change smoothly along the t axis)
-      if (j - i <= axialMaxSplits / 4) {
+      if (j - i <= axialSplits / 4) {
 	shading->getColor(tt, &color1);
 	for (k = 0; k < nComps; ++k) {
 	  if (abs(color1.c[k] - color0.c[k]) > axialColorDelta) {
