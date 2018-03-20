@@ -640,7 +640,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   mapUnknownCharNames = gFalse;
   mapExtTrueTypeFontsViaUnicode = gTrue;
   enableXFA = gTrue;
-  keyBindings = new GList();
+  createDefaultKeyBindings();
   popupMenuCmds = new GList();
   printCommands = gFalse;
   errQuiet = gFalse;
@@ -711,6 +711,10 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
     delete fileName;
     fclose(f);
   }
+}
+
+void GlobalParams::createDefaultKeyBindings() {
+  keyBindings = new GList();
 }
 
 void GlobalParams::parseFile(GString *fileName, FILE *f) {
@@ -1321,7 +1325,7 @@ void GlobalParams::parseInitialZoom(GList *tokens,
 }
 
 void GlobalParams::parseStrokeAdjust(GList *tokens, GString *fileName,
-                                     int line) {
+				     int line) {
   GString *tok;
 
   if (tokens->getLength() != 2) {
@@ -1339,8 +1343,8 @@ void GlobalParams::parseStrokeAdjust(GList *tokens, GString *fileName,
     strokeAdjust = strokeAdjustCAD;
   } else {
     error(errConfig, -1,
-          "Bad 'strokeAdjust' config file command ({0:t}:{1:d})",
-          fileName, line);
+	  "Bad 'strokeAdjust' config file command ({0:t}:{1:d})",
+	  fileName, line);
   }
 }
 
