@@ -177,6 +177,9 @@ public:
   // the new Gfx object.
   void takeContentStreamStack(Gfx *oldGfx);
 
+  // Clear the state stack and the marked content stack.
+  void endOfPage();
+
 private:
 
   PDFDoc *doc;

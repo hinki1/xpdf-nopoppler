@@ -4429,6 +4429,15 @@ void Gfx::takeContentStreamStack(Gfx *oldGfx) {
   contentStreamStack->append(oldGfx->contentStreamStack);
 }
 
+void Gfx::endOfPage() {
+  while (state->hasSaves()) {
+    restoreState();
+  }
+  while (markedContentStack->getLength() > 0) {
+    opEndMarkedContent(NULL, 0);
+  }
+}
+
 //------------------------------------------------------------------------
 // in-line image operators
 //------------------------------------------------------------------------
