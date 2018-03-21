@@ -185,6 +185,8 @@ private:
   GBool subPage;		// is this a sub-page object?
   GBool printCommands;		// print the drawing commands (for debugging)
   GfxResources *res;		// resource stack
+  int opCounter;		// operation counter (used to decide when
+				//   to check for an abort)
   int updateLevel;
 
   GfxState *state;		// current graphics state
@@ -333,7 +335,7 @@ private:
 
   // in-line image operators
   void opBeginImage(Object args[], int numArgs);
-  Stream *buildImageStream();
+  Stream *buildImageStream(GBool *haveLength = 0);
   void opImageData(Object args[], int numArgs);
   void opEndImage(Object args[], int numArgs);
 

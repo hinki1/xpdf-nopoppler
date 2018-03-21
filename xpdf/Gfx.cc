@@ -685,6 +685,7 @@ GBool Gfx::checkForContentStreamLoop(Object *ref) {
 void Gfx::go(GBool topLevel) {
   Object obj;
   Object args[maxArgs];
+  GBool aborted;
   int numArgs, i;
   int lastAbortCheck, errCount;
 
@@ -4441,13 +4442,27 @@ void Gfx::opBeginImage(Object args[], int numArgs) {
   // responsible for skipping over the inline image data
 
   // build dict/stream
-  str = buildImageStream();
+  str = buildImageStream(&haveLength);
 
   // display the image
   if (str) {
     doImage(NULL, str, gTrue);
   
-    if (0) {
+    // if we have the stream length, skip to end-of-stream and then
+    // skip 'EI' in the original stream
+    if (haveLength) {
+      while ((c1 = str->getChar()) != EOF) ;
+      delete str;
+      str = parser->getStream();
+      c1 = str->getChar();
+      c2 = str->getChar();
+      c3 = str->lookChar();
+      while (!(c1 == 'E' && c2 == 'I' && Lexer::isSpace(c3)) && c3 != EOF) {
+	c1 = c2;
+	c2 = str->getChar();
+	c3 = str->lookChar();
+      }
+
     // else, look for the 'EI' tag and skip it
     } else {
       c1 = str->getUndecodedStream()->getChar();
@@ -4463,7 +4478,7 @@ void Gfx::opBeginImage(Object args[], int numArgs) {
   }
 }
 
-Stream *Gfx::buildImageStream() {
+Stream *Gfx::buildImageStream(GBool *haveLength) {
   Object dict;
   Object obj, lengthObj;
   char *key;
@@ -4500,6 +4515,7 @@ Stream *Gfx::buildImageStream() {
 
   // check for length field
   length = 0;
+  *haveLength = gFalse;
   // make stream
   if (!(str = parser->getStream())) {
     error(errSyntaxError, getPos(), "Invalid inline image data");
