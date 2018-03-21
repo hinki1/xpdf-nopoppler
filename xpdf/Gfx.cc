@@ -687,17 +687,25 @@ void Gfx::go(GBool topLevel) {
   Object args[maxArgs];
   GBool aborted;
   int numArgs, i;
-  int lastAbortCheck, errCount;
+  int errCount;
 
   // scan a sequence of objects
   opCounter = 0;
   aborted = gFalse;
-  updateLevel = 1; // make sure even empty pages trigger a call to dump()
-  lastAbortCheck = 0;
   errCount = 0;
   numArgs = 0;
   parser->getObj(&obj);
   while (!obj.isEOF()) {
+
+    // check for an abort
+    ++opCounter;
+    if (abortCheckCbk && opCounter > 100) {
+      if ((*abortCheckCbk)(abortCheckCbkData)) {
+	aborted = gTrue;
+	break;
+      }
+      opCounter = 0;
+    }
 
     // got a command - execute it
     if (obj.isCmd()) {
@@ -717,22 +725,6 @@ void Gfx::go(GBool topLevel) {
       for (i = 0; i < numArgs; ++i)
 	args[i].free();
       numArgs = 0;
-
-      // periodically update display
-      if (++updateLevel >= 20000) {
-	out->dump();
-	updateLevel = 0;
-      }
-
-      // check for an abort
-      if (abortCheckCbk) {
-	if (updateLevel - lastAbortCheck > 10) {
-	  if ((*abortCheckCbk)(abortCheckCbkData)) {
-	    break;
-	  }
-	  lastAbortCheck = updateLevel;
-	}
-      }
 
       // check for too many errors
       if (errCount > contentStreamErrorLimit) {
@@ -764,7 +756,7 @@ void Gfx::go(GBool topLevel) {
 
   // args at end with no command
   if (numArgs > 0) {
-    if (!lastAbortCheck) {
+    if (!aborted) {
       error(errSyntaxError, getPos(), "Leftover args in content stream");
       if (printCommands) {
 	printf("%d leftovers:", numArgs);
@@ -781,10 +773,6 @@ void Gfx::go(GBool topLevel) {
     }
   }
 
-  // update display
-  if (topLevel && updateLevel > 0) {
-    out->dump();
-  }
 }
 
 // Returns true if successful, false on error.
@@ -1011,6 +999,10 @@ void Gfx::opSetExtGState(Object args[], int numArgs) {
   obj2.free();
   if (obj1.dictLookup("FL", &obj2)->isNum()) {
     opSetFlat(&obj2, 1);
+  }
+  obj2.free();
+  if (obj1.dictLookup("RI", &obj2)->isName()) {
+    opSetRenderingIntent(&obj2, 1);
   }
   obj2.free();
 
@@ -3758,7 +3750,7 @@ void Gfx::doShowText(GString *s) {
     out->restoreTextPos(state);
   }
 
-  updateLevel += 10 * s->getLength();
+  opCounter += 10 * s->getLength();
 }
 
 // NB: this is only called when ocState is false.
@@ -4224,7 +4216,7 @@ void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
   if ((i = width * height) > 1000) {
     i = 1000;
   }
-  updateLevel += i;
+  opCounter += i;
 
   return;
 
