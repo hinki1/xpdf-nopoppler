@@ -190,7 +190,6 @@ private:
   GfxResources *res;		// resource stack
   int opCounter;		// operation counter (used to decide when
 				//   to check for an abort)
-  int updateLevel;
 
   GfxState *state;		// current graphics state
   GBool fontChanged;		// set if font or text matrix has changed
