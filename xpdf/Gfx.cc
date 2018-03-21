@@ -2871,6 +2871,16 @@ void Gfx::doRadialShFill(GfxRadialShading *shading) {
   abortCheckCounter = 0;
   while (ia < radialMaxSplits) {
 
+    if (abortCheckCbk) {
+      ++abortCheckCounter;
+      if (abortCheckCounter > 100) {
+	if ((*abortCheckCbk)(abortCheckCbkData)) {
+	  break;
+	}
+	abortCheckCounter = 0;
+      }
+    }
+
     // go as far along the t axis (toward t1) as we can, such that the
     // color difference is within the tolerance (radialColorDelta) --
     // this uses bisection (between the current value, t, and t1),
@@ -3047,6 +3057,10 @@ void Gfx::doRadialShFill(GfxRadialShading *shading) {
   }
 }
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC reset_options
+#endif
+
 void Gfx::doGouraudTriangleShFill(GfxGouraudTriangleShading *shading) {
   double x0, y0, x1, y1, x2, y2;
   double color0[gfxColorMaxComps];
@@ -3056,6 +3070,15 @@ void Gfx::doGouraudTriangleShFill(GfxGouraudTriangleShading *shading) {
 
   abortCheckCounter = 0;
   for (i = 0; i < shading->getNTriangles(); ++i) {
+    if (abortCheckCbk) {
+      ++abortCheckCounter;
+      if (abortCheckCounter > 25) {
+	if ((*abortCheckCbk)(abortCheckCbkData)) {
+	  break;
+	}
+	abortCheckCounter = 0;
+      }
+    }
     shading->getTriangle(i, &x0, &y0, color0,
 			 &x1, &y1, color1,
 			 &x2, &y2, color2);
@@ -3144,6 +3167,15 @@ void Gfx::doPatchMeshShFill(GfxPatchMeshShading *shading) {
   }
   abortCheckCounter = 0;
   for (i = 0; i < shading->getNPatches(); ++i) {
+    if (abortCheckCbk) {
+      ++abortCheckCounter;
+      if (abortCheckCounter > 25) {
+	if ((*abortCheckCbk)(abortCheckCbkData)) {
+	  break;
+	}
+	abortCheckCounter = 0;
+      }
+    }
     fillPatch(shading->getPatch(i), shading, start);
   }
 }
@@ -4423,6 +4455,8 @@ void Gfx::drawForm(Object *strRef, Dict *resDict,
   // draw the form
   display(strRef, gFalse);
 
+  restoreStateStack(savedState);
+
   if (softMask || transpGroup) {
     out->endTransparencyGroup(state);
   }
@@ -4436,7 +4470,7 @@ void Gfx::drawForm(Object *strRef, Dict *resDict,
   parser = oldParser;
 
   // restore graphics state
-  restoreStateStack(savedState);
+  restoreState();
 
   // pop resource stack
   popResources();
@@ -4550,13 +4584,23 @@ Stream *Gfx::buildImageStream(GBool *haveLength) {
   // check for length field
   length = 0;
   *haveLength = gFalse;
+  if (!dict.dictLookup("Length", &lengthObj)->isInt()) {
+    lengthObj.free();
+    dict.dictLookup("L", &lengthObj);
+  }
+  if (lengthObj.isInt()) {
+    length = lengthObj.getInt();
+    *haveLength = gTrue;
+  }
+  lengthObj.free();
+
   // make stream
   if (!(str = parser->getStream())) {
     error(errSyntaxError, getPos(), "Invalid inline image data");
     dict.free();
     return NULL;
   }
-  str = new EmbedStream(str, &dict, gFalse, 0);
+  str = new EmbedStream(str, &dict, *haveLength, (GFileOffset)length);
   str = str->addFilters(&dict);
 
   return str;
