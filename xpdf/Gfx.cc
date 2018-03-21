@@ -3900,8 +3900,14 @@ void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
   Stream *maskStr;
   double matte[gfxColorMaxComps];
   GBool interpolate;
+  GfxRenderingIntent riSaved;
   Object obj1, obj2;
   int i, n;
+
+  // check for optional content
+  if (!ocState && !inlineImg) {
+    return;
+  }
 
   // get info from the stream
   bits = 0;
@@ -3910,6 +3916,9 @@ void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 
   // get stream dict
   dict = str->getDict();
+
+  // save the current rendering intent
+  riSaved = state->getRenderingIntent();
 
   // get size
   dict->lookup("Width", &obj1);
@@ -4023,6 +4032,12 @@ void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
     }
 
   } else {
+
+    // rendering intent
+    if (dict->lookup("Intent", &obj1)->isName()) {
+      opSetRenderingIntent(&obj1, 1);
+    }
+    obj1.free();
 
     // get color space and color map
     dict->lookup("ColorSpace", &obj1);
@@ -4263,6 +4278,12 @@ void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
     smaskObj.free();
   }
 
+  // restore rendering intent
+  if (state->getRenderingIntent() != riSaved) {
+    state->setRenderingIntent(riSaved);
+    out->updateRenderingIntent(state);
+  }
+
   if ((i = width * height) > 1000) {
     i = 1000;
   }
@@ -4274,6 +4295,12 @@ void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
   obj1.free();
  err1:
   error(errSyntaxError, getPos(), "Bad image parameters");
+
+  // restore rendering intent
+  if (state->getRenderingIntent() != riSaved) {
+    state->setRenderingIntent(riSaved);
+    out->updateRenderingIntent(state);
+  }
 }
 
 void Gfx::doForm(Object *strRef, Object *str) {
@@ -4284,12 +4311,16 @@ void Gfx::doForm(Object *strRef, Object *str) {
   double m[6], bbox[4];
   Object resObj;
   Dict *resDict;
-  GBool oc, ocSaved;
   Object obj1, obj2, obj3;
   int i;
 
   // check for excessive recursion
   if (formDepth > 100) {
+    return;
+  }
+
+  // check for optional content
+  if (!ocState && !out->needCharCount()) {
     return;
   }
 
@@ -4303,25 +4334,11 @@ void Gfx::doForm(Object *strRef, Object *str) {
   }
   obj1.free();
 
-  // check for optional content key
-  ocSaved = ocState;
-  dict->lookupNF("OC", &obj1);
-  if (doc->getOptionalContent()->evalOCObject(&obj1, &oc) && !oc) {
-    obj1.free();
-    if (out->needCharCount()) {
-      ocState = gFalse;
-    } else {
-      return;
-    }
-  }
-  obj1.free();
-
   // get bounding box
   dict->lookup("BBox", &bboxObj);
   if (!bboxObj.isArray()) {
     bboxObj.free();
     error(errSyntaxError, getPos(), "Bad form bounding box");
-    ocState = ocSaved;
     return;
   }
   for (i = 0; i < 4; ++i) {
@@ -4384,8 +4401,6 @@ void Gfx::doForm(Object *strRef, Object *str) {
     delete blendingColorSpace;
   }
   resObj.free();
-
-  ocState = ocSaved;
 }
 
 void Gfx::drawForm(Object *strRef, Dict *resDict,
@@ -4404,7 +4419,7 @@ void Gfx::drawForm(Object *strRef, Dict *resDict,
   pushResources(resDict);
 
   // save current graphics state
-  savedState = saveStateStack();
+  saveState();
 
   // kill any pre-existing path
   state->clearPath();
@@ -4451,6 +4466,10 @@ void Gfx::drawForm(Object *strRef, Dict *resDict,
     oldBaseMatrix[i] = baseMatrix[i];
     baseMatrix[i] = state->getCTM()[i];
   }
+
+  // save the state stack -- this handles the case where the form
+  // contents have unbalanced q/Q operators
+  savedState = saveStateStack();
 
   // draw the form
   display(strRef, gFalse);
