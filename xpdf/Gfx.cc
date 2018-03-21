@@ -3817,6 +3817,7 @@ void Gfx::doIncCharCount(GString *s) {
 void Gfx::opXObject(Object args[], int numArgs) {
   char *name;
   Object obj1, obj2, obj3, refObj;
+  GBool ocSaved, oc;
 #if OPI_SUPPORT
   Object opiDict;
 #endif
@@ -3833,6 +3834,15 @@ void Gfx::opXObject(Object args[], int numArgs) {
     obj1.free();
     return;
   }
+
+  // check for optional content key
+  ocSaved = ocState;
+  obj1.streamGetDict()->lookupNF("OC", &obj2);
+  if (doc->getOptionalContent()->evalOCObject(&obj2, &oc)) {
+    ocState &= oc;
+  }
+  obj2.free();
+
 #if USE_EXCEPTIONS
   try {
 #endif
@@ -3852,15 +3862,19 @@ void Gfx::opXObject(Object args[], int numArgs) {
     } else if (obj2.isName("Form")) {
       res->lookupXObjectNF(name, &refObj);
       if (out->useDrawForm() && refObj.isRef()) {
-	out->drawForm(refObj.getRef());
+	if (ocState) {
+	  out->drawForm(refObj.getRef());
+	}
       } else {
 	doForm(&refObj, &obj1);
       }
       refObj.free();
     } else if (obj2.isName("PS")) {
-      obj1.streamGetDict()->lookup("Level1", &obj3);
-      out->psXObject(obj1.getStream(),
-		     obj3.isStream() ? obj3.getStream() : (Stream *)NULL);
+      if (ocState) {
+	obj1.streamGetDict()->lookup("Level1", &obj3);
+	out->psXObject(obj1.getStream(),
+		       obj3.isStream() ? obj3.getStream() : (Stream *)NULL);
+      }
     } else if (obj2.isName()) {
       error(errSyntaxError, getPos(),
 	    "Unknown XObject subtype '{0:s}'", obj2.getName());
@@ -3882,6 +3896,8 @@ void Gfx::opXObject(Object args[], int numArgs) {
   }
 #endif
   obj1.free();
+
+  ocState = ocSaved;
 }
 
 void Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
