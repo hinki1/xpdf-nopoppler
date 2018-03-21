@@ -338,7 +338,7 @@ private:
 
   // in-line image operators
   void opBeginImage(Object args[], int numArgs);
-  Stream *buildImageStream(GBool *haveLength = 0);
+  Stream *buildImageStream(GBool *haveLength);
   void opImageData(Object args[], int numArgs);
   void opEndImage(Object args[], int numArgs);
 
