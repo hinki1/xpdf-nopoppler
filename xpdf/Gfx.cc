@@ -1269,7 +1269,11 @@ void Gfx::doSoftMask(Object *str, Object *strRef, GBool alpha,
 }
 
 void Gfx::opSetRenderingIntent(Object args[], int numArgs) {
+  GfxRenderingIntent ri;
 
+  ri = parseRenderingIntent(args[0].getName());
+  state->setRenderingIntent(ri);
+  out->updateRenderingIntent(state);
 }
 
 GfxRenderingIntent Gfx::parseRenderingIntent(const char *name) {
@@ -1980,12 +1984,20 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
   } else {
     state->setFillColorSpace(GfxColorSpace::create(csDeviceGray));
     out->updateFillColorSpace(state);
+    state->getFillColorSpace()->getDefaultColor(&color);
+    state->setFillColor(&color);
+    out->updateFillColor(state);
     state->setStrokeColorSpace(GfxColorSpace::create(csDeviceGray));
     out->updateStrokeColorSpace(state);
+    state->getStrokeColorSpace()->getDefaultColor(&color);
+    state->setStrokeColor(&color);
+    out->updateStrokeColor(state);
   }
   if (!stroke) {
     state->setLineWidth(0);
     out->updateLineWidth(state);
+    state->setLineDash(NULL, 0, 0);
+    out->updateLineDash(state);
   }
 
   // clip to current path
@@ -2082,6 +2094,15 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
     abortCheckCounter = 0;
     for (yi = yi0; yi < yi1; ++yi) {
       for (xi = xi0; xi < xi1; ++xi) {
+	if (abortCheckCbk) {
+	  ++abortCheckCounter;
+	  if (abortCheckCounter > 100) {
+	    if ((*abortCheckCbk)(abortCheckCbkData)) {
+	      goto err;
+	    }
+	    abortCheckCounter = 0;
+	  }
+	}
 	x = xi * xstep;
 	y = yi * ystep;
 	m1[4] = x * m[0] + y * m[2] + m[4];

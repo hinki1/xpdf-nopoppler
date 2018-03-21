@@ -143,6 +143,7 @@ public:
   virtual void updateFillOverprint(GfxState *state) {}
   virtual void updateStrokeOverprint(GfxState *state) {}
   virtual void updateOverprintMode(GfxState *state) {}
+  virtual void updateRenderingIntent(GfxState *state) {}
   virtual void updateTransfer(GfxState *state) {}
 
   //----- update text state

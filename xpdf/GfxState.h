@@ -1125,6 +1125,7 @@ public:
   GBool getFillOverprint() { return fillOverprint; }
   GBool getStrokeOverprint() { return strokeOverprint; }
   int getOverprintMode() { return overprintMode; }
+  GfxRenderingIntent getRenderingIntent() { return renderingIntent; }
   Function **getTransfer() { return transfer; }
   double getLineWidth() { return lineWidth; }
   void getLineDash(double **dash, int *length, double *start)
@@ -1194,6 +1195,7 @@ public:
   void setFillOverprint(GBool op) { fillOverprint = op; }
   void setStrokeOverprint(GBool op) { strokeOverprint = op; }
   void setOverprintMode(int opm) { overprintMode = opm; }
+  void setRenderingIntent(GfxRenderingIntent ri) { renderingIntent = ri; }
   void setTransfer(Function **funcs);
   void setLineWidth(double width) { lineWidth = width; }
   void setLineDash(double *dash, int length, double start);
@@ -1273,6 +1275,7 @@ private:
   GBool fillOverprint;		// fill overprint
   GBool strokeOverprint;	// stroke overprint
   int overprintMode;		// overprint mode ("OPM")
+  GfxRenderingIntent renderingIntent;	// rendering intent
   Function *transfer[4];	// transfer function (entries may be: all
 				//   NULL = identity; last three NULL =
 				//   single function; all four non-NULL =
