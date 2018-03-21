@@ -521,7 +521,6 @@ Gfx::Gfx(PDFDoc *docA, OutputDev *outA, int pageNum, Dict *resDict,
     baseMatrix[i] = state->getCTM()[i];
   }
   formDepth = 0;
-  textClipBBoxEmpty = gTrue;
   markedContentStack = new GList();
   ocState = gTrue;
   parser = NULL;
@@ -566,7 +565,6 @@ Gfx::Gfx(PDFDoc *docA, OutputDev *outA, Dict *resDict,
     baseMatrix[i] = state->getCTM()[i];
   }
   formDepth = 0;
-  textClipBBoxEmpty = gTrue;
   markedContentStack = new GList();
   ocState = gTrue;
   parser = NULL;
@@ -3313,7 +3311,6 @@ void Gfx::opBeginText(Object args[], int numArgs) {
   out->updateTextMat(state);
   out->updateTextPos(state);
   fontChanged = gTrue;
-  textClipBBoxEmpty = gTrue;
 }
 
 void Gfx::opEndText(Object args[], int numArgs) {

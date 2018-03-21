@@ -198,9 +198,6 @@ private:
   double baseMatrix[6];		// default matrix for most recent
 				//   page/form/pattern
   int formDepth;
-  double textClipBBox[4];	// text clipping bounding box
-  GBool textClipBBoxEmpty;	// true if textClipBBox has not been
-				//   initialized yet
   GBool ocState;		// true if drawing is enabled, false if
 				//   disabled
   GList *markedContentStack;	// BMC/BDC/EMC stack [GfxMarkedContent]
