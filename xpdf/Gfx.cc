@@ -690,6 +690,8 @@ void Gfx::go(GBool topLevel) {
   int lastAbortCheck, errCount;
 
   // scan a sequence of objects
+  opCounter = 0;
+  aborted = gFalse;
   updateLevel = 1; // make sure even empty pages trigger a call to dump()
   lastAbortCheck = 0;
   errCount = 0;
@@ -1276,6 +1278,19 @@ void Gfx::doSoftMask(Object *str, Object *strRef, GBool alpha,
 
 void Gfx::opSetRenderingIntent(Object args[], int numArgs) {
 
+}
+
+GfxRenderingIntent Gfx::parseRenderingIntent(const char *name) {
+  if (!strcmp(name, "AbsoluteColorimetric")) {
+    return gfxRenderingIntentAbsoluteColorimetric;
+  }
+  if (!strcmp(name, "Saturation")) {
+    return gfxRenderingIntentSaturation;
+  }
+  if (!strcmp(name, "Perceptual")) {
+    return gfxRenderingIntentPerceptual;
+  }
+  return gfxRenderingIntentRelativeColorimetric;
 }
 
 //------------------------------------------------------------------------

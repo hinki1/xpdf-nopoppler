@@ -239,6 +239,7 @@ private:
 		  GBool isolated, GBool knockout,
 		  Function *transferFunc, GfxColor *backdropColor);
   void opSetRenderingIntent(Object args[], int numArgs);
+  GfxRenderingIntent parseRenderingIntent(const char *name);
 
   // color operators
   void opSetFillGray(Object args[], int numArgs);

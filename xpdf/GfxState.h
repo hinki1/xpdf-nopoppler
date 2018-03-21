@@ -2,7 +2,7 @@
 //
 // GfxState.h
 //
-// Copyright 1996-2003 Glyph & Cog, LLC
+// Copyright 1996-2016 Glyph & Cog, LLC
 //
 //========================================================================
 
@@ -23,6 +23,7 @@ class Array;
 class GfxFont;
 class PDFRectangle;
 class GfxShading;
+class GfxState;
 
 //------------------------------------------------------------------------
 // GfxBlendMode
@@ -46,6 +47,19 @@ enum GfxBlendMode {
   gfxBlendColor,
   gfxBlendLuminosity
 };
+
+//------------------------------------------------------------------------
+// GfxRenderingIntent
+//------------------------------------------------------------------------
+
+enum GfxRenderingIntent {
+  gfxRenderingIntentAbsoluteColorimetric,
+  gfxRenderingIntentRelativeColorimetric,
+  gfxRenderingIntentSaturation,
+  gfxRenderingIntentPerceptual
+};
+
+#define gfxNumRenderingIntents 4
 
 //------------------------------------------------------------------------
 // GfxColorComp
