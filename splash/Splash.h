@@ -228,6 +228,9 @@ public:
   // first flatten the path and handle the linedash.
   SplashPath *makeStrokePath(SplashPath *path, SplashCoord w,
 			     GBool flatten = gTrue);
+  SplashPath *makeStrokePath(SplashPath *path, SplashCoord w,
+				int lineCap, int lineJoin,
+			     GBool flatten = gTrue);
 
   // Reduce the size of a rectangle as much as possible by moving any
   // edges that are completely outside the clip region.  Returns the
@@ -309,7 +312,9 @@ private:
   void updateModY(int y);
   void strokeNarrow(SplashPath *path);
   void drawStrokeSpan(SplashPipe *pipe, int x0, int x1, int y, GBool noClip);
-  void strokeWide(SplashPath *path, SplashCoord w);
+  void strokeWide(SplashPath *path, SplashCoord w);	// 3.x version
+  void strokeWide(SplashPath *path, SplashCoord w,
+		int lineCap, int lineJoin);
   SplashPath *flattenPath(SplashPath *path, SplashCoord *matrix,
 			  SplashCoord flatness);
   void flattenCurve(SplashCoord x0, SplashCoord y0,

@@ -2517,7 +2517,16 @@ void Splash::drawStrokeSpan(SplashPipe *pipe, int x0, int x1, int y,
 void Splash::strokeWide(SplashPath *path, SplashCoord w) {
   SplashPath *path2;
 
-  path2 = makeStrokePath(path, w, gFalse);
+  path2 = makeStrokePath(path, w, state->lineCap, state->lineJoin, gFalse);
+  fillWithPattern(path2, gFalse, state->strokePattern, state->strokeAlpha);
+  delete path2;
+}
+
+void Splash::strokeWide(SplashPath *path, SplashCoord w,
+			int lineCap, int lineJoin) {
+  SplashPath *path2;
+
+  path2 = makeStrokePath(path, w, lineCap, lineJoin, gFalse);
   fillWithPattern(path2, gFalse, state->strokePattern, state->strokeAlpha);
   delete path2;
 }
@@ -6462,11 +6471,21 @@ SplashError Splash::blitCorrectedAlpha(SplashBitmap *dest, int xSrc, int ySrc,
 
 // wird in SplashOutputDev.cc benutzt
 SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
+				   GBool flatten)
+{
+	return makeStrokePath( path, w, state->lineCap,
+				state->lineJoin, flatten );
+}
 
+SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
+				   int lineCap, int lineJoin,
 				   GBool flatten) {
   SplashPath *pathIn, *dashPath, *pathOut;
   SplashCoord d, dx, dy, wdx, wdy, dxNext, dyNext, wdxNext, wdyNext;
   SplashCoord crossprod, dotprod, miter, m;
+  SplashCoord angle, angleNext, dAngle, xc, yc;
+  SplashCoord dxJoin, dyJoin, dJoin, kappa;
+  SplashCoord cx1, cy1, cx2, cy2, cx3, cy3, cx4, cy4;
   GBool first, last, closed;
   int subpathStart0, subpathStart1, seg, i0, i1, j0, j1, k0, k1;
   int left0, left1, left2, right0, right1, right2, join0, join1, join2;
@@ -6526,7 +6545,7 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
       j1 = j0;
     }
     if (pathIn->flags[i1] & splashPathLast) {
-      if (first && state->lineCap == splashLineCapRound) {
+      if (first && lineCap == splashLineCapRound) {
 	// special case: zero-length subpath with round line caps -->
 	// draw a circle
 	pathOut->moveTo(pathIn->pts[i0].x + (SplashCoord)0.5 * w,
@@ -6596,7 +6615,7 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
       firstPt = pathOut->length;
     }
     if (first && !closed) {
-      switch (state->lineCap) {
+      switch (lineCap) {
       case splashLineCapButt:
 	pathOut->moveTo(pathIn->pts[i0].x - wdy, pathIn->pts[i0].y + wdx);
 	pathOut->lineTo(pathIn->pts[i0].x + wdy, pathIn->pts[i0].y - wdx);
@@ -6631,7 +6650,7 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
     // draw the left side of the segment rectangle and the end cap
     left2 = pathOut->length - 1;
     if (last && !closed) {
-      switch (state->lineCap) {
+      switch (lineCap) {
       case splashLineCapButt:
 	pathOut->lineTo(pathIn->pts[j0].x + wdy, pathIn->pts[j0].y - wdx);
 	pathOut->lineTo(pathIn->pts[j0].x - wdy, pathIn->pts[j0].y + wdx);
@@ -6712,33 +6731,111 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
       }
 
       // round join
-      if (state->lineJoin == splashLineJoinRound) {
-	pathOut->moveTo(pathIn->pts[j0].x + (SplashCoord)0.5 * w,
-			pathIn->pts[j0].y);
-	pathOut->curveTo(pathIn->pts[j0].x + (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].y + bezierCircle2 * w,
-			 pathIn->pts[j0].x + bezierCircle2 * w,
-			 pathIn->pts[j0].y + (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].x,
-			 pathIn->pts[j0].y + (SplashCoord)0.5 * w);
-	pathOut->curveTo(pathIn->pts[j0].x - bezierCircle2 * w,
-			 pathIn->pts[j0].y + (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].x - (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].y + bezierCircle2 * w,
-			 pathIn->pts[j0].x - (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].y);
-	pathOut->curveTo(pathIn->pts[j0].x - (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].y - bezierCircle2 * w,
-			 pathIn->pts[j0].x - bezierCircle2 * w,
-			 pathIn->pts[j0].y - (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].x,
-			 pathIn->pts[j0].y - (SplashCoord)0.5 * w);
-	pathOut->curveTo(pathIn->pts[j0].x + bezierCircle2 * w,
-			 pathIn->pts[j0].y - (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].x + (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].y - bezierCircle2 * w,
-			 pathIn->pts[j0].x + (SplashCoord)0.5 * w,
-			 pathIn->pts[j0].y);
+      if (lineJoin == splashLineJoinRound) {
+	// join angle < 180
+	if (crossprod < 0) {
+	  angle = atan2((double)dx, (double)-dy);
+	  angleNext = atan2((double)dxNext, (double)-dyNext);
+	  if (angle < angleNext) {
+	    angle += 2 * M_PI;
+	  }
+	  dAngle = (angle  - angleNext) / M_PI;
+	  if (dAngle < 0.501) {
+	    // span angle is <= 90 degrees -> draw a single arc
+	    kappa = dAngle * bezierCircle * w;
+	    cx1 = pathIn->pts[j0].x - wdy + kappa * dx;
+	    cy1 = pathIn->pts[j0].y + wdx + kappa * dy;
+	    cx2 = pathIn->pts[j0].x - wdyNext - kappa * dxNext;
+	    cy2 = pathIn->pts[j0].y + wdxNext - kappa * dyNext;
+	    pathOut->moveTo(pathIn->pts[j0].x, pathIn->pts[j0].y);
+	    pathOut->lineTo(pathIn->pts[j0].x - wdyNext,
+			    pathIn->pts[j0].y + wdxNext);
+	    pathOut->curveTo(cx2, cy2, cx1, cy1,
+			     pathIn->pts[j0].x - wdy,
+			     pathIn->pts[j0].y + wdx);
+	  } else {
+	    // span angle is > 90 degrees -> split into two arcs
+	    dJoin = splashDist(-wdy, wdx, -wdyNext, wdxNext);
+	    if (dJoin > 0) {
+	      dxJoin = (-wdyNext + wdy) / dJoin;
+	      dyJoin = (wdxNext - wdx) / dJoin;
+	      xc = pathIn->pts[j0].x
+		   + (SplashCoord)0.5 * w
+		     * cos((double)((SplashCoord)0.5 * (angle + angleNext)));
+	      yc = pathIn->pts[j0].y
+		   + (SplashCoord)0.5 * w
+		     * sin((double)((SplashCoord)0.5 * (angle + angleNext)));
+	      kappa = dAngle * bezierCircle2 * w;
+	      cx1 = pathIn->pts[j0].x - wdy + kappa * dx;
+	      cy1 = pathIn->pts[j0].y + wdx + kappa * dy;
+	      cx2 = xc - kappa * dxJoin;
+	      cy2 = yc - kappa * dyJoin;
+	      cx3 = xc + kappa * dxJoin;
+	      cy3 = yc + kappa * dyJoin;
+	      cx4 = pathIn->pts[j0].x - wdyNext - kappa * dxNext;
+	      cy4 = pathIn->pts[j0].y + wdxNext - kappa * dyNext;
+	      pathOut->moveTo(pathIn->pts[j0].x, pathIn->pts[j0].y);
+	      pathOut->lineTo(pathIn->pts[j0].x - wdyNext,
+			      pathIn->pts[j0].y + wdxNext);
+	      pathOut->curveTo(cx4, cy4, cx3, cy3, xc, yc);
+	      pathOut->curveTo(cx2, cy2, cx1, cy1,
+			       pathIn->pts[j0].x - wdy,
+			       pathIn->pts[j0].y + wdx);
+	    }
+	  }
+
+	// join angle >= 180
+	} else {
+	  angle = atan2((double)-dx, (double)dy);
+	  angleNext = atan2((double)-dxNext, (double)dyNext);
+	  if (angleNext < angle) {
+	    angleNext += 2 * M_PI;
+	  }
+	  dAngle = (angleNext - angle) / M_PI;
+	  if (dAngle < 0.501) {
+	    // span angle is <= 90 degrees -> draw a single arc
+	    kappa = dAngle * bezierCircle * w;
+	      cx1 = pathIn->pts[j0].x + wdy + kappa * dx;
+	      cy1 = pathIn->pts[j0].y - wdx + kappa * dy;
+	      cx2 = pathIn->pts[j0].x + wdyNext - kappa * dxNext;
+	      cy2 = pathIn->pts[j0].y - wdxNext - kappa * dyNext;
+	      pathOut->moveTo(pathIn->pts[j0].x, pathIn->pts[j0].y);
+	      pathOut->lineTo(pathIn->pts[j0].x + wdy,
+			      pathIn->pts[j0].y - wdx);
+	      pathOut->curveTo(cx1, cy1, cx2, cy2,
+			       pathIn->pts[j0].x + wdyNext,
+			       pathIn->pts[j0].y - wdxNext);
+	  } else {
+	    // span angle is > 90 degrees -> split into two arcs
+	    dJoin = splashDist(wdy, -wdx, wdyNext, -wdxNext);
+	    if (dJoin > 0) {
+	      dxJoin = (wdyNext - wdy) / dJoin;
+	      dyJoin = (-wdxNext + wdx) / dJoin;
+	      xc = pathIn->pts[j0].x
+		   + (SplashCoord)0.5 * w
+		     * cos((double)((SplashCoord)0.5 * (angle + angleNext)));
+	      yc = pathIn->pts[j0].y
+		   + (SplashCoord)0.5 * w
+		     * sin((double)((SplashCoord)0.5 * (angle + angleNext)));
+	      kappa = dAngle * bezierCircle2 * w;
+	      cx1 = pathIn->pts[j0].x + wdy + kappa * dx;
+	      cy1 = pathIn->pts[j0].y - wdx + kappa * dy;
+	      cx2 = xc - kappa * dxJoin;
+	      cy2 = yc - kappa * dyJoin;
+	      cx3 = xc + kappa * dxJoin;
+	      cy3 = yc + kappa * dyJoin;
+	      cx4 = pathIn->pts[j0].x + wdyNext - kappa * dxNext;
+	      cy4 = pathIn->pts[j0].y - wdxNext - kappa * dyNext;
+	      pathOut->moveTo(pathIn->pts[j0].x, pathIn->pts[j0].y);
+	      pathOut->lineTo(pathIn->pts[j0].x + wdy,
+			      pathIn->pts[j0].y - wdx);
+	      pathOut->curveTo(cx1, cy1, cx2, cy2, xc, yc);
+	      pathOut->curveTo(cx3, cy3, cx4, cy4,
+			       pathIn->pts[j0].x + wdyNext,
+			       pathIn->pts[j0].y - wdxNext);
+	    }
+	  }
+	}
 
       } else {
 	pathOut->moveTo(pathIn->pts[j0].x, pathIn->pts[j0].y);
@@ -6748,7 +6845,7 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 	  pathOut->lineTo(pathIn->pts[j0].x - wdyNext,
 			  pathIn->pts[j0].y + wdxNext);
 	  // miter join inside limit
-	  if (state->lineJoin == splashLineJoinMiter &&
+	  if (lineJoin == splashLineJoinMiter &&
 	      splashSqrt(miter) <= state->miterLimit) {
 	    pathOut->lineTo(pathIn->pts[j0].x - wdy + wdx * m,
 			    pathIn->pts[j0].y + wdx + wdy * m);
@@ -6765,7 +6862,7 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 	  pathOut->lineTo(pathIn->pts[j0].x + wdy,
 			  pathIn->pts[j0].y - wdx);
 	  // miter join inside limit
-	  if (state->lineJoin == splashLineJoinMiter &&
+	  if (lineJoin == splashLineJoinMiter &&
 	      splashSqrt(miter) <= state->miterLimit) {
 	    pathOut->lineTo(pathIn->pts[j0].x + wdy + wdx * m,
 			    pathIn->pts[j0].y - wdx + wdy * m);
@@ -6784,64 +6881,101 @@ SplashPath *Splash::makeStrokePath(SplashPath *path, SplashCoord w,
 
     // add stroke adjustment hints
     if (state->strokeAdjust != splashStrokeAdjustOff) {
-      if (seg == 0 && !closed) {
-	if (state->lineCap == splashLineCapButt) {
-	  pathOut->addStrokeAdjustHint(firstPt, left2 + 1,
-				       firstPt, firstPt + 1);
-	  if (last) {
-	    pathOut->addStrokeAdjustHint(firstPt, left2 + 1,
-					 left2 + 1, left2 + 2);
-	  }
-	} else if (state->lineCap == splashLineCapProjecting) {
-	  if (last) {
-	    pathOut->addStrokeAdjustHint(firstPt + 1, left2 + 2,
-					 firstPt + 1, firstPt + 2);
-	    pathOut->addStrokeAdjustHint(firstPt + 1, left2 + 2,
-					 left2 + 2, left2 + 3);
-	  } else {
-	    pathOut->addStrokeAdjustHint(firstPt + 1, left2 + 1,
-					 firstPt + 1, firstPt + 2);
-	  }
-	}
-      }
-      if (seg >= 1) {
 
+      // subpath with one segment
+      if (seg == 0 && last) {
+	switch (lineCap) {
+	case splashLineCapButt:
+	  pathOut->addStrokeAdjustHint(firstPt, left2 + 1,
+				       firstPt, pathOut->length - 1);
+	  break;
+	case splashLineCapProjecting:
+	  pathOut->addStrokeAdjustHint(firstPt, left2 + 1,
+				       firstPt, pathOut->length - 1, gTrue);
+	  break;
+	case splashLineCapRound:
+	  break;
+	}
+	pathOut->addStrokeAdjustHint(left2, right2,
+				     firstPt, pathOut->length - 1);
+      } else {
+
+	// start of subpath
+	if (seg == 1) {
+
+	  // start cap
+	  if (!closed) {
+	    switch (lineCap) {
+	    case splashLineCapButt:
+	      pathOut->addStrokeAdjustHint(firstPt, left1 + 1,
+					   firstPt, firstPt + 1);
+	      pathOut->addStrokeAdjustHint(firstPt, left1 + 1,
+					   right1 + 1, right1 + 1);
+	      break;
+	    case splashLineCapProjecting:
+	      pathOut->addStrokeAdjustHint(firstPt, left1 + 1,
+					   firstPt, firstPt + 1, gTrue);
+	      pathOut->addStrokeAdjustHint(firstPt, left1 + 1,
+					   right1 + 1, right1 + 1, gTrue);
+	      break;
+	    case splashLineCapRound:
+	      break;
+	    }
+	  }
+
+	  // first segment
+	  pathOut->addStrokeAdjustHint(left1, right1, firstPt, left2);
+	  pathOut->addStrokeAdjustHint(left1, right1, right2 + 1, right2 + 1);
+	}
+
+	// middle of subpath
 	if (seg > 1) {
 	  pathOut->addStrokeAdjustHint(left1, right1, left0 + 1, right0);
 	  pathOut->addStrokeAdjustHint(left1, right1, join0, left2);
-	} else {
-	  pathOut->addStrokeAdjustHint(left1, right1, firstPt, left2);
+	  pathOut->addStrokeAdjustHint(left1, right1, right2 + 1, right2 + 1);
 	}
-	pathOut->addStrokeAdjustHint(left1, right1, right2 + 1, right2 + 1);
-      }
 
 	// end of subpath
-      if (last) {
-	if (seg >= 2) {
-	  pathOut->addStrokeAdjustHint(left1, right1, left0 + 1, right0);
-	  pathOut->addStrokeAdjustHint(left1, right1,
-				       join0, pathOut->length - 1);
-	} else {
-	  pathOut->addStrokeAdjustHint(left1, right1,
-				       firstPt, pathOut->length - 1);
-	}
-	if (closed) {
-	  pathOut->addStrokeAdjustHint(left1, right1, firstPt, leftFirst);
-	  pathOut->addStrokeAdjustHint(left1, right1,
-				       rightFirst + 1, rightFirst + 1);
-	  pathOut->addStrokeAdjustHint(leftFirst, rightFirst,
-				       left1 + 1, right1);
-	  pathOut->addStrokeAdjustHint(leftFirst, rightFirst,
-				       join1, pathOut->length - 1);
-	}
-	if (!closed && seg > 0) {
+	if (last) {
+
+	  if (closed) {
+	    // first segment
+	    pathOut->addStrokeAdjustHint(leftFirst, rightFirst,
+					 left2 + 1, right2);
+	    pathOut->addStrokeAdjustHint(leftFirst, rightFirst,
+					 join2, pathOut->length - 1);
+
+	    // last segment
+	    pathOut->addStrokeAdjustHint(left2, right2,
+					 left1 + 1, right1);
+	    pathOut->addStrokeAdjustHint(left2, right2,
+					 join1, pathOut->length - 1);
+	    pathOut->addStrokeAdjustHint(left2, right2,
+					 leftFirst - 1, leftFirst);
+	    pathOut->addStrokeAdjustHint(left2, right2,
+					 rightFirst + 1, rightFirst + 1);
+
+	  } else {
+
+	    // last segment
+	    pathOut->addStrokeAdjustHint(left2, right2,
+					 left1 + 1, right1);
+	    pathOut->addStrokeAdjustHint(left2, right2,
+					 join1, pathOut->length - 1);
+
 	    // end cap
-	  if (state->lineCap == splashLineCapButt) {
-	    pathOut->addStrokeAdjustHint(left1 - 1, left1 + 1,
-					 left1 + 1, left1 + 2);
-	  } else if (state->lineCap == splashLineCapProjecting) {
-	    pathOut->addStrokeAdjustHint(left1 - 1, left1 + 2,
-					 left1 + 2, left1 + 3);
+	    switch (lineCap) {
+	    case splashLineCapButt:
+	      pathOut->addStrokeAdjustHint(left2 - 1, left2 + 1,
+					   left2 + 1, left2 + 2);
+	      break;
+	    case splashLineCapProjecting:
+	      pathOut->addStrokeAdjustHint(left2 - 1, left2 + 1,
+					   left2 + 1, left2 + 2, gTrue);
+	      break;
+	    case splashLineCapRound:
+	      break;
+	    }
 	  }
 	}
       }
