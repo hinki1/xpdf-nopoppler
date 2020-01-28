@@ -274,7 +274,7 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
   Guchar shape, aSrc, aDest, alphaI, alphaIm1, alpha0, aResult;
   SplashColor cSrc, cDest, cBlend;
   Guchar shapeVal, cResult0, cResult1, cResult2, cResult3;
-  int cSrcStride, shapeStride, x, lastX, t, i;
+  int cSrcStride, shapeStride, x, lastX, t;
   SplashColorPtr destColorPtr;
   Guchar destColorMask;
   Guchar *destAlphaPtr;
@@ -409,43 +409,25 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 
       switch (bitmap->mode) {
       case splashModeMono1:
-	cResult0 = state->grayTransfer[cSrcPtr[0]];
-	if (state->screen->test(x, y, cResult0)) {
-	  *destColorPtr |= destColorMask;
-	} else {
-	  *destColorPtr &= ~destColorMask;
-	}
-	destColorPtr += destColorMask & 1;
-	destColorMask = (destColorMask << 7) | (destColorMask >> 1);
-	break;
       case splashModeMono8:
-	*destColorPtr++ = state->grayTransfer[cSrcPtr[0]];
+	cResult0 = state->grayTransfer[cSrcPtr[0]];
 	break;
       case splashModeRGB8:
-	destColorPtr[0] = state->rgbTransferR[cSrcPtr[0]];
-	destColorPtr[1] = state->rgbTransferG[cSrcPtr[1]];
-	destColorPtr[2] = state->rgbTransferB[cSrcPtr[2]];
-	destColorPtr += 3;
-	break;
       case splashModeBGR8:
-	destColorPtr[0] = state->rgbTransferB[cSrcPtr[2]];
-	destColorPtr[1] = state->rgbTransferG[cSrcPtr[1]];
-	destColorPtr[2] = state->rgbTransferR[cSrcPtr[0]];
-	destColorPtr += 3;
+	cResult0 = state->rgbTransferR[cSrcPtr[0]];
+	cResult1 = state->rgbTransferG[cSrcPtr[1]];
+	cResult2 = state->rgbTransferB[cSrcPtr[2]];
 	break;
 #if SPLASH_CMYK
       case splashModeCMYK8:
-	destColorPtr[0] = state->cmykTransferC[cSrcPtr[0]];
-	destColorPtr[1] = state->cmykTransferM[cSrcPtr[1]];
-	destColorPtr[2] = state->cmykTransferY[cSrcPtr[2]];
-	destColorPtr[3] = state->cmykTransferK[cSrcPtr[3]];
-	destColorPtr += 4;
+	cResult0 = state->cmykTransferC[cSrcPtr[0]];
+	cResult1 = state->cmykTransferM[cSrcPtr[1]];
+	cResult2 = state->cmykTransferY[cSrcPtr[2]];
+	cResult3 = state->cmykTransferK[cSrcPtr[3]];
 	break;
 #endif
       }
-      if (destAlphaPtr) {
-	*destAlphaPtr++ = 255;
-      }
+      aResult = 255;
 
     } else { // if (noTransparency && !blendFunc)
 
@@ -523,17 +505,42 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	aDest = 0xff;
       }
 
-      //----- overprint
+      //----- read source color; handle overprint
 
-      for (i = 0; i < bitmapComps; ++i) {
+      switch (bitmap->mode) {
+      case splashModeMono1:
+      case splashModeMono8:
+	cSrc[0] = state->grayTransfer[cSrcPtr[0]];
+	break;
+      case splashModeRGB8:
+      case splashModeBGR8:
+	cSrc[0] = state->rgbTransferR[cSrcPtr[0]];
+	cSrc[1] = state->rgbTransferG[cSrcPtr[1]];
+	cSrc[2] = state->rgbTransferB[cSrcPtr[2]];
+	break;
 #if SPLASH_CMYK
-	if (state->overprintMask & (1 << i)) {
-	  cSrc[i] = cSrcPtr[i];
+      case splashModeCMYK8:
+	if (state->overprintMask & 0x01) {
+	  cSrc[0] = state->cmykTransferC[cSrcPtr[0]];
 	} else {
-	  cSrc[i] = div255(aDest * cDest[i]);
+	  cSrc[0] = div255(aDest * cDest[0]);
 	}
-#else
-	cSrc[i] = cSrcPtr[i];
+	if (state->overprintMask & 0x02) {
+	  cSrc[1] = state->cmykTransferM[cSrcPtr[1]];
+	} else {
+	  cSrc[1] = div255(aDest * cDest[1]);
+	}
+	if (state->overprintMask & 0x04) {
+	  cSrc[2] = state->cmykTransferY[cSrcPtr[2]];
+	} else {
+	  cSrc[2] = div255(aDest * cDest[2]);
+	}
+	if (state->overprintMask & 0x08) {
+	  cSrc[3] = state->cmykTransferK[cSrcPtr[3]];
+	} else {
+	  cSrc[3] = div255(aDest * cDest[3]);
+	}
+	break;
 #endif
       }
 
@@ -639,19 +646,19 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
       switch (pipe->resultColorCtrl) {
 
       case splashPipeResultColorNoAlphaBlendMono:
-	cResult0 = state->grayTransfer[div255((255 - aDest) * cSrc[0] + aDest * cBlend[0])];
+	cResult0 = div255((255 - aDest) * cSrc[0] + aDest * cBlend[0]);
 	break;
       case splashPipeResultColorNoAlphaBlendRGB:
-	cResult0 = state->rgbTransferR[div255((255 - aDest) * cSrc[0] + aDest * cBlend[0])];
-	cResult1 = state->rgbTransferG[div255((255 - aDest) * cSrc[1] + aDest * cBlend[1])];
-	cResult2 = state->rgbTransferB[div255((255 - aDest) * cSrc[2] + aDest * cBlend[2])];
+	cResult0 = div255((255 - aDest) * cSrc[0] + aDest * cBlend[0]);
+	cResult1 = div255((255 - aDest) * cSrc[1] + aDest * cBlend[1]);
+	cResult2 = div255((255 - aDest) * cSrc[2] + aDest * cBlend[2]);
 	break;
 #if SPLASH_CMYK
       case splashPipeResultColorNoAlphaBlendCMYK:
-	cResult0 = state->cmykTransferC[div255((255 - aDest) * cSrc[0] + aDest * cBlend[0])];
-	cResult1 = state->cmykTransferM[div255((255 - aDest) * cSrc[1] + aDest * cBlend[1])];
-	cResult2 = state->cmykTransferY[div255((255 - aDest) * cSrc[2] + aDest * cBlend[2])];
-	cResult3 = state->cmykTransferK[div255((255 - aDest) * cSrc[3] + aDest * cBlend[3])];
+	cResult0 = div255((255 - aDest) * cSrc[0] + aDest * cBlend[0]);
+	cResult1 = div255((255 - aDest) * cSrc[1] + aDest * cBlend[1]);
+	cResult2 = div255((255 - aDest) * cSrc[2] + aDest * cBlend[2]);
+	cResult3 = div255((255 - aDest) * cSrc[3] + aDest * cBlend[3]);
 	break;
 #endif
 
@@ -659,7 +666,7 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	if (alphaI == 0) {
 	  cResult0 = 0;
 	} else {
-	  cResult0 = state->grayTransfer[((alphaI - aSrc) * cDest[0] + aSrc * cSrc[0]) / alphaI];
+	  cResult0 = ((alphaI - aSrc) * cDest[0] + aSrc * cSrc[0]) / alphaI;
 	}
 	break;
       case splashPipeResultColorAlphaNoBlendRGB:
@@ -668,9 +675,9 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	  cResult1 = 0;
 	  cResult2 = 0;
 	} else {
-	  cResult0 = state->rgbTransferR[((alphaI - aSrc) * cDest[0] + aSrc * cSrc[0]) / alphaI];
-	  cResult1 = state->rgbTransferG[((alphaI - aSrc) * cDest[1] + aSrc * cSrc[1]) / alphaI];
-	  cResult2 = state->rgbTransferB[((alphaI - aSrc) * cDest[2] + aSrc * cSrc[2]) / alphaI];
+	  cResult0 = ((alphaI - aSrc) * cDest[0] + aSrc * cSrc[0]) / alphaI;
+	  cResult1 = ((alphaI - aSrc) * cDest[1] + aSrc * cSrc[1]) / alphaI;
+	  cResult2 = ((alphaI - aSrc) * cDest[2] + aSrc * cSrc[2]) / alphaI;
 	}
 	break;
 #if SPLASH_CMYK
@@ -681,10 +688,10 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	  cResult2 = 0;
 	  cResult3 = 0;
 	} else {
-	  cResult0 = state->cmykTransferC[((alphaI - aSrc) * cDest[0] + aSrc * cSrc[0]) / alphaI];
-	  cResult1 = state->cmykTransferM[((alphaI - aSrc) * cDest[1] + aSrc * cSrc[1]) / alphaI];
-	  cResult2 = state->cmykTransferY[((alphaI - aSrc) * cDest[2] + aSrc * cSrc[2]) / alphaI];
-	  cResult3 = state->cmykTransferK[((alphaI - aSrc) * cDest[3] + aSrc * cSrc[3]) / alphaI];
+	  cResult0 = ((alphaI - aSrc) * cDest[0] + aSrc * cSrc[0]) / alphaI;
+	  cResult1 = ((alphaI - aSrc) * cDest[1] + aSrc * cSrc[1]) / alphaI;
+	  cResult2 = ((alphaI - aSrc) * cDest[2] + aSrc * cSrc[2]) / alphaI;
+	  cResult3 = ((alphaI - aSrc) * cDest[3] + aSrc * cSrc[3]) / alphaI;
 	}
 	break;
 #endif
@@ -693,10 +700,10 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	if (alphaI == 0) {
 	  cResult0 = 0;
 	} else {
-	  cResult0 = state->grayTransfer[((alphaI - aSrc) * cDest[0] +
+	  cResult0 = ((alphaI - aSrc) * cDest[0] +
 		      aSrc * ((255 - alphaIm1) * cSrc[0] +
 			      alphaIm1 * cBlend[0]) / 255)
-	             / alphaI];
+	             / alphaI;
 	}
 	break;
       case splashPipeResultColorAlphaBlendRGB:
@@ -705,18 +712,18 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	  cResult1 = 0;
 	  cResult2 = 0;
 	} else {
-	  cResult0 = state->rgbTransferR[((alphaI - aSrc) * cDest[0] +
+	  cResult0 = ((alphaI - aSrc) * cDest[0] +
 		      aSrc * ((255 - alphaIm1) * cSrc[0] +
 			      alphaIm1 * cBlend[0]) / 255)
-	             / alphaI];
-	  cResult1 = state->rgbTransferG[((alphaI - aSrc) * cDest[1] +
+	             / alphaI;
+	  cResult1 = ((alphaI - aSrc) * cDest[1] +
 		      aSrc * ((255 - alphaIm1) * cSrc[1] +
 			      alphaIm1 * cBlend[1]) / 255)
-	             / alphaI];
-	  cResult2 = state->rgbTransferB[((alphaI - aSrc) * cDest[2] +
+	             / alphaI;
+	  cResult2 = ((alphaI - aSrc) * cDest[2] +
 		      aSrc * ((255 - alphaIm1) * cSrc[2] +
 			      alphaIm1 * cBlend[2]) / 255)
-	             / alphaI];
+	             / alphaI;
 	}
 	break;
 #if SPLASH_CMYK
@@ -727,28 +734,28 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
 	  cResult2 = 0;
 	  cResult3 = 0;
 	} else {
-	  cResult0 = state->cmykTransferC[((alphaI - aSrc) * cDest[0] +
+	  cResult0 = ((alphaI - aSrc) * cDest[0] +
 		      aSrc * ((255 - alphaIm1) * cSrc[0] +
 			      alphaIm1 * cBlend[0]) / 255)
-	             / alphaI];
-	  cResult1 = state->cmykTransferM[((alphaI - aSrc) * cDest[1] +
+	             / alphaI;
+	  cResult1 = ((alphaI - aSrc) * cDest[1] +
 		      aSrc * ((255 - alphaIm1) * cSrc[1] +
 			      alphaIm1 * cBlend[1]) / 255)
-	             / alphaI];
-	  cResult2 = state->cmykTransferY[((alphaI - aSrc) * cDest[2] +
+	             / alphaI;
+	  cResult2 = ((alphaI - aSrc) * cDest[2] +
 		      aSrc * ((255 - alphaIm1) * cSrc[2] +
 			      alphaIm1 * cBlend[2]) / 255)
-	             / alphaI];
-	  cResult3 = state->cmykTransferK[((alphaI - aSrc) * cDest[3] +
+	             / alphaI;
+	  cResult3 = ((alphaI - aSrc) * cDest[3] +
 		      aSrc * ((255 - alphaIm1) * cSrc[3] +
 			      alphaIm1 * cBlend[3]) / 255)
-	             / alphaI];
+	             / alphaI;
 	}
 	break;
 #endif
       }
 
-      //----- write destination pixel
+    } // if (noTransparency && !blendFunc)
 
     //----- write destination pixel
 
@@ -790,8 +797,6 @@ void Splash::pipeRun(SplashPipe *pipe, int x0, int x1, int y,
     if (destAlphaPtr) {
       *destAlphaPtr++ = aResult;
     }
-
-    } // if (noTransparency && !blendFunc)
 
     cSrcPtr += cSrcStride;
     shapePtr2 += shapeStride;
