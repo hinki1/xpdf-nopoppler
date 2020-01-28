@@ -5606,11 +5606,15 @@ void Splash::scaleImageYuXu(SplashImageSource src, void *srcData,
 			    int scaledWidth, int scaledHeight,
 			    SplashBitmap *dest) {
   Guchar *lineBuf, *alphaLineBuf;
-  Guint pix[splashMaxColorComps];
+  Guchar pix0, pix1, pix2;
+#if SPLASH_CMYK
+  Guchar pix3;
+#endif
   Guint alpha;
-  Guchar *destPtr0, *destPtr, *destAlphaPtr0, *destAlphaPtr;
-  int yp, yq, xp, xq, yt, y, yStep, xt, x, xStep, xx;
-  int i, j;
+  Guchar *srcPtr, *srcAlphaPtr;
+  Guchar *destPtr, *destAlphaPtr;
+  int yp, yq, xp, xq, yt, y, yStep, xt, x, xStep;
+  int i;
 
   // Bresenham parameters for y scale
   yp = scaledHeight / srcHeight;
@@ -5631,8 +5635,8 @@ void Splash::scaleImageYuXu(SplashImageSource src, void *srcData,
   // init y scale Bresenham
   yt = 0;
 
-  destPtr0 = dest->data;
-  destAlphaPtr0 = dest->alpha;
+  destPtr = dest->data;
+  destAlphaPtr = dest->alpha;
   for (y = 0; y < srcHeight; ++y) {
 
     // y scale Bresenham
@@ -5649,7 +5653,9 @@ void Splash::scaleImageYuXu(SplashImageSource src, void *srcData,
     // init x scale Bresenham
     xt = 0;
 
-    xx = 0;
+    // generate one row
+    srcPtr = lineBuf;
+    srcAlphaPtr = alphaLineBuf;
     for (x = 0; x < srcWidth; ++x) {
 
       // x scale Bresenham
@@ -5660,41 +5666,35 @@ void Splash::scaleImageYuXu(SplashImageSource src, void *srcData,
 	xStep = xp;
       }
 
-      // compute the final pixel
-      for (i = 0; i < nComps; ++i) {
-	pix[i] = lineBuf[x * nComps + i];
-      }
-
-      // store the pixel
+      // duplicate the pixel horizontally
       switch (srcMode) {
       case splashModeMono8:
-	for (i = 0; i < yStep; ++i) {
-	  for (j = 0; j < xStep; ++j) {
-	    destPtr = destPtr0 + (i * scaledWidth + xx + j) * nComps;
-	    *destPtr++ = (Guchar)pix[0];
-	  }
+	pix0 = *srcPtr++;
+	for (i = 0; i < xStep; ++i) {
+	  *destPtr++ = pix0;
 	}
 	break;
       case splashModeRGB8:
-	for (i = 0; i < yStep; ++i) {
-	  for (j = 0; j < xStep; ++j) {
-	    destPtr = destPtr0 + (i * scaledWidth + xx + j) * nComps;
-	    *destPtr++ = (Guchar)pix[0];
-	    *destPtr++ = (Guchar)pix[1];
-	    *destPtr++ = (Guchar)pix[2];
-	  }
+	pix0 = *srcPtr++;
+	pix1 = *srcPtr++;
+	pix2 = *srcPtr++;
+	for (i = 0; i < xStep; ++i) {
+	  *destPtr++ = pix0;
+	  *destPtr++ = pix1;
+	  *destPtr++ = pix2;
 	}
 	break;
 #if SPLASH_CMYK
       case splashModeCMYK8:
-	for (i = 0; i < yStep; ++i) {
-	  for (j = 0; j < xStep; ++j) {
-	    destPtr = destPtr0 + (i * scaledWidth + xx + j) * nComps;
-	    *destPtr++ = (Guchar)pix[0];
-	    *destPtr++ = (Guchar)pix[1];
-	    *destPtr++ = (Guchar)pix[2];
-	    *destPtr++ = (Guchar)pix[3];
-	  }
+	pix0 = *srcPtr++;
+	pix1 = *srcPtr++;
+	pix2 = *srcPtr++;
+	pix3 = *srcPtr++;
+	for (i = 0; i < xStep; ++i) {
+	  *destPtr++ = pix0;
+	  *destPtr++ = pix1;
+	  *destPtr++ = pix2;
+	  *destPtr++ = pix3;
 	}
 	break;
 #endif
@@ -5704,23 +5704,26 @@ void Splash::scaleImageYuXu(SplashImageSource src, void *srcData,
 	break;
       }
 
-      // process alpha
+      // duplicate the alpha value horizontally
       if (srcAlpha) {
-	alpha = alphaLineBuf[x];
-	for (i = 0; i < yStep; ++i) {
-	  for (j = 0; j < xStep; ++j) {
-	    destAlphaPtr = destAlphaPtr0 + i * scaledWidth + xx + j;
-	    *destAlphaPtr = (Guchar)alpha;
-	  }
+	alpha = *srcAlphaPtr++;
+	for (i = 0; i < xStep; ++i) {
+	  *destAlphaPtr++ = alpha;
 	}
       }
-
-      xx += xStep;
     }
 
-    destPtr0 += yStep * scaledWidth * nComps;
+    // duplicate the row vertically
+    for (i = 1; i < yStep; ++i) {
+      memcpy(destPtr, destPtr - scaledWidth * nComps,
+	     scaledWidth * nComps);
+      destPtr += scaledWidth * nComps;
+    }
     if (srcAlpha) {
-      destAlphaPtr0 += yStep * scaledWidth;
+      for (i = 1; i < yStep; ++i) {
+	memcpy(destAlphaPtr, destAlphaPtr - scaledWidth, scaledWidth);
+	destAlphaPtr += scaledWidth;
+      }
     }
   }
 
@@ -5796,6 +5799,12 @@ void Splash::scaleImageYuXuI(SplashImageSource src, void *srcData,
 	     ((SplashCoord)1 - xs) * (int)alphaLineBuf1[xSrc1]);
     }
   }
+
+  // make gcc happy
+  pix[0] = pix[1] = pix[2] = 0;
+#if SPLASH_CMYK
+  pix[3] = 0;
+#endif
 
   destPtr = dest->data;
   destAlphaPtr = dest->alpha;
