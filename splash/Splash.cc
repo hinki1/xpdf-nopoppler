@@ -1092,7 +1092,7 @@ void Splash::pipeRunShapeMono1(SplashPipe *pipe, int x0, int x1, int y,
 // bitmap->mode == splashModeMono8 && bitmap->alpha
 void Splash::pipeRunShapeMono8(SplashPipe *pipe, int x0, int x1, int y,
 			       Guchar *shapePtr, SplashColorPtr cSrcPtr) {
-  Guchar shape, aSrc, aDest, alphaI, aResult, cDest0, cResult0;
+  Guchar shape, aSrc, aDest, alphaI, aResult, cSrc0, cDest0, cResult0;
   SplashColorPtr destColorPtr;
   Guchar *destAlphaPtr;
   int cSrcStride, x, lastX;
@@ -1133,11 +1133,26 @@ void Splash::pipeRunShapeMono8(SplashPipe *pipe, int x0, int x1, int y,
     }
     lastX = x;
 
+    //----- source color
+    cSrc0 = state->grayTransfer[cSrcPtr[0]];
+
     //----- source alpha
     aSrc = shape;
 
+    //----- special case for aSrc = 255
+    if (aSrc == 255) {
+      aResult = 255;
+      cResult0 = cSrc0;
+    } else {
+
+      //----- read destination alpha
       aDest = *destAlphaPtr;
 
+      //----- special case for aDest = 0
+      if (aDest == 0) {
+	aResult = aSrc;
+	cResult0 = cSrc0;
+      } else {
 
 	//----- read destination pixel
 	cDest0 = *destColorPtr;
@@ -1146,12 +1161,10 @@ void Splash::pipeRunShapeMono8(SplashPipe *pipe, int x0, int x1, int y,
 	aResult = aSrc + aDest - div255(aSrc * aDest);
 	alphaI = aResult;
 
-    //----- result color
-    if (alphaI == 0) {
-      cResult0 = 0;
-      } else {
-	cResult0 = state->grayTransfer[(Guchar)(((alphaI - aSrc) * cDest0 + aSrc * cSrcPtr[0]) / alphaI)];
+	//----- result color
+	cResult0 = (Guchar)(((alphaI - aSrc) * cDest0 + aSrc * cSrc0) / alphaI);
       }
+    }
 
     //----- write destination pixel
     *destColorPtr++ = cResult0;
