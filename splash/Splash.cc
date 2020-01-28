@@ -1008,7 +1008,7 @@ void Splash::pipeRunSimpleCMYK8(SplashPipe *pipe, int x0, int x1, int y,
 // bitmap->mode == splashModeMono1 && !bitmap->alpha
 void Splash::pipeRunShapeMono1(SplashPipe *pipe, int x0, int x1, int y,
 			       Guchar *shapePtr, SplashColorPtr cSrcPtr) {
-  Guchar shape, aSrc, cDest0, cResult0;
+  Guchar shape, aSrc, cSrc0, cDest0, cResult0;
   SplashColorPtr destColorPtr;
   Guchar destColorMask;
   SplashScreenCursor screenCursor;
@@ -1052,17 +1052,23 @@ void Splash::pipeRunShapeMono1(SplashPipe *pipe, int x0, int x1, int y,
     }
     lastX = x;
 
+    //----- source color
+    cSrc0 = state->grayTransfer[cSrcPtr[0]];
+
     //----- source alpha
     aSrc = shape;
 
-    {
+    //----- special case for aSrc = 255
+    if (aSrc == 255) {
+      cResult0 = cSrc0;
+    } else {
 
       //----- read destination pixel
       cDest0 = (*destColorPtr & destColorMask) ? 0xff : 0x00;
 
       //----- result color
       // note: aDest = alphaI = aResult = 0xff
-      cResult0 = state->grayTransfer[(Guchar)div255((0xff - aSrc) * cDest0 + aSrc * cSrcPtr[0])];
+      cResult0 = (Guchar)div255((0xff - aSrc) * cDest0 + aSrc * cSrc0);
     }
 
     //----- write destination pixel
