@@ -1,0 +1,5 @@
+/.debhelper/
+/files
+/xpdf-nopoppler.debhelper.log
+/xpdf-nopoppler.substvars
+/xpdf-nopoppler/
