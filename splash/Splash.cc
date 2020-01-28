@@ -2762,8 +2762,8 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
   SplashCoord lineDashTotal;
   SplashCoord lineDashStartPhase, lineDashDist, segLen;
   SplashCoord x0, y0, x1, y1, xa, ya;
-  GBool lineDashStartOn, lineDashOn, newPath;
-  int lineDashStartIdx, lineDashIdx;
+  GBool lineDashStartOn, lineDashEndOn, lineDashOn, newPath;
+  int lineDashStartIdx, lineDashIdx, subpathStart, nDashes;
   int i, j, k;
 
   lineDashTotal = 0;
@@ -2775,6 +2775,13 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
     return new SplashPath();
   }
   lineDashStartPhase = state->lineDashPhase;
+  if (lineDashStartPhase > lineDashTotal * 2) {
+    i = splashFloor(lineDashStartPhase / (lineDashTotal * 2));
+    lineDashStartPhase -= lineDashTotal * i * 2;
+  } else if (lineDashStartPhase < 0) {
+    i = splashCeil(-lineDashStartPhase / (lineDashTotal * 2));
+    lineDashStartPhase += lineDashTotal * i * 2;
+  }
   i = splashFloor(lineDashStartPhase / lineDashTotal);
   lineDashStartPhase -= (SplashCoord)i * lineDashTotal;
   lineDashStartOn = gTrue;
@@ -2783,7 +2790,9 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
     while (lineDashStartPhase >= state->lineDash[lineDashStartIdx]) {
       lineDashStartOn = !lineDashStartOn;
       lineDashStartPhase -= state->lineDash[lineDashStartIdx];
-      ++lineDashStartIdx;
+      if (++lineDashStartIdx == state->lineDashLength) {
+	lineDashStartIdx = 0;
+      }
     }
   }
 
@@ -2800,8 +2809,11 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
 
     // initialize the dash parameters
     lineDashOn = lineDashStartOn;
+    lineDashEndOn = lineDashStartOn;
     lineDashIdx = lineDashStartIdx;
     lineDashDist = state->lineDash[lineDashIdx] - lineDashStartPhase;
+    subpathStart = dPath->length;
+    nDashes = 0;
 
     // process each segment of the subpath
     newPath = gTrue;
@@ -2817,12 +2829,31 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
       // process the segment
       while (segLen > 0) {
 
-
-	if (lineDashDist >= segLen) {
+	// Special case for zero-length dash segments: draw a very
+	// short -- but not zero-length -- segment.  This ensures that
+	// we get the correct behavior with butt and projecting line
+	// caps.  The PS/PDF specs imply that zero-length segments are
+	// not drawn unless the line cap is round, but Acrobat and
+	// Ghostscript both draw very short segments (for butt caps)
+	// and squares (for projecting caps).
+	if (lineDashDist == 0) {
 	  if (lineDashOn) {
 	    if (newPath) {
 	      dPath->moveTo(x0, y0);
 	      newPath = gFalse;
+	      ++nDashes;
+	    }
+	    xa = x0 + ((SplashCoord)0.001 / segLen) * (x1 - x0);
+	    ya = y0 + ((SplashCoord)0.001 / segLen) * (y1 - y0);
+	    dPath->lineTo(xa, ya);
+	  }
+
+	} else if (lineDashDist >= segLen) {
+	  if (lineDashOn) {
+	    if (newPath) {
+	      dPath->moveTo(x0, y0);
+	      newPath = gFalse;
+	      ++nDashes;
 	    }
 	    dPath->lineTo(x1, y1);
 	  }
@@ -2836,6 +2867,7 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
 	    if (newPath) {
 	      dPath->moveTo(x0, y0);
 	      newPath = gFalse;
+	      ++nDashes;
 	    }
 	    dPath->lineTo(xa, ya);
 	  }
@@ -2845,6 +2877,7 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
 	  lineDashDist = 0;
 	}
 
+	lineDashEndOn = lineDashOn;
 
 	// get the next entry in the dash array
 	if (lineDashDist <= 0) {
@@ -2858,6 +2891,29 @@ SplashPath *Splash::makeDashedPath(SplashPath *path) {
       }
     }
 
+    // in a closed subpath, where the dash pattern is "on" at both the
+    // start and end of the subpath, we need to merge the start and
+    // end to get a proper line join
+    if ((path->flags[j] & splashPathClosed) &&
+	lineDashStartOn &&
+	lineDashEndOn) {
+      if (nDashes == 1) {
+	dPath->close();
+      } else if (nDashes > 1) {
+	k = subpathStart;
+	do {
+	  ++k;
+	  dPath->lineTo(dPath->pts[k].x, dPath->pts[k].y);
+	} while (!(dPath->flags[k] & splashPathLast));
+	++k;
+	memmove(&dPath->pts[subpathStart], &dPath->pts[k],
+		(dPath->length - k) * sizeof(SplashPathPoint));
+	memmove(&dPath->flags[subpathStart], &dPath->flags[k],
+		(dPath->length - k) * sizeof(Guchar));
+	dPath->length -= k - subpathStart;
+	dPath->curSubpath -= k - subpathStart;
+      }
+    }
 
     i = j + 1;
   }
