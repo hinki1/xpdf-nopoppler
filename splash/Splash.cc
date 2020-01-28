@@ -4246,10 +4246,10 @@ void Splash::scaleMaskYuXu(SplashImageMaskSource src, void *srcData,
 			   int scaledWidth, int scaledHeight,
 			   SplashBitmap *dest) {
   Guchar *lineBuf;
-  Guint pix;
-  Guchar *destPtr0, *destPtr;
-  int yp, yq, xp, xq, yt, y, yStep, xt, x, xStep, xx;
-  int i, j;
+  Guchar pix;
+  Guchar *srcPtr, *destPtr;
+  int yp, yq, xp, xq, yt, y, yStep, xt, x, xStep;
+  int i;
 
   // Bresenham parameters for y scale
   yp = scaledHeight / srcHeight;
@@ -4265,7 +4265,7 @@ void Splash::scaleMaskYuXu(SplashImageMaskSource src, void *srcData,
   // init y scale Bresenham
   yt = 0;
 
-  destPtr0 = dest->data;
+  destPtr = dest->data;
   for (y = 0; y < srcHeight; ++y) {
 
     // y scale Bresenham
@@ -4282,7 +4282,8 @@ void Splash::scaleMaskYuXu(SplashImageMaskSource src, void *srcData,
     // init x scale Bresenham
     xt = 0;
 
-    xx = 0;
+    // generate one row
+    srcPtr = lineBuf;
     for (x = 0; x < srcWidth; ++x) {
 
       // x scale Bresenham
@@ -4294,20 +4295,20 @@ void Splash::scaleMaskYuXu(SplashImageMaskSource src, void *srcData,
       }
 
       // compute the final pixel
-      pix = lineBuf[x] ? 255 : 0;
+      pix = *srcPtr ? 255 : 0;
+      ++srcPtr;
 
-      // store the pixel
-      for (i = 0; i < yStep; ++i) {
-	for (j = 0; j < xStep; ++j) {
-	  destPtr = destPtr0 + i * scaledWidth + xx + j;
-	  *destPtr++ = (Guchar)pix;
-	}
+      // duplicate the pixel horizontally
+      for (i = 0; i < xStep; ++i) {
+	*destPtr++ = pix;
       }
-
-      xx += xStep;
     }
 
-    destPtr0 += yStep * scaledWidth;
+    // duplicate the row vertically
+    for (i = 1 ; i < yStep; ++i) {
+      memcpy(destPtr, destPtr - scaledWidth, scaledWidth);
+      destPtr += scaledWidth;
+    }
   }
 
   gfree(lineBuf);
@@ -5484,6 +5485,12 @@ void Splash::scaleImageYuXd(SplashImageSource src, void *srcData,
   } else {
     alphaLineBuf = NULL;
   }
+
+  // make gcc happy
+  pix[0] = pix[1] = pix[2] = 0;
+#if SPLASH_CMYK
+  pix[3] = 0;
+#endif
 
   // init y scale Bresenham
   yt = 0;
