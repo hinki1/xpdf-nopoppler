@@ -2371,7 +2371,8 @@ void Splash::clear(SplashColorPtr color, Guchar alpha) {
 
 SplashError Splash::stroke(SplashPath *path) {
   SplashPath *path2, *dPath;
-  SplashCoord t0, t1, t2, t3, w, w2;
+  SplashCoord t0, t1, t2, t3, w, w2, lineDashMax, lineDashTotal;
+  int lineCap, lineJoin, i;
 
   if (debugMode) {
     printf("stroke [dash:%d] [width:%.2f]:\n",
@@ -2412,8 +2413,20 @@ SplashError Splash::stroke(SplashPath *path) {
     // pixel, don't apply the dash pattern; this avoids a huge
     // performance/memory hit with PDF files that use absurd dash
     // patterns like [0.0007 0.0003]
-//TODO
-    {
+    lineDashTotal = 0;
+    lineDashMax = 0;
+    for (i = 0; i < state->lineDashLength; ++i) {
+      lineDashTotal += state->lineDash[i];
+      if (state->lineDash[i] > lineDashMax) {
+	lineDashMax = state->lineDash[i];
+      }
+    }
+    // Acrobat simply draws nothing if the dash array is [0]
+    if (lineDashTotal == 0) {
+      delete path2;
+      return splashOk;
+    }
+    if (w * lineDashMax > 0.1) {
 
       dPath = makeDashedPath(path2);
       delete path2;
@@ -2429,12 +2442,24 @@ SplashError Splash::stroke(SplashPath *path) {
   // stroke-adjusted, so use projecting caps instead (but we can't do
   // this if there are zero-length dashes or segments, because those
   // turn into round dots)
-//TODO
+  lineCap = state->lineCap;
+  lineJoin = state->lineJoin;
+  if (state->strokeAdjust == splashStrokeAdjustCAD &&
+      w2 < 3.5) {
+    if (lineCap == splashLineCapRound &&
+	!state->lineDashContainsZeroLengthDashes() &&
+	!path->containsZeroLengthSubpaths()) {
+      lineCap = splashLineCapProjecting;
+    }
+    if (lineJoin == splashLineJoinRound) {
+      lineJoin = splashLineJoinBevel;
+    }
+  }
 
   // if there is a min line width set, and the transformed line width
   // is smaller, use the min line width
   if (w > 0 && w2 < minLineWidth) {
-    strokeWide(path2, minLineWidth / w);
+    strokeWide(path2, minLineWidth / w, splashLineCapButt, splashLineJoinBevel);
   } else if (bitmap->mode == splashModeMono1) {
     // in monochrome mode, use 0-width lines for any transformed line
     // width <= 1 -- lines less than 1 pixel wide look too fat without
@@ -2442,7 +2467,7 @@ SplashError Splash::stroke(SplashPath *path) {
     if (w2 < 1.001) {
       strokeNarrow(path2);
     } else {
-      strokeWide(path2, state->lineWidth);
+      strokeWide(path2, state->lineWidth, lineCap, lineJoin);
     }
   } else {
     // in gray and color modes, only use 0-width lines if the line
@@ -2450,7 +2475,7 @@ SplashError Splash::stroke(SplashPath *path) {
     if (state->lineWidth == 0) {
       strokeNarrow(path2);
     } else {
-      strokeWide(path2, state->lineWidth);
+      strokeWide(path2, state->lineWidth, lineCap, lineJoin);
     }
   }
 
