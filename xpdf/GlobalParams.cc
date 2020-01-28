@@ -1204,10 +1204,14 @@ void GlobalParams::parsePSLevel(GList *tokens, GString *fileName, int line) {
     psLevel = psLevel1Sep;
   } else if (!tok->cmp("level2")) {
     psLevel = psLevel2;
+  } else if (!tok->cmp("level2gray")) {
+    psLevel = psLevel2Gray;
   } else if (!tok->cmp("level2sep")) {
     psLevel = psLevel2Sep;
   } else if (!tok->cmp("level3")) {
     psLevel = psLevel3;
+  } else if (!tok->cmp("level3gray")) {
+    psLevel = psLevel3Gray;
   } else if (!tok->cmp("level3Sep")) {
     psLevel = psLevel3Sep;
   } else {

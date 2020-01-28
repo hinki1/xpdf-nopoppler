@@ -76,9 +76,11 @@ enum PSLevel {
   psLevel1,
   psLevel1Sep,
   psLevel2,
+  psLevel2Gray,
   psLevel2Sep,
   psLevel3,
-  psLevel3Sep
+  psLevel3Gray,
+  psLevel3Sep,
 };
 
 //------------------------------------------------------------------------
