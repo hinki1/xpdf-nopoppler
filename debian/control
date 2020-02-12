@@ -17,9 +17,7 @@ Build-Depends:
  libstdc++-dev,
  libfontconfig-dev,
 # new qt deps since 4.00
- libqtgui-dev,
- libqtnetwork-dev,
- libqtcore-dev,
+ qtbase5-dev,
 # for printing
  libcups2-dev,
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/xpdf.git
