@@ -38,6 +38,10 @@ Provides:
  poppler-utils,
 Breaks:
  xpdf,
+ poppler-utils,
+Replaces:
+ xpdf,
+ poppler-utils,
 Description: Portable Document Format (PDF) reader
  xpdf-nopoppler is a light-weight open source viewer for
  Portable Document Format (PDF) files.
