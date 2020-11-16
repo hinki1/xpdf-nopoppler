@@ -5,6 +5,7 @@ Maintainer: Matthias Hinkfoth <hinki@abwesend.de>
 Standards-Version: 4.1.1
 Build-Depends:
  autoconf (>= 2.57),
+ cmake,
  debhelper (>= 9),
  pkg-config,
  libpaper-dev,
