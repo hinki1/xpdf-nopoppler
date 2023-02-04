@@ -30,6 +30,7 @@ Architecture: any
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
+ libqt5svg5,
 Recommends:
  gsfonts-x11,
  cups-bsd,
