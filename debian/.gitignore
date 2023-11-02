@@ -1,4 +1,5 @@
 /.debhelper/
+/debhelper-build-stamp
 /files
 /xpdf-nopoppler.debhelper.log
 /xpdf-nopoppler.substvars
