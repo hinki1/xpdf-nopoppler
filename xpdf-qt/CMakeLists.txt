@@ -98,4 +98,10 @@ if ((QT4_FOUND OR Qt5Widgets_FOUND)
 
   install(TARGETS xpdf RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
   install(FILES ${PROJECT_SOURCE_DIR}/doc/xpdf.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+
+  #--- xpdf.desktop for xdg-mime
+  install(FILES ${PROJECT_SOURCE_DIR}/xdg/xpdf.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+
+  #--- icon for xpdf.desktop
+  install(FILES ${PROJECT_SOURCE_DIR}/xpdf-qt/xpdf-icon.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
 endif ()

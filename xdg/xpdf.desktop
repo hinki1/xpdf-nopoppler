@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Xpdf
+Comment=Xpdf: open source pdf file viewer
+GenericName=xpdf
+Exec=/usr/bin/xpdf %f
+Icon=xpdf-icon
+Terminal=false
+Type=Application
+MimeType=application/pdf;
+Categories=Viewer;Graphics;
